@@ -20,7 +20,7 @@ module MList
       end
       
       def tmail
-        @tmail.dup
+        TMail::Mail.parse(@tmail.to_s)
       end
     end
   end

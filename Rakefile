@@ -10,7 +10,6 @@ require 'spec/rake/spectask'
 Hoe.new('mlist', MList::VERSION::STRING) do |p|
   p.url = 'http://github.com/aiwilliams/mlist/'
   p.description = "A Ruby mailing list library designed to be integrated into other applications."
-  p.rubyforge_name = 'mlist'
   p.developer('Adam Williams', 'adam@thewilliams.ws')
 end
 

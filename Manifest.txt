@@ -2,6 +2,4 @@ History.txt
 Manifest.txt
 README.txt
 Rakefile
-bin/blah
-lib/blah.rb
-test/test_blah.rb
+lib/mlist.rb

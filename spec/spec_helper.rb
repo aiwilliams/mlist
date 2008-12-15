@@ -22,4 +22,10 @@ ActiveRecord::Base.silence do
   load "#{SPEC_ROOT}/fixtures/schema.rb"
 end
 
+require 'dataset'
+class Spec::Example::ExampleGroup
+  include Dataset
+  datasets_directory "#{SPEC_ROOT}/datasets"
+end
+
 require 'mlist'

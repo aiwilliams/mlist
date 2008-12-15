@@ -1,0 +1,32 @@
+Delivered-To: adam@thewilliams.ws
+Received: by 10.180.204.12 with SMTP id b12cs224493bkg;
+        Mon, 15 Dec 2008 12:33:50 -0800 (PST)
+Received: by 10.210.61.8 with SMTP id j8mr8266239eba.45.1229373230140;
+        Mon, 15 Dec 2008 12:33:50 -0800 (PST)
+Return-Path: <adam@fivepointssolutions.com>
+Received: from nf-out-0910.google.com (nf-out-0910.google.com [64.233.182.191])
+        by mx.google.com with ESMTP id 12si10845271ewy.54.2008.12.15.12.33.49;
+        Mon, 15 Dec 2008 12:33:50 -0800 (PST)
+Received-SPF: neutral (google.com: 64.233.182.191 is neither permitted nor denied by best guess record for domain of adam@fivepointssolutions.com) client-ip=64.233.182.191;
+Authentication-Results: mx.google.com; spf=neutral (google.com: 64.233.182.191 is neither permitted nor denied by best guess record for domain of adam@fivepointssolutions.com) smtp.mail=adam@fivepointssolutions.com
+Received: by nf-out-0910.google.com with SMTP id 30so838340nfu.47
+        for <adam@thewilliams.ws>; Mon, 15 Dec 2008 12:33:49 -0800 (PST)
+Received: by 10.210.143.11 with SMTP id q11mr8274170ebd.43.1229373229206;
+        Mon, 15 Dec 2008 12:33:49 -0800 (PST)
+Return-Path: <adam@fivepointssolutions.com>
+Received: from ?192.168.0.111? (cpe-076-182-107-072.nc.res.rr.com [76.182.107.72])
+        by mx.google.com with ESMTPS id k7sm283148nfh.4.2008.12.15.12.33.47
+        (version=TLSv1/SSLv3 cipher=RC4-MD5);
+        Mon, 15 Dec 2008 12:33:48 -0800 (PST)
+Message-Id: <9FE4A68B-6C8B-4A2B-B8C1-664D3944CE7C@memberhub.com>
+To: Adam Williams <adam@thewilliams.ws>,
+ nospam@thewilliams.ws
+Content-Type: text/plain; charset=US-ASCII; format=flowed
+Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0 (Apple Message framework v929.2)
+Subject: Testing Multiple Lists
+Date: Mon, 15 Dec 2008 15:33:45 -0500
+X-Mailer: Apple Mail (2.929.2)
+From: Adam Williams <adam@fivepointssolutions.com>
+
+Testing multiple lists

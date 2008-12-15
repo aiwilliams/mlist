@@ -8,8 +8,8 @@ module MList
         @deliveries = []
       end
       
-      def deliver(email)
-        @deliveries << email
+      def deliver(tmail)
+        @deliveries << tmail
       end
     end
   end

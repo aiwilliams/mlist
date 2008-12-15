@@ -10,7 +10,10 @@ module MList
     
     def receive(mail)
       lists = listman.lists(mail)
-      lists.each { |list| list.deliver(email_server, MList::Mail.new(:tmail => mail.tmail)) }
+      lists.each do |list|
+        list_mail = MList::Mail.new(:tmail => mail.tmail)
+        list.deliver(email_server, list_mail)
+      end
     end
   end
 end
