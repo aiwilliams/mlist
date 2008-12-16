@@ -36,6 +36,7 @@ module MList
         end
       end
       
+      # http://www.jamesshuggins.com/h/web1/list-email-headers.htm
       def list_headers
         headers = {
           'list-id'          => list_id,

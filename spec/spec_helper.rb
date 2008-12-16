@@ -4,6 +4,7 @@ $LOAD_PATH << (SPEC_ROOT + '/../lib')
 require 'rubygems'
 require 'spec'
 require 'rr'
+require 'ostruct'
 
 Spec::Runner.configure do |config|
   config.mock_with :rr
