@@ -44,7 +44,7 @@ module Spec
         def header_values(email)
           values = []
           email.each_header do |k,v|
-            values << v.to_s.strip if k == @name
+            values << v.to_s.strip if k.downcase == @name.downcase
           end
           values
         end

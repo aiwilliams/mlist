@@ -1,6 +1,7 @@
 require 'tmail'
 require 'activerecord'
 
+require 'mlist/util'
 require 'mlist/mail'
 require 'mlist/list'
 require 'mlist/email_server'

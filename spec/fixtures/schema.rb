@@ -1,6 +1,7 @@
 ActiveRecord::Schema.define(:version => 20081126181722) do
   create_table :lists, :force => true do |t|
     t.column :address, :string
+    t.column :label, :string
     t.column :created_at, :datetime
   end
   

@@ -39,8 +39,8 @@ module Spec
             @failure_message = unequal.join("\n") unless unequal.empty?
           else
             @failure_message = "expected tmail instances to be equal but headers were not\n"
-            @failure_message << "missing in given: #{missing.collect(&:name).inspect}" unless missing.empty?
-            @failure_message << "extra in given: #{extra.collect(&:name).inspect}" unless extra.empty?
+            @failure_message << "missing in given: #{missing.inspect}" unless missing.empty?
+            @failure_message << "extra in given: #{extra.inspect}" unless extra.empty?
           end
           @failure_message.nil?
         end

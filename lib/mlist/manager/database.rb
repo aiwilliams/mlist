@@ -2,8 +2,12 @@ module MList
   module Manager
     
     class Database < Base
-      def create_list(address)
-        List.create!(:address => address)
+      def create_list(address, attributes = {})
+        attributes = {
+          :address => address,
+          :label   => address.match(/\A(.*?)@/)[1]
+        }.merge(attributes)
+        List.create!(attributes)
       end
       
       def lists(email)
