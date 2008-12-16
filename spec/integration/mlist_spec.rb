@@ -7,10 +7,17 @@ describe MList do
     TMail::Mail.load(File.join(SPEC_ROOT, 'fixtures/email', path))
   end
   
-  dataset {}
+  dataset do
+    @listman = MList::Manager::Database.new
+    @list_one = @listman.create_list('list_one@example.com')
+    @list_one.subscribe('tom@example.com')
+    @list_one.subscribe('dick@example.com')
+    
+    @list_two = @listman.create_list('list_two@example.com')
+    @list_two.subscribe('jane@example.com')
+  end
   
   before do
-    @listman = MList::Manager::Database.new
     @email_server = MList::EmailServer::Fake.new
     @server = MList::Server.new(
       :listman => @listman,
@@ -32,16 +39,13 @@ describe MList do
   
   describe 'single list' do
     before do
-      @list = @listman.create_list('adam@thewilliams.ws')
-      @list.subscribe('tom@example.com')
-      @list.subscribe('dick@example.com')
-      @email_server.receive(email_fixture('adam@thewilliams.ws'))
+      @email_server.receive(email_fixture('single_list'))
     end
     
     it 'should forward emails that are sent to a mailing list' do
       @email_server.deliveries.size.should == 1
       email = @email_server.deliveries.first
-      email.should have_address(:to, 'adam@thewilliams.ws')
+      email.should have_address(:to, 'list_one@example.com')
       email.should have_address(:bcc, %w(tom@example.com dick@example.com))
     end
     
@@ -53,21 +57,19 @@ describe MList do
   
   describe 'multiple lists' do
     before do
-      @list = @listman.create_list('adam@thewilliams.ws')
-      @list.subscribe('tom@example.com')
-      @list = @listman.create_list('nospam@thewilliams.ws')
-      @list.subscribe('dick@example.com')
       @email_server.receive(email_fixture('multiple_lists'))
     end
     
     it 'should forward emails that are sent to a mailing list' do
       @email_server.deliveries.size.should == 2
+      
       email = @email_server.deliveries.first
-      email.should have_address(:to, 'adam@thewilliams.ws')
-      email.should have_address(:bcc, %w(tom@example.com))
+      email.should have_address(:to, 'list_one@example.com')
+      email.should have_address(:bcc, %w(tom@example.com dick@example.com))
+      
       email = @email_server.deliveries.last
-      email.should have_address(:to, 'nospam@thewilliams.ws')
-      email.should have_address(:bcc, %w(dick@example.com))
+      email.should have_address(:to, 'list_two@example.com')
+      email.should have_address(:bcc, %w(jane@example.com))
     end
     
     it 'should start a new thread for each list' do
@@ -76,6 +78,13 @@ describe MList do
       threads[1].mails.first.tmail.should equal_tmail(@email_server.deliveries[1])
     end
   end
+  
+  describe 'x-beenthere' do
+    it 'should not be received by the list' do
+      lambda do
+        @email_server.receive(email_fixture('x-beenthere'))
+        @email_server.deliveries.size.should == 0
+      end.should_not change(MList::Thread, :count)
+    end
+  end
 end
-
-# TODO Define behavior of multiple lists receiving an email

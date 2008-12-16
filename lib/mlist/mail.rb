@@ -8,6 +8,14 @@ module MList
   class Mail < ActiveRecord::Base
     before_save :serialize_tmail
     
+    def read_header(header_name)
+      tmail[header_name]
+    end
+    
+    def write_header(header_name, value)
+      tmail[header_name] = value
+    end
+    
     def tmail=(tmail)
       @tmail = tmail
     end
@@ -16,8 +24,8 @@ module MList
       @tmail ||= TMail::Mail.parse(email_text)
     end
     
-    def method_missing(symbol, *args)
-      tmail.__send__(symbol, *args)
+    def method_missing(symbol, *args, &block)
+      tmail.__send__(symbol, *args, &block)
     end
     
     private

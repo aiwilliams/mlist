@@ -12,7 +12,7 @@ module MList
       lists = listman.lists(mail)
       lists.each do |list|
         list_mail = MList::Mail.new(:tmail => mail.tmail)
-        list.deliver(email_server, list_mail)
+        list.receive(email_server, list_mail)
       end
     end
   end
