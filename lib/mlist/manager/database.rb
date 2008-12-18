@@ -1,7 +1,7 @@
 module MList
   module Manager
     
-    class Database < Base
+    class Database
       def create_list(address, attributes = {})
         attributes = {
           :address => address,

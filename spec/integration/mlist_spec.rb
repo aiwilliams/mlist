@@ -3,24 +3,20 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 require 'mlist/manager/database'
 
 describe MList do
-  def email_fixture(path)
-    TMail::Mail.load(File.join(SPEC_ROOT, 'fixtures/email', path))
-  end
-  
   dataset do
-    @listman = MList::Manager::Database.new
-    @list_one = @listman.create_list('list_one@example.com')
+    @list_manager = MList::Manager::Database.new
+    @list_one = @list_manager.create_list('list_one@example.com')
     @list_one.subscribe('tom@example.com')
     @list_one.subscribe('dick@example.com')
     
-    @list_two = @listman.create_list('list_two@example.com')
+    @list_two = @list_manager.create_list('list_two@example.com')
     @list_two.subscribe('jane@example.com')
   end
   
   before do
     @email_server = MList::EmailServer::Fake.new
     @server = MList::Server.new(
-      :listman => @listman,
+      :list_manager => @list_manager,
       :email_server => @email_server
     )
     
@@ -49,9 +45,16 @@ describe MList do
       email.should have_address(:bcc, %w(tom@example.com dick@example.com))
     end
     
-    it 'should start a new thread for an email' do
+    it 'should start a new thread for a new email' do
       thread = MList::Thread.last
       thread.mails.first.tmail.should equal_tmail(@email_server.deliveries.first)
+    end
+    
+    it 'should add to an existing thread when reply email' do
+      @email_server.receive(email_fixture('single_list_reply'))
+      thread = MList::Thread.last
+      thread.mails.size.should be(2)
+      thread.mails.last.tmail.should equal_tmail(@email_server.deliveries.last)
     end
   end
   

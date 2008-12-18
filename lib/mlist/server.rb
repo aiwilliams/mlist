@@ -1,18 +1,18 @@
 module MList
   class Server
-    attr_reader :listman, :email_server
+    attr_reader :list_manager, :email_server
     
     def initialize(config)
-      @listman = config[:listman]
+      @list_manager = config[:list_manager]
       @email_server = config[:email_server]
       @email_server.receiver(self)
     end
     
     def receive(mail)
-      lists = listman.lists(mail)
+      lists = list_manager.lists(mail)
       lists.each do |list|
-        list_mail = MList::Mail.new(:tmail => mail.tmail)
-        list.receive(email_server, list_mail)
+        mail_list = MailList.find_or_create_by_list(list)
+        mail_list.post(email_server, MList::Mail.new(:mail_list => mail_list, :tmail => mail.tmail))
       end
     end
   end

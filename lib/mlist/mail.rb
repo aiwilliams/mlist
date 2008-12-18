@@ -6,16 +6,40 @@ module MList
   # the 'same' originating email.
   #
   class Mail < ActiveRecord::Base
-    attr_writer :header_sanitizers
+    belongs_to :mail_list
     
+    attr_writer :header_sanitizers
     before_save :serialize_tmail
     
     def charset
       'utf-8'
     end
     
+    def delete_header(name)
+      tmail[name] = nil
+    end
+    
+    def parent_identifier
+      if in_reply_to = header_string('in-reply-to')
+        identifier = in_reply_to
+      elsif references = read_header('references')
+        identifier = references.ids.first
+      else
+        parent_mail = mail_list.mails.find(:first,
+          :conditions => ['mails.subject = ?', remove_regard(subject)],
+          :order => 'created_at asc'
+        )
+        identifier = parent_mail.identifier if parent_mail
+      end
+      remove_brackets(identifier) if identifier
+    end
+    
     def read_header(name)
       tmail[name]
+    end
+    
+    def reply?
+      !parent_identifier.nil?
     end
     
     def write_header(name, value)
@@ -23,6 +47,8 @@ module MList
     end
     
     def tmail=(tmail)
+      write_attribute(:identifier, remove_brackets(tmail.header_string('message-id')))
+      write_attribute(:subject, tmail.subject)
       @tmail = tmail
     end
     
@@ -38,8 +64,17 @@ module MList
       tmail.bcc = sanitize_header('bcc', recipients)
     end
     
-    def method_missing(symbol, *args, &block)
-      tmail.__send__(symbol, *args, &block)
+    # Provide delegation to *most* of the underlying TMail::Mail methods,
+    # excluding those overridden by this class and the [] and []= methods. We
+    # must maintain the ActiveRecord interface over that of the TMail::Mail
+    # interface.
+    #
+    def method_missing(symbol, *args, &block) # :nodoc:
+      if @tmail && @tmail.respond_to?(symbol) && !(symbol == :[] || symbol == :[]=)
+        @tmail.__send__(symbol, *args, &block)
+      else
+        super
+      end
     end
     
     def sanitize_header(name, *values)
@@ -50,6 +85,15 @@ module MList
       def header_sanitizer(name)
         @header_sanitizers ||= Util.default_header_sanitizers
         @header_sanitizers[name]
+      end
+      
+      def remove_brackets(string)
+        string =~ /\A<(.*?)>\Z/ ? $1 : string
+      end
+      
+      def remove_regard(string)
+        stripped = string.strip
+        stripped =~ /\Are:\s+(.*?)\Z/i ? $1 : stripped
       end
       
       def serialize_tmail
