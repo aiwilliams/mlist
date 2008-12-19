@@ -4,15 +4,26 @@
 
 == DESCRIPTION:
 
-FIX (describe your package)
+An insane attempt to build a mail list server library that can be used
+other applications very easily. The first target is Ruby applications
+that can load MList models for direct integration. It will later have
+a RESTful API so that non-Ruby applications can easily integrate. That
+may depend heavily on community involvement...
 
 == FEATURES/PROBLEMS:
 
-* FIX (list of features or problems)
+There is a LOT to do: segmenting, spam filtering, HTML conversion, i18n,
+backscatter - only the Mailman developers know what else. I have enough
+experience to know that rewrites are NEVER as easy as they seem. I begin
+this with fear and trepidation. Alas, I go boldly forward.
 
 == SYNOPSIS:
 
-  FIX (code sample of usage)
+Let's say you want you web application to have a mailing list feature.
+Let's also say you care about the UI, and you don't want to learn all
+about creating the correct HTML structures for a mailing list. You want to
+have lots of power for searching the mail, and you have your own strategy
+for managing the lists. You love Ruby.
 
 == REQUIREMENTS:
 

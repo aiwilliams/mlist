@@ -1,6 +1,6 @@
 module MList
   
-  # The persisted version of an email that is processed by MList::Lists.
+  # The persisted version of an email that is processed by MList::MailLists.
   #
   # The tmail object referenced by these are unique, though they may reference
   # the 'same' originating email.
