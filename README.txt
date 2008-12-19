@@ -1,6 +1,6 @@
 = mlist
 
-* FIX (url)
+http://aiwilliams.github.com/mlist
 
 == DESCRIPTION:
 
@@ -19,7 +19,7 @@ this with fear and trepidation. Alas, I go boldly forward.
 
 == SYNOPSIS:
 
-Let's say you want you web application to have a mailing list feature.
+Let's say you want your web application to have a mailing list feature.
 Let's also say you care about the UI, and you don't want to learn all
 about creating the correct HTML structures for a mailing list. You want to
 have lots of power for searching the mail, and you have your own strategy
@@ -27,7 +27,11 @@ for managing the lists. You love Ruby.
 
 == REQUIREMENTS:
 
-* FIX (list of requirements)
+You'll need some gems.
+
+* activesupport
+* activerecord
+* tmail
 
 == INSTALL:
 
