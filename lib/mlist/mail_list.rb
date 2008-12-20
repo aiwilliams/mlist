@@ -10,10 +10,7 @@ module MList
     has_many :threads, :dependent => :delete_all
     
     attr_accessor :manager_list
-    delegate :list_id, :address, :host, :label,
-             :name, :post_url, :subscriptions,
-             :archive_url, :subscribe_url, :unsubscribe_url,
-             :owner_url, :help_url,
+    delegate :address, :subscriptions,
              :to => :manager_list
     
     def post(email_server, mail)
@@ -24,6 +21,12 @@ module MList
     
     def been_there?(mail)
       mail.header_string('x-beenthere') == address
+    end
+    
+    # http://mail.python.org/pipermail/mailman-developers/2006-April/018718.html
+    def bounce_headers
+      {'sender'    => "mlist-#{address}",
+       'errors-to' => "mlist-#{address}"}
     end
     
     def deliver(mail, email_server)
@@ -49,18 +52,10 @@ module MList
     
     # http://www.jamesshuggins.com/h/web1/list-email-headers.htm
     def list_headers
-      headers = {
-        'list-id'          => list_id,
-        'list-archive'     => (archive_url rescue nil),
-        'list-subscribe'   => (subscribe_url rescue nil),
-        'list-unsubscribe' => (unsubscribe_url rescue nil),
-        'list-owner'       => (owner_url rescue nil),
-        'list-help'        => (help_url rescue nil),
-        'list-post'        => post_url,
-        'x-beenthere'      => address
-      }
+      headers = manager_list.list_headers
+      headers['x-beenthere'] = address
+      headers.update(bounce_headers)
       headers.delete_if {|k,v| v.nil?}
-      headers
     end
     
     def prepare_delivery(mail)
@@ -76,7 +71,7 @@ module MList
     end
     
     def process?(mail)
-      !been_there?(mail)
+      !been_there?(mail) && !subscriptions.blank?
     end
   end
 end

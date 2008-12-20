@@ -9,9 +9,9 @@ module MList
         raise 'Implement actual delivery mechanism in subclasses'
       end
       
-      def receive(email)
-        mail = EmailServer::Email.new(email)
-        @receivers.each { |r| r.receive(mail) }
+      def receive(tmail)
+        email = EmailServer::Email.new(tmail)
+        @receivers.each { |r| r.receive(email) }
       end
       
       def receiver(rx)

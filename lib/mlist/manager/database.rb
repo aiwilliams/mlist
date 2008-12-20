@@ -11,8 +11,8 @@ module MList
       end
       
       def lists(email)
-        lists = List.find_all_by_address(email.addresses)
-        email.addresses.map { |a| lists.detect {|l| l.address == a} }
+        lists = List.find_all_by_address(email.list_addresses)
+        email.list_addresses.map { |a| lists.detect {|l| l.address == a} }
       end
       
       class List < ActiveRecord::Base

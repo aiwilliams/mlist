@@ -15,8 +15,12 @@ module MList
       # TODO: Provide intelligence to this that allows it to ignore addresses
       # that are not for the server domain.
       #
-      def addresses
-        @tmail.to
+      def list_addresses
+        bounce? ? @tmail.header_string('to').match(/\Amlist-(.*)\Z/)[1] : @tmail.to
+      end
+      
+      def bounce?
+        @tmail.header_string('to') =~ /mlist-/
       end
       
       def tmail

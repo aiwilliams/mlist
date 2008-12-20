@@ -32,13 +32,15 @@ describe MList::MailList do
       @mail_list.prepare_delivery(@mail)
       
       {
-        'list-id' => "Discussions <list@example.com>",
-        'list-help' => "<#{help_url}>",
-        'list-subscribe' => "<#{subscribe_url}>",
+        'list-id'          => "Discussions <list@example.com>",
+        'list-help'        => "<#{help_url}>",
+        'list-subscribe'   => "<#{subscribe_url}>",
         'list-unsubscribe' => "<#{unsubscribe_url}>",
-        'list-post' => "<#{address}>",
-        'list-owner' => '<mailto:list_manager@example.com>(Jimmy Fish)',
-        'list-archive' => "<#{archive_url}>"
+        'list-post'        => "<#{address}>",
+        'list-owner'       => '<mailto:list_manager@example.com>(Jimmy Fish)',
+        'list-archive'     => "<#{archive_url}>",
+        'sender'           => 'mlist-list@example.com',
+        'errors-to'        => 'mlist-list@example.com'
       }.each do |header, expected|
         @mail.should have_header(header, expected)
       end
@@ -52,6 +54,4 @@ describe MList::MailList do
       end
     end
   end
-  
-  it 'should not deliver mail when there are no subscriptions'
 end

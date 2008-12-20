@@ -11,6 +11,8 @@ describe MList do
     
     @list_two = @list_manager.create_list('list_two@example.com')
     @list_two.subscribe('jane@example.com')
+    
+    @empty_list = @list_manager.create_list('empty@example.com')
   end
   
   before do
@@ -31,6 +33,13 @@ describe MList do
       ActiveRecord::Base.connection.decrement_open_transactions
     end
     ActiveRecord::Base.clear_active_connections!
+  end
+  
+  it 'should not forward mail when there are no subscriptions' do
+    email = email_fixture('single_list')
+    email.to = @empty_list.address
+    @email_server.receive(email)
+    @email_server.deliveries.should be_empty
   end
   
   describe 'single list' do
@@ -79,6 +88,17 @@ describe MList do
       threads = MList::Thread.find(:all)
       threads[0].mails.first.tmail.should equal_tmail(@email_server.deliveries[0])
       threads[1].mails.first.tmail.should equal_tmail(@email_server.deliveries[1])
+    end
+  end
+  
+  describe 'bounces' do
+    it 'should be reported to the list manager without saving it' do
+      stub(@list_manager).lists(is_a(MList::EmailServer::Email)) { [@list_one] }
+      mock(@list_one).bounce(is_a(MList::EmailServer::Email))
+      lambda do
+        @email_server.receive(email_fixture('bounces/1'))
+        @email_server.deliveries.should be_empty
+      end.should_not change(MList::Mail, :count)
     end
   end
   

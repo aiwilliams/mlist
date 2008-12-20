@@ -19,7 +19,10 @@ describe MList::Mail, 'parent_identifier' do
   it 'should disregard references that are not in the list'
   
   it 'should be based on subject if present and no in-reply-to or references' do
-    mock(@mail_list.mails).find(:first, :conditions => ['mails.subject = ?', 'Test'], :order => 'created_at asc') {@parent_mail}
+    mock(@mail_list.mails).find(
+      :first, :conditions => ['mails.subject = ?', 'Test'],
+      :order => 'created_at asc'
+    ) {@parent_mail}
     
     @mail.delete_header('in-reply-to')
     @mail.delete_header('references')
