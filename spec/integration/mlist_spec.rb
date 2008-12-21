@@ -3,16 +3,31 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 require 'mlist/manager/database'
 
 describe MList do
+  def forward_email(email)
+    simple_matcher('forward email') do |email_server|
+      lambda do
+        lambda do
+          lambda do
+            email_server.receive(email)
+          end.should_not change(email_server.deliveries, :size)
+        end.should_not change(MList::Thread, :count)
+      end.should_not change(MList::Mail, :count)
+    end
+  end
+  
   dataset do
     @list_manager = MList::Manager::Database.new
     @list_one = @list_manager.create_list('list_one@example.com')
+    @list_one.subscribe('adam@nomail.net')
     @list_one.subscribe('tom@example.com')
     @list_one.subscribe('dick@example.com')
     
     @list_two = @list_manager.create_list('list_two@example.com')
+    @list_two.subscribe('adam@nomail.net')
     @list_two.subscribe('jane@example.com')
     
-    @empty_list = @list_manager.create_list('empty@example.com')
+    @list_three = @list_manager.create_list('empty@example.com')
+    @list_three.subscribe('adam@nomail.net')
   end
   
   before do
@@ -35,16 +50,33 @@ describe MList do
     ActiveRecord::Base.clear_active_connections!
   end
   
-  it 'should not forward mail when there are no subscriptions' do
-    email = email_fixture('single_list')
-    email.to = @empty_list.address
-    @email_server.receive(email)
-    @email_server.deliveries.should be_empty
+  it 'should not forward mail that has been on this server before' do
+    @email_server.should_not forward_email(tmail_fixture('x-beenthere'))
+  end
+  
+  it 'should not forward mail when there are no recipients' do
+    email = tmail_fixture('single_list')
+    email.to = @list_three.address
+    @email_server.should_not forward_email(email)
+  end
+  
+  it 'should not forward mail from non-subscriber and notify list manager' do
+    email = tmail_fixture('single_list')
+    email.from = 'unknown@example.com'
+    stub(@list_manager).lists(is_a(MList::EmailServer::Email)) { [@list_one] }
+    mock(@list_one).non_subscriber_posted(is_a(MList::EmailServer::Email))
+    @email_server.should_not forward_email(email)
+  end
+  
+  it 'should report bounces to the list manager' do
+    stub(@list_manager).lists(is_a(MList::EmailServer::Email)) { [@list_one] }
+    mock(@list_one).bounce(is_a(MList::EmailServer::Email))
+    @email_server.should_not forward_email(tmail_fixture('bounces/1'))
   end
   
   describe 'single list' do
     before do
-      @email_server.receive(email_fixture('single_list'))
+      @email_server.receive(tmail_fixture('single_list'))
     end
     
     it 'should forward emails that are sent to a mailing list' do
@@ -60,7 +92,7 @@ describe MList do
     end
     
     it 'should add to an existing thread when reply email' do
-      @email_server.receive(email_fixture('single_list_reply'))
+      @email_server.receive(tmail_fixture('single_list_reply'))
       thread = MList::Thread.last
       thread.mails.size.should be(2)
       thread.mails.last.tmail.should equal_tmail(@email_server.deliveries.last)
@@ -69,7 +101,7 @@ describe MList do
   
   describe 'multiple lists' do
     before do
-      @email_server.receive(email_fixture('multiple_lists'))
+      @email_server.receive(tmail_fixture('multiple_lists'))
     end
     
     it 'should forward emails that are sent to a mailing list' do
@@ -88,26 +120,6 @@ describe MList do
       threads = MList::Thread.find(:all)
       threads[0].mails.first.tmail.should equal_tmail(@email_server.deliveries[0])
       threads[1].mails.first.tmail.should equal_tmail(@email_server.deliveries[1])
-    end
-  end
-  
-  describe 'bounces' do
-    it 'should be reported to the list manager without saving it' do
-      stub(@list_manager).lists(is_a(MList::EmailServer::Email)) { [@list_one] }
-      mock(@list_one).bounce(is_a(MList::EmailServer::Email))
-      lambda do
-        @email_server.receive(email_fixture('bounces/1'))
-        @email_server.deliveries.should be_empty
-      end.should_not change(MList::Mail, :count)
-    end
-  end
-  
-  describe 'x-beenthere' do
-    it 'should not be received by the list' do
-      lambda do
-        @email_server.receive(email_fixture('x-beenthere'))
-        @email_server.deliveries.size.should == 0
-      end.should_not change(MList::Thread, :count)
     end
   end
 end

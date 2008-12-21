@@ -13,6 +13,10 @@ module MList
         @tmail = tmail
       end
       
+      def from_address
+        @tmail.from.first
+      end
+      
       # Answers the usable destination addresses of the email.
       #
       # TODO: Provide intelligence to this that allows it to ignore addresses

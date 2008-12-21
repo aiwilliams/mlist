@@ -3,8 +3,8 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 describe MList::Mail, 'parent_identifier' do
   before do
     @mail_list = MList::MailList.new
-    @parent_mail = MList::Mail.new(:mail_list => @mail_list, :tmail => email_fixture('single_list'))
-    @mail = MList::Mail.new(:mail_list => @mail_list, :tmail => email_fixture('single_list_reply'))
+    @parent_mail = MList::Mail.new(:mail_list => @mail_list, :tmail => tmail_fixture('single_list'))
+    @mail = MList::Mail.new(:mail_list => @mail_list, :tmail => tmail_fixture('single_list_reply'))
   end
   
   it 'should be in-reply-to field when present' do

@@ -11,7 +11,7 @@ describe MList::MailList do
     @mail_list = MList::MailList.new
     @mail_list.manager_list = self
     
-    @mail = MList::Mail.new(:mail_list => @mail_list, :tmail => TMail::Mail.new)
+    @mail = MList::Mail.new(:mail_list => @mail_list, :tmail => tmail_fixture('single_list'))
   end
   
   describe 'prepare_delivery' do

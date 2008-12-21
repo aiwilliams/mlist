@@ -10,7 +10,7 @@ module MList
     has_many :threads, :dependent => :delete_all
     
     attr_accessor :manager_list
-    delegate :address, :subscriptions,
+    delegate :address, :recipients, :subscriptions,
              :to => :manager_list
     
     def post(email_server, mail)
@@ -61,7 +61,7 @@ module MList
     def prepare_delivery(mail)
       prepare_list_headers(mail)
       mail.to = address
-      mail.bcc = subscriptions.collect(&:address)
+      mail.bcc = recipients(mail)
     end
     
     def prepare_list_headers(mail)
@@ -71,7 +71,7 @@ module MList
     end
     
     def process?(mail)
-      !been_there?(mail) && !subscriptions.blank?
+      !been_there?(mail) && !recipients(mail).blank?
     end
   end
 end

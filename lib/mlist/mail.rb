@@ -19,6 +19,10 @@ module MList
       tmail[name] = nil
     end
     
+    def from_address
+      tmail.from.first
+    end
+    
     def parent_identifier
       if in_reply_to = header_string('in-reply-to')
         identifier = in_reply_to

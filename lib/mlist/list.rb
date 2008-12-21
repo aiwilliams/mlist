@@ -37,5 +37,13 @@ module MList
     def post_url
       address
     end
+    
+    def recipients(mail)
+      subscriptions.collect(&:address) - [mail.from_address]
+    end
+    
+    def subscriber?(address)
+      !subscriptions.detect {|s| s.address == address}.nil?
+    end
   end
 end

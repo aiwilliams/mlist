@@ -29,7 +29,7 @@ class Spec::Example::ExampleGroup
   datasets_directory "#{SPEC_ROOT}/datasets"
 end
 
-def email_fixture(path)
+def tmail_fixture(path)
   TMail::Mail.load(File.join(SPEC_ROOT, 'fixtures/email', path))
 end
 
