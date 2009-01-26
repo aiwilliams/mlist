@@ -1,17 +1,7 @@
-# -*- ruby -*-
-
 $:.unshift(File.join(File.dirname(__FILE__), 'lib'))
 
 require 'rubygems'
-require 'hoe'
-require 'mlist/version'
 require 'spec/rake/spectask'
-
-Hoe.new('mlist', MList::VERSION::STRING) do |p|
-  p.url = 'http://github.com/aiwilliams/mlist/'
-  p.description = "A Ruby mailing list library designed to be integrated into other applications."
-  p.developer('Adam Williams', 'adam@thewilliams.ws')
-end
 
 task :default => :spec
 
@@ -19,4 +9,19 @@ desc "Run all specs"
 Spec::Rake::SpecTask.new do |t|
   t.spec_files = FileList['spec/**/*_spec.rb']
   t.spec_opts = ['--options', 'spec/spec.opts']
+end
+
+begin
+  require 'jeweler'
+  Jeweler::Tasks.new do |s|
+    s.name = 'mlist'
+    s.summary = 'A Ruby mailing list library designed to be integrated into other applications.'
+    s.email = 'adam@thewilliams.ws'
+    s.files = FileList["[A-Z]*", "{lib,rails}/**/*"].exclude("tmp,**/tmp")
+    s.homepage = "http://github.com/aiwilliams/mlist"
+    s.description = s.summary
+    s.authors = ['Adam Williams']
+  end
+rescue LoadError
+  puts "Jeweler not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"
 end

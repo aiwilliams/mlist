@@ -1,4 +1,0 @@
-=== 0.0.1 / 2008-12-15
-
-* Created project and began working to replace a significant part of a large application that I'm working on in order to gain control over how our mailing lists are working.
-
