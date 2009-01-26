@@ -11,13 +11,13 @@ describe MList::MailList do
     @mail_list = MList::MailList.new
     @mail_list.manager_list = self
     
-    @mail = MList::Mail.new(:mail_list => @mail_list, :tmail => tmail_fixture('single_list'))
+    @message = MList::Message.new(:mail_list => @mail_list, :tmail => tmail_fixture('single_list'))
   end
   
   describe 'prepare_delivery' do
     it 'should set x-beenthere on emails it receives to keep from re-posting them' do
-      @mail_list.prepare_delivery(@mail)
-      @mail.should have_header('x-beenthere', 'list@example.com')
+      @mail_list.prepare_delivery(@message)
+      @message.should have_header('x-beenthere', 'list@example.com')
     end
     
     it 'should not remove any existing x-beenthere headers'
@@ -29,7 +29,7 @@ describe MList::MailList do
       stub(self).owner_url       {"<mailto:list_manager@example.com>\n(Jimmy Fish)"}
       stub(self).archive_url     {'http://list_manager.example.com/archive'}
       
-      @mail_list.prepare_delivery(@mail)
+      @mail_list.prepare_delivery(@message)
       
       {
         'list-id'          => "Discussions <list@example.com>",
@@ -42,15 +42,15 @@ describe MList::MailList do
         'sender'           => 'mlist-list@example.com',
         'errors-to'        => 'mlist-list@example.com'
       }.each do |header, expected|
-        @mail.should have_header(header, expected)
+        @message.should have_header(header, expected)
       end
     end
     
     it 'should not add list headers that are not available or nil' do
       stub(self).help_url {nil}
-      @mail_list.prepare_delivery(@mail)
+      @mail_list.prepare_delivery(@message)
       %w(list-help list-subscribe).each do |header|
-        @mail.should_not have_header(header)
+        @message.should_not have_header(header)
       end
     end
   end

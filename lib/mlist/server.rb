@@ -26,7 +26,7 @@ module MList
         lists.each do |list|
           if list.subscriber?(email.from_address)
             mail_list = MailList.find_or_create_by_list(list)
-            mail_list.post(email_server, MList::Mail.new(:mail_list => mail_list, :tmail => email.tmail))
+            mail_list.post(email_server, MList::Message.new(:mail_list => mail_list, :tmail => email.tmail))
           else
             list.non_subscriber_posted(email)
           end

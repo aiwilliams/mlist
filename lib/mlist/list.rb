@@ -2,7 +2,7 @@ module MList
   
   # Represents the interface of the lists that a list manager must answer.
   # This is distinct from the MList::MailList to allow for greater flexibility
-  # in processing mail coming to a list - that is, whatever you include this
+  # in processing email coming to a list - that is, whatever you include this
   # into may re-define behavior appropriately.
   #
   module List
@@ -38,8 +38,8 @@ module MList
       address
     end
     
-    def recipients(mail)
-      subscriptions.collect(&:address) - [mail.from_address]
+    def recipients(message)
+      subscriptions.collect(&:address) - [message.from_address]
     end
     
     def subscriber?(address)

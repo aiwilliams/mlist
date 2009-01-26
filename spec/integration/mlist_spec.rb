@@ -11,7 +11,7 @@ describe MList do
             email_server.receive(email)
           end.should_not change(email_server.deliveries, :size)
         end.should_not change(MList::Thread, :count)
-      end.should_not change(MList::Mail, :count)
+      end.should_not change(MList::Message, :count)
     end
   end
   
@@ -88,14 +88,14 @@ describe MList do
     
     it 'should start a new thread for a new email' do
       thread = MList::Thread.last
-      thread.mails.first.tmail.should equal_tmail(@email_server.deliveries.first)
+      thread.messages.first.tmail.should equal_tmail(@email_server.deliveries.first)
     end
     
     it 'should add to an existing thread when reply email' do
       @email_server.receive(tmail_fixture('single_list_reply'))
       thread = MList::Thread.last
-      thread.mails.size.should be(2)
-      thread.mails.last.tmail.should equal_tmail(@email_server.deliveries.last)
+      thread.messages.size.should be(2)
+      thread.messages.last.tmail.should equal_tmail(@email_server.deliveries.last)
     end
   end
   
@@ -118,8 +118,8 @@ describe MList do
     
     it 'should start a new thread for each list' do
       threads = MList::Thread.find(:all)
-      threads[0].mails.first.tmail.should equal_tmail(@email_server.deliveries[0])
-      threads[1].mails.first.tmail.should equal_tmail(@email_server.deliveries[1])
+      threads[0].messages.first.tmail.should equal_tmail(@email_server.deliveries[0])
+      threads[1].messages.first.tmail.should equal_tmail(@email_server.deliveries[1])
     end
   end
 end

@@ -6,21 +6,21 @@ module MList
       mail_list
     end
     
-    has_many :mails, :dependent => :delete_all
+    has_many :messages, :dependent => :delete_all
     has_many :threads, :dependent => :delete_all
     
     attr_accessor :manager_list
     delegate :address, :recipients, :subscriptions,
              :to => :manager_list
     
-    def post(email_server, mail)
-      return unless process?(mail)
-      prepare_delivery(mail)
-      deliver(mail, email_server)
+    def post(email_server, message)
+      return unless process?(message)
+      prepare_delivery(message)
+      deliver(message, email_server)
     end
     
-    def been_there?(mail)
-      mail.header_string('x-beenthere') == address
+    def been_there?(message)
+      message.header_string('x-beenthere') == address
     end
     
     # http://mail.python.org/pipermail/mailman-developers/2006-April/018718.html
@@ -29,21 +29,21 @@ module MList
        'errors-to' => "mlist-#{address}"}
     end
     
-    def deliver(mail, email_server)
+    def deliver(message, email_server)
       transaction do
-        email_server.deliver(mail.tmail)
-        thread = find_thread(mail)
-        thread.mails << mail
+        email_server.deliver(message.tmail)
+        thread = find_thread(message)
+        thread.messages << message
         thread.save!
       end
     end
     
-    def find_thread(mail)
-      if mail.reply?
+    def find_thread(message)
+      if message.reply?
         threads.find(:first,
-          :joins => :mails,
+          :joins => :messages,
           :readonly => false,
-          :conditions => ['mails.identifier = ?', mail.parent_identifier]
+          :conditions => ['messages.identifier = ?', message.parent_identifier]
         )
       else
         threads.build
@@ -58,20 +58,20 @@ module MList
       headers.delete_if {|k,v| v.nil?}
     end
     
-    def prepare_delivery(mail)
-      prepare_list_headers(mail)
-      mail.to = address
-      mail.bcc = recipients(mail)
+    def prepare_delivery(message)
+      prepare_list_headers(message)
+      message.to = address
+      message.bcc = recipients(message)
     end
     
-    def prepare_list_headers(mail)
+    def prepare_list_headers(message)
       list_headers.each do |k,v|
-        mail.write_header(k,v)
+        message.write_header(k,v)
       end
     end
     
-    def process?(mail)
-      !been_there?(mail) && !recipients(mail).blank?
+    def process?(message)
+      !been_there?(message) && !recipients(message).blank?
     end
   end
 end

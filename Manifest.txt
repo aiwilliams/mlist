@@ -8,7 +8,7 @@ lib/mlist/email_server/base.rb
 lib/mlist/email_server/email.rb
 lib/mlist/email_server/fake.rb
 lib/mlist/list.rb
-lib/mlist/mail.rb
+lib/mlist/message.rb
 lib/mlist/mail_list.rb
 lib/mlist/manager/database.rb
 lib/mlist/server.rb

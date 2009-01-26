@@ -5,7 +5,7 @@ module MList
   # The tmail object referenced by these are unique, though they may reference
   # the 'same' originating email.
   #
-  class Mail < ActiveRecord::Base
+  class Message < ActiveRecord::Base
     belongs_to :mail_list
     
     attr_writer :header_sanitizers
@@ -29,11 +29,11 @@ module MList
       elsif references = read_header('references')
         identifier = references.ids.first
       else
-        parent_mail = mail_list.mails.find(:first,
-          :conditions => ['mails.subject = ?', remove_regard(subject)],
+        parent_message = mail_list.messages.find(:first,
+          :conditions => ['messages.subject = ?', remove_regard(subject)],
           :order => 'created_at asc'
         )
-        identifier = parent_mail.identifier if parent_mail
+        identifier = parent_message.identifier if parent_message
       end
       remove_brackets(identifier) if identifier
     end
