@@ -6,6 +6,8 @@ module MList
   # the 'same' originating email.
   #
   class Message < ActiveRecord::Base
+    set_table_name 'mlist_messages'
+    
     belongs_to :mail_list
     
     attr_writer :header_sanitizers
@@ -30,7 +32,7 @@ module MList
         identifier = references.ids.first
       else
         parent_message = mail_list.messages.find(:first,
-          :conditions => ['messages.subject = ?', remove_regard(subject)],
+          :conditions => ['mlist_messages.subject = ?', remove_regard(subject)],
           :order => 'created_at asc'
         )
         identifier = parent_message.identifier if parent_message

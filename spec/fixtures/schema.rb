@@ -1,7 +1,7 @@
 ActiveRecord::Schema.define(:version => 20081126181722) do
   
   # MList tables
-  create_table :messages, :force => true do |t|
+  create_table :mlist_messages, :force => true do |t|
     t.column :mail_list_id, :integer
     t.column :thread_id, :integer
     t.column :identifier, :string
@@ -9,20 +9,20 @@ ActiveRecord::Schema.define(:version => 20081126181722) do
     t.column :email_text, :text
     t.column :created_at, :datetime
   end
-  add_index :messages, :mail_list_id
-  add_index :messages, :thread_id
-  add_index :messages, :identifier
-  add_index :messages, :subject
+  add_index :mlist_messages, :mail_list_id
+  add_index :mlist_messages, :thread_id
+  add_index :mlist_messages, :identifier
+  add_index :mlist_messages, :subject
   
-  create_table :threads, :force => true do |t|
+  create_table :mlist_threads, :force => true do |t|
     t.column :mail_list_id, :integer
   end
-  add_index :threads, :mail_list_id
+  add_index :mlist_threads, :mail_list_id
   
-  create_table :mail_lists, :force => true do |t|
+  create_table :mlist_mail_lists, :force => true do |t|
     t.column :identifier, :string
   end
-  add_index :mail_lists, :identifier
+  add_index :mlist_mail_lists, :identifier
   
   # Database list manager tables
   create_table :lists, :force => true do |t|

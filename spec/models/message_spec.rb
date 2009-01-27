@@ -20,7 +20,7 @@ describe MList::Message, 'parent_identifier' do
   
   it 'should be based on subject if present and no in-reply-to or references' do
     mock(@mail_list.messages).find(
-      :first, :conditions => ['messages.subject = ?', 'Test'],
+      :first, :conditions => ['mlist_messages.subject = ?', 'Test'],
       :order => 'created_at asc'
     ) {@parent_message}
     

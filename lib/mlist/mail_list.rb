@@ -1,5 +1,7 @@
 module MList
   class MailList < ActiveRecord::Base
+    set_table_name 'mlist_mail_lists'
+    
     def self.find_or_create_by_list(list)
       mail_list = find_or_create_by_identifier(list.list_id)
       mail_list.manager_list = list
@@ -43,7 +45,7 @@ module MList
         threads.find(:first,
           :joins => :messages,
           :readonly => false,
-          :conditions => ['messages.identifier = ?', message.parent_identifier]
+          :conditions => ['mlist_messages.identifier = ?', message.parent_identifier]
         )
       else
         threads.build
