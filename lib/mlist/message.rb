@@ -99,7 +99,7 @@ module MList
       
       def remove_regard(string)
         stripped = string.strip
-        stripped =~ /\Are:\s+(.*?)\Z/i ? $1 : stripped
+        stripped =~ /\A.*re:\s+(\[.*\]\s*)?(.*?)\Z/i ? $2 : stripped
       end
       
       def serialize_tmail

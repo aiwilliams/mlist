@@ -60,11 +60,28 @@ describe MList do
     @email_server.should_not forward_email(tmail)
   end
   
-  it 'should not forward mail from non-subscriber and notify list manager' do
+  it 'should not forward mail from non-subscriber and notify manager list' do
     tmail = tmail_fixture('single_list')
     tmail.from = 'unknown@example.com'
     stub(@list_manager).lists(is_a(MList::EmailServer::Email)) { [@list_one] }
-    mock(@list_one).non_subscriber_posted(is_a(MList::EmailServer::Email))
+    mock(@list_one).non_subscriber_post(is_a(MList::EmailServer::Email))
+    @email_server.should_not forward_email(tmail)
+  end
+  
+  it 'should not forward mail from non-subscriber when inactive and notify as non-subscriber' do
+    tmail = tmail_fixture('single_list')
+    tmail.from = 'unknown@example.com'
+    stub(@list_one).active? { false }
+    stub(@list_manager).lists(is_a(MList::EmailServer::Email)) { [@list_one] }
+    mock(@list_one).non_subscriber_post(is_a(MList::EmailServer::Email))
+    @email_server.should_not forward_email(tmail)
+  end
+  
+  it 'should not forward mail to inactive list and notify manager list' do
+    tmail = tmail_fixture('single_list')
+    stub(@list_one).active? { false }
+    stub(@list_manager).lists(is_a(MList::EmailServer::Email)) { [@list_one] }
+    mock(@list_one).inactive_post(is_a(MList::EmailServer::Email))
     @email_server.should_not forward_email(tmail)
   end
   

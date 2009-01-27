@@ -18,14 +18,26 @@ describe MList::Message, 'parent_identifier' do
   
   it 'should disregard references that are not in the list'
   
-  it 'should be based on subject if present and no in-reply-to or references' do
-    mock(@mail_list.messages).find(
-      :first, :conditions => ['mlist_messages.subject = ?', 'Test'],
-      :order => 'created_at asc'
-    ) {@parent_message}
+  describe 'using subject' do
+    before do
+      @message.delete_header('in-reply-to')
+      @message.delete_header('references')
+      
+      mock(@mail_list.messages).find(
+        :first, :conditions => ['mlist_messages.subject = ?', 'Test'],
+        :order => 'created_at asc'
+      ) {@parent_message}
+    end
     
-    @message.delete_header('in-reply-to')
-    @message.delete_header('references')
-    @message.parent_identifier.should == @parent_message.identifier
+    it 'should happen if present and no in-reply-to or references' do
+      @message.parent_identifier.should == @parent_message.identifier
+    end
+    
+    ['RE: [list name] Re: Test', 'Re: [list name] Re: [list name] Test'].each do |subject|
+      it "should handle '#{subject}'" do
+        @message.subject = subject
+        @message.parent_identifier.should == @parent_message.identifier
+      end
+    end
   end
 end

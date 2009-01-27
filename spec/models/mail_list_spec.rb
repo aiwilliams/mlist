@@ -22,6 +22,8 @@ describe MList::MailList do
     
     it 'should not remove any existing x-beenthere headers'
     
+    it 'should not modify existing headers'
+    
     it 'should add standard list headers when they are available' do
       stub(self).help_url        {'http://list_manager.example.com/help'}
       stub(self).subscribe_url   {'http://list_manager.example.com/subscribe'}

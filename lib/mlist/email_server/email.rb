@@ -19,9 +19,6 @@ module MList
       
       # Answers the usable destination addresses of the email.
       #
-      # TODO: Provide intelligence to this that allows it to ignore addresses
-      # that are not for the domain of the email_server.
-      #
       def list_addresses
         bounce? ? @tmail.header_string('to').match(/\Amlist-(.*)\Z/)[1] : @tmail.to
       end

@@ -25,10 +25,14 @@ module MList
       def process_post(lists, email)
         lists.each do |list|
           if list.subscriber?(email.from_address)
-            mail_list = MailList.find_or_create_by_list(list)
-            mail_list.post(email_server, MList::Message.new(:mail_list => mail_list, :tmail => email.tmail))
+            if list.active?
+              mail_list = MailList.find_or_create_by_list(list)
+              mail_list.post(email_server, MList::Message.new(:mail_list => mail_list, :tmail => email.tmail))
+            else
+              list.inactive_post(email)
+            end
           else
-            list.non_subscriber_posted(email)
+            list.non_subscriber_post(email)
           end
         end
       end
