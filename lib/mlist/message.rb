@@ -8,7 +8,7 @@ module MList
   class Message < ActiveRecord::Base
     set_table_name 'mlist_messages'
     
-    belongs_to :mail_list
+    belongs_to :mail_list, :class_name => 'MList::MailList'
     
     attr_writer :header_sanitizers
     before_save :serialize_tmail

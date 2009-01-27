@@ -8,7 +8,7 @@ module MList
       mail_list
     end
     
-    has_many :messages, :dependent => :delete_all
+    has_many :messages, :class_name => 'MList::Message', :dependent => :delete_all
     has_many :threads, :class_name => 'MList::Thread', :dependent => :delete_all
     
     attr_accessor :manager_list

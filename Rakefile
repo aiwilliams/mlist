@@ -17,7 +17,7 @@ begin
     s.name = 'mlist'
     s.summary = 'A Ruby mailing list library designed to be integrated into other applications.'
     s.email = 'adam@thewilliams.ws'
-    s.files = FileList["[A-Z]*", "{lib,rails}/**/*"].exclude("tmp,**/tmp")
+    s.files = FileList["[A-Z]*", "{lib}/**/*"].exclude("tmp,**/tmp")
     s.homepage = "http://github.com/aiwilliams/mlist"
     s.description = s.summary
     s.authors = ['Adam Williams']
