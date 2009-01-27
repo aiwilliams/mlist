@@ -50,6 +50,8 @@ describe MList do
     ActiveRecord::Base.clear_active_connections!
   end
   
+  it 'should have threads and mail_lists updated at set to last message time'
+  
   it 'should not forward mail that has been on this server before' do
     @email_server.should_not forward_email(tmail_fixture('x-beenthere'))
   end

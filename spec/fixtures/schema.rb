@@ -16,11 +16,13 @@ ActiveRecord::Schema.define(:version => 20081126181722) do
   
   create_table :mlist_threads, :force => true do |t|
     t.column :mail_list_id, :integer
+    t.timestamps
   end
   add_index :mlist_threads, :mail_list_id
   
   create_table :mlist_mail_lists, :force => true do |t|
     t.column :identifier, :string
+    t.timestamps
   end
   add_index :mlist_mail_lists, :identifier
   

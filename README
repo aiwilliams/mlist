@@ -17,6 +17,9 @@ backscatter - only the Mailman developers know what else. I have enough
 experience to know that rewrites are NEVER as easy as they seem. I begin
 this with fear and trepidation. Alas, I go boldly forward.
 
+* Why extracting from IP address is not implemented:
+  http://compnetworking.about.com/od/workingwithipaddresses/qt/ipaddressemail.htm
+
 == SYNOPSIS:
 
 Let's say you want your web application to have a mailing list feature.
