@@ -9,7 +9,7 @@ module MList
     end
     
     has_many :messages, :dependent => :delete_all
-    has_many :threads, :dependent => :delete_all
+    has_many :threads, :class_name => 'MList::Thread', :dependent => :delete_all
     
     attr_accessor :manager_list
     delegate :address, :recipients, :subscriptions,
