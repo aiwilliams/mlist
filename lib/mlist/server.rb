@@ -8,7 +8,7 @@ module MList
       @email_server.receiver(self)
     end
     
-    def receive(email)
+    def receive_email(email)
       lists = list_manager.lists(email)
       if email.bounce?
         process_bounce(lists.first, email)

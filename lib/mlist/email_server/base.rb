@@ -11,7 +11,7 @@ module MList
       
       def receive(tmail)
         email = EmailServer::Email.new(tmail)
-        @receivers.each { |r| r.receive(email) }
+        @receivers.each { |r| r.receive_email(email) }
       end
       
       def receiver(rx)

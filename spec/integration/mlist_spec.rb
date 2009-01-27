@@ -3,12 +3,12 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 require 'mlist/manager/database'
 
 describe MList do
-  def forward_email(email)
+  def forward_email(tmail)
     simple_matcher('forward email') do |email_server|
       lambda do
         lambda do
           lambda do
-            email_server.receive(email)
+            email_server.receive(tmail)
           end.should_not change(email_server.deliveries, :size)
         end.should_not change(MList::Thread, :count)
       end.should_not change(MList::Message, :count)
@@ -55,17 +55,17 @@ describe MList do
   end
   
   it 'should not forward mail when there are no recipients' do
-    email = tmail_fixture('single_list')
-    email.to = @list_three.address
-    @email_server.should_not forward_email(email)
+    tmail = tmail_fixture('single_list')
+    tmail.to = @list_three.address
+    @email_server.should_not forward_email(tmail)
   end
   
   it 'should not forward mail from non-subscriber and notify list manager' do
-    email = tmail_fixture('single_list')
-    email.from = 'unknown@example.com'
+    tmail = tmail_fixture('single_list')
+    tmail.from = 'unknown@example.com'
     stub(@list_manager).lists(is_a(MList::EmailServer::Email)) { [@list_one] }
     mock(@list_one).non_subscriber_posted(is_a(MList::EmailServer::Email))
-    @email_server.should_not forward_email(email)
+    @email_server.should_not forward_email(tmail)
   end
   
   it 'should report bounces to the list manager' do

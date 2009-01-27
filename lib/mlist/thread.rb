@@ -4,5 +4,9 @@ module MList
     
     belongs_to :mail_list, :class_name => 'MList::MailList'
     has_many :messages, :class_name => 'MList::Message', :dependent => :delete_all
+    
+    def subject
+      messages.first.subject
+    end
   end
 end
