@@ -1,0 +1,75 @@
+Message-Id: <9A08C775-57C7-4686-9826-3779DA9F62FD@example.com>
+From: Adam Williams <adam.williams@example.com>
+To: list1@example.com
+In-Reply-To: <6C420032-7883-47B7-91E6-9E41B3C2CB86@gmail.com>
+Content-Type: text/plain;
+	charset=US-ASCII;
+	format=flowed;
+	delsp=yes
+X-Smtp-Server: smtp.gmail.com:adam.williams@example.com
+Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0 (Apple Message framework v930.3)
+Subject: Re: Discussion for fixtures/email/integration
+Date: Wed, 28 Jan 2009 12:14:54 -0500
+References: <9AFB07CC-9983-46F0-B8F4-0A9DA71482F1@gmail.com> <0FE2B43A-929C-4603-B673-6D393A58C424@thewilliams.ws> <6C420032-7883-47B7-91E6-9E41B3C2CB86@gmail.com>
+
+This is coming from an address that isn't in the list, even though it  
+is a reply to an actual list email (has the in-reply-to headers. It  
+should not end up in the list. That last one wasn't, in fact :P
+
+On Jan 28, 2009, at 8:18 AM, Adam Williams wrote:
+
+>
+> Ah ha! Notice the content included from 'On Jan 28, 2009, at 8:09 AM'.
+> It does not show the foot from the mailing list - it is only included
+> once, at the bottom. Looks like this list is stripping that out. Seems
+> like a good idea.
+>
+> Note that in Mail.app, all the emails having this subject are
+> connected as a thread, oldest to newest. So, even Mail.app assumes
+> that where the subjects are the same, the discussion is one.
+>
+> On Jan 28, 2009, at 8:14 AM, Adam Williams wrote:
+>
+>>
+>> It would seem that a poor MUA implementation would not include in-
+>> reply-to or references headers, thereby leaving us no choice but to
+>> connect this email by subject. What is the appropriate thing to do?
+>>
+>> a. connect this to the thread that was started first, having the
+>> same subject
+>> b. connect this to the thread that was started most recently, having
+>> the same subject
+>> c. consider both those emails, looking to see whether there is any
+>> content in this new email that matches best either of those
+>>
+>> I would vote for b. c is far to problematic, and I would guess that b
+>> covers 90%.
+>>
+>> On Jan 28, 2009, at 8:09 AM, Adam Williams wrote:
+>>
+>>>
+>>> This is a new email (not a reply to any existing email) which has  
+>>> the
+>>> same subject as another email that was recently sent from a  
+>>> different
+>>> account of mine. My purpose at the time of composing it is to  
+>>> provide
+>>> an artifact that has the same subject, without the RE:, but no in-
+>>> reply-to or references headers.
+>>>
+>>>>
+>>
+>>
+>>>
+>
+>
+> --~--~---------~--~----~------------~-------~--~----~
+> You received this message because you are subscribed to the Google  
+> Groups "MList Developers" group.
+> To post to this group, send email to list1@example.com
+> To unsubscribe from this group, send email to mlist-developers+unsubscribe@googlegroups.com
+> For more options, visit this group at http://groups.google.com/group/mlist-developers?hl=en
+> -~----------~----~----~----~------~----~------~--~---
+>
+

@@ -1,0 +1,21 @@
+Message-Id: <DF31EC9A-320A-4E8C-8450-43ED196777E6@thewilliams.ws>
+From: Adam Williams <adam@nomail.net>
+To: list1@example.com
+Content-Type: text/plain;
+	charset=US-ASCII;
+	format=flowed;
+	delsp=yes
+Content-Transfer-Encoding: 7bit
+X-Smtp-Server: smtp.gmail.com:adam@nomail.net
+Mime-Version: 1.0 (Apple Message framework v930.3)
+Subject: Discussion for fixtures/email/integration
+Date: Wed, 28 Jan 2009 08:06:33 -0500
+
+I am going to start this thread for the purpose of generating a series  
+of emails that will be used for integration testing MList. It would be  
+ideal to have a number of MUAs (Mail User Agent) involved in the  
+thread, as well as a number of content types.
+
+Heres to all the hard work coming!
+
+   adam

@@ -1,0 +1,18 @@
+Message-Id: <9AFB07CC-9983-46F0-B8F4-0A9DA71482F1@gmail.com>
+From: Adam Williams <adam@example.net>
+To: list1@example.com
+Content-Type: text/plain;
+	charset=US-ASCII;
+	format=flowed;
+	delsp=yes
+Content-Transfer-Encoding: 7bit
+X-Smtp-Server: smtp.gmail.com:adamsgeemail
+Mime-Version: 1.0 (Apple Message framework v930.3)
+Subject: Discussion for fixtures/email/integration
+Date: Wed, 28 Jan 2009 08:09:43 -0500
+
+This is a new email (not a reply to any existing email) which has the  
+same subject as another email that was recently sent from a different  
+account of mine. My purpose at the time of composing it is to provide  
+an artifact that has the same subject, without the RE:, but no in- 
+reply-to or references headers.

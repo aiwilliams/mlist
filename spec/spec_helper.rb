@@ -29,8 +29,12 @@ class Spec::Example::ExampleGroup
   datasets_directory "#{SPEC_ROOT}/datasets"
 end
 
+def email_fixtures_path(path)
+  File.join(SPEC_ROOT, 'fixtures/email', path)
+end
+
 def email_fixture(path)
-  File.read(File.join(SPEC_ROOT, 'fixtures/email', path))
+  File.read(email_fixtures_path(path))
 end
 
 def tmail_fixture(path)
