@@ -1,21 +1,17 @@
-Message-Id: <9A08C775-57C7-4686-9826-3779DA9F62FD@example.com>
-From: Adam Williams <adam.williams@example.com>
-To: list1@example.com
+Message-Id: <A2700E25-486D-473E-82BD-3A39796F1173@nomail.net>
+From: Adam Williams <adam@nomail.net>
+To: list1@example.com,
+ adam.williams@somewherelse.com
 In-Reply-To: <6C420032-7883-47B7-91E6-9E41B3C2CB86@gmail.com>
-Content-Type: text/plain;
-	charset=US-ASCII;
-	format=flowed;
-	delsp=yes
-X-Smtp-Server: smtp.gmail.com:adam.williams@example.com
+Content-Type: text/plain; charset=US-ASCII; format=flowed; delsp=yes
 Content-Transfer-Encoding: 7bit
 Mime-Version: 1.0 (Apple Message framework v930.3)
 Subject: Re: Discussion for fixtures/email/integration
-Date: Wed, 28 Jan 2009 12:14:54 -0500
+Date: Wed, 28 Jan 2009 13:16:17 -0500
 References: <9AFB07CC-9983-46F0-B8F4-0A9DA71482F1@gmail.com> <0FE2B43A-929C-4603-B673-6D393A58C424@nomail.net> <6C420032-7883-47B7-91E6-9E41B3C2CB86@gmail.com>
+X-Mailer: Apple Mail (2.930.3)
 
-This is coming from an address that isn't in the list, even though it  
-is a reply to an actual list email (has the in-reply-to headers. It  
-should not end up in the list. That last one wasn't, in fact :P
+This is an email destined for the list and someone else.
 
 On Jan 28, 2009, at 8:18 AM, Adam Williams wrote:
 
@@ -67,7 +63,7 @@ On Jan 28, 2009, at 8:18 AM, Adam Williams wrote:
 > --~--~---------~--~----~------------~-------~--~----~
 > You received this message because you are subscribed to the Google  
 > Groups "MList Developers" group.
-> To post to this group, send email to list1@example.com
+> To post to this group, send email to mlist-developers@googlegroups.com
 > To unsubscribe from this group, send email to mlist-developers+unsubscribe@googlegroups.com
 > For more options, visit this group at http://groups.google.com/group/mlist-developers?hl=en
 > -~----------~----~----~----~------~----~------~--~---

@@ -9,6 +9,7 @@ module MList
     set_table_name 'mlist_messages'
     
     belongs_to :mail_list, :class_name => 'MList::MailList'
+    belongs_to :subscriber, :polymorphic => true
     
     attr_writer :header_sanitizers
     before_save :serialize_tmail

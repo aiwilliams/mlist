@@ -4,14 +4,18 @@ describe MList::MailList do
   include MList::List
   
   before do
-    stub(self).label           {'Discussions'}
-    stub(self).address         {'list@example.com'}
-    stub(self).subscriptions   {[OpenStruct.new(:address => 'bob@example.com')]}
+    stub(self).label       {'Discussions'}
+    stub(self).address     {'list@example.com'}
+    stub(self).list_id     {'list@example.com'}
+    stub(self).subscribers {[OpenStruct.new(:email_address => 'bob@example.com')]}
     
-    @mail_list = MList::MailList.new
-    @mail_list.manager_list = self
-    
+    @mail_list = MList::MailList.new(:manager_list => self)
     @message = MList::Message.new(:mail_list => @mail_list, :tmail => tmail_fixture('single_list'))
+  end
+  
+  it 'should not require the manager list be an ActiveRecord type' do
+    @mail_list.list.should == self
+    @mail_list.manager_list.should be_nil
   end
   
   describe 'prepare_delivery' do
@@ -34,7 +38,7 @@ describe MList::MailList do
       @mail_list.prepare_delivery(@message)
       
       {
-        'list-id'          => "Discussions <list@example.com>",
+        'list-id'          => "list@example.com",
         'list-help'        => "<#{help_url}>",
         'list-subscribe'   => "<#{subscribe_url}>",
         'list-unsubscribe' => "<#{unsubscribe_url}>",

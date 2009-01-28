@@ -1,7 +1,7 @@
 Message-Id: <6C420032-7883-47B7-91E6-9E41B3C2CB86@gmail.com>
 From: Adam Williams <adam@example.net>
 To: list1@example.com
-In-Reply-To: <0FE2B43A-929C-4603-B673-6D393A58C424@thewilliams.ws>
+In-Reply-To: <0FE2B43A-929C-4603-B673-6D393A58C424@nomail.net>
 Content-Type: text/plain;
 	charset=US-ASCII;
 	format=flowed;
@@ -11,7 +11,7 @@ Content-Transfer-Encoding: 7bit
 Mime-Version: 1.0 (Apple Message framework v930.3)
 Subject: Re: Discussion for fixtures/email/integration
 Date: Wed, 28 Jan 2009 08:18:22 -0500
-References: <9AFB07CC-9983-46F0-B8F4-0A9DA71482F1@gmail.com> <0FE2B43A-929C-4603-B673-6D393A58C424@thewilliams.ws>
+References: <9AFB07CC-9983-46F0-B8F4-0A9DA71482F1@gmail.com> <0FE2B43A-929C-4603-B673-6D393A58C424@nomail.net>
 
 Ah ha! Notice the content included from 'On Jan 28, 2009, at 8:09 AM'.  
 It does not show the foot from the mailing list - it is only included  

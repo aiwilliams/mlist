@@ -30,7 +30,7 @@ module MList
     end
     
     def list_id
-      "#{label} <#{address}>"
+      raise 'answer a unique, never changing value'
     end
     
     def name
@@ -42,11 +42,15 @@ module MList
     end
     
     def recipients(message)
-      subscriptions.collect(&:address) - [message.from_address]
+      subscribers.collect(&:email_address) - [message.from_address]
     end
     
-    def subscriber?(address)
-      !subscriptions.detect {|s| s.address == address}.nil?
+    def subscriber(email_address)
+      subscribers.detect {|s| s.email_address == email_address}
+    end
+    
+    def subscriber?(email_address)
+      !subscriber(email_address).nil?
     end
     
     # Methods that will be invoked on your implementation of Mlist::List when

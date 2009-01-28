@@ -50,7 +50,26 @@ describe MList do
     ActiveRecord::Base.clear_active_connections!
   end
   
-  it 'should have threads and mail_lists updated at set to last message time'
+  it 'should have threads and mail_lists updated_at set to last message receive time' do
+    now = Time.now
+    stub(Time).now {now}
+    @email_server.receive(tmail_fixture('single_list'))
+    MList::MailList.last.updated_at.to_s.should == now.to_s
+    MList::Thread.last.updated_at.to_s.should == now.to_s
+    
+    later = 5.days.from_now
+    stub(Time).now {later}
+    @email_server.receive(tmail_fixture('single_list_reply'))
+    MList::MailList.last.updated_at.to_s.should == later.to_s
+    MList::Thread.last.updated_at.to_s.should == later.to_s
+  end
+  
+  it 'should associate manager lists to mlist mail lists when they are ActiveRecord instances' do
+    @email_server.receive(tmail_fixture('single_list'))
+    mail_list = MList::MailList.last
+    mail_list.manager_list.should == @list_one
+    mail_list.manager_list_identifier.should == @list_one.list_id
+  end
   
   it 'should not forward mail that has been on this server before' do
     @email_server.should_not forward_email(tmail_fixture('x-beenthere'))
@@ -103,6 +122,7 @@ describe MList do
       email = @email_server.deliveries.first
       email.should have_address(:to, 'list_one@example.com')
       email.should have_address(:bcc, %w(tom@example.com dick@example.com))
+      email.should have_address(:'reply-to', 'list_one@example.com')
     end
     
     it 'should start a new thread for a new email' do
@@ -115,6 +135,14 @@ describe MList do
       thread = MList::Thread.last
       thread.messages.size.should be(2)
       thread.messages.last.tmail.should equal_tmail(@email_server.deliveries.last)
+    end
+    
+    it 'should associate subscriber address to messages' do
+      MList::Message.last.subscriber_address.should == 'adam@nomail.net'
+    end
+    
+    it 'should associate subscriber to messages when they are ActiveRecord instances' do
+      MList::Message.last.subscriber.should == MList::Manager::Database::Subscriber.find_by_email_address('adam@nomail.net')
     end
   end
   
@@ -129,10 +157,12 @@ describe MList do
       email = @email_server.deliveries.first
       email.should have_address(:to, 'list_one@example.com')
       email.should have_address(:bcc, %w(tom@example.com dick@example.com))
+      email.should have_address(:'reply-to', 'list_one@example.com')
       
       email = @email_server.deliveries.last
       email.should have_address(:to, 'list_two@example.com')
       email.should have_address(:bcc, %w(jane@example.com))
+      email.should have_address(:'reply-to', 'list_two@example.com')
     end
     
     it 'should start a new thread for each list' do

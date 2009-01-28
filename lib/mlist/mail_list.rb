@@ -3,20 +3,31 @@ module MList
     set_table_name 'mlist_mail_lists'
     
     def self.find_or_create_by_list(list)
-      mail_list = find_or_create_by_identifier(list.list_id)
-      mail_list.manager_list = list
-      mail_list
+      if list.is_a?(ActiveRecord::Base)
+        find_or_create_by_manager_list_identifier_and_manager_list_type_and_manager_list_id(
+          list.list_id, list.class.base_class.name, list.id
+        )
+      else
+        mail_list = find_or_create_by_manager_list_identifier(list.list_id)
+        mail_list.manager_list = list
+        mail_list
+      end
     end
+    
+    belongs_to :manager_list, :polymorphic => true
     
     has_many :messages, :class_name => 'MList::Message', :dependent => :delete_all
     has_many :threads, :class_name => 'MList::Thread', :dependent => :delete_all
     
-    attr_accessor :manager_list
-    delegate :address, :recipients, :subscriptions,
-             :to => :manager_list
+    delegate :address, :label, :post_url, :recipients, :subscribers,
+             :to => :list
     
-    def post(email_server, message)
+    def post(email_server, email)
+      message = messages.build(:subscriber_address => email.from_address, :tmail => email.tmail)
       return unless process?(message)
+      
+      subscriber = list.subscriber(email.from_address)
+      message.subscriber = subscriber if subscriber.is_a?(ActiveRecord::Base)
       prepare_delivery(message)
       deliver(message, email_server)
     end
@@ -32,11 +43,13 @@ module MList
     end
     
     def deliver(message, email_server)
+      deliver_time = Time.now
       transaction do
         email_server.deliver(message.tmail)
         thread = find_thread(message)
         thread.messages << message
-        thread.save!
+        thread.new_record? ? thread.save! : thread.update_attribute(:updated_at, deliver_time)
+        update_attribute :updated_at, deliver_time
       end
     end
     
@@ -52,18 +65,33 @@ module MList
       end
     end
     
+    def list
+      @list ||= manager_list
+    end
+    
     # http://www.jamesshuggins.com/h/web1/list-email-headers.htm
     def list_headers
-      headers = manager_list.list_headers
+      headers = list.list_headers
       headers['x-beenthere'] = address
       headers.update(bounce_headers)
       headers.delete_if {|k,v| v.nil?}
+    end
+    
+    alias_method :ar_manager_list=, :manager_list=
+    def manager_list=(list)
+      if list.is_a?(ActiveRecord::Base)
+        self.ar_manager_list = list
+        @list = list
+      else
+        @list = list
+      end
     end
     
     def prepare_delivery(message)
       prepare_list_headers(message)
       message.to = address
       message.bcc = recipients(message)
+      message.reply_to = "#{label} <#{post_url}>"
     end
     
     def prepare_list_headers(message)

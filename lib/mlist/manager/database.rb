@@ -12,20 +12,24 @@ module MList
       
       def lists(email)
         lists = List.find_all_by_address(email.list_addresses)
-        email.list_addresses.map { |a| lists.detect {|l| l.address == a} }
+        email.list_addresses.map { |a| lists.detect {|l| l.address == a} }.compact
       end
       
       class List < ActiveRecord::Base
         include ::MList::List
         
-        has_many :subscriptions, :dependent => :delete_all
+        has_many :subscribers, :dependent => :delete_all
+        
+        def list_id
+          "#{self.class.name}#{id}"
+        end
         
         def subscribe(address)
-          subscriptions.find_or_create_by_address(address)
+          subscribers.find_or_create_by_email_address(address)
         end
       end
       
-      class Subscription < ActiveRecord::Base
+      class Subscriber < ActiveRecord::Base
         belongs_to :list
       end
     end
