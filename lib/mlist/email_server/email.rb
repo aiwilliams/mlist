@@ -7,20 +7,19 @@ module MList
     # MList::Server, this class acting as the bridge.
     #
     class Email
-      
       # TODO Provide the email_server to the instances
       def initialize(tmail)
         @tmail = tmail
       end
       
       def from_address
-        @tmail.from.first
+        @tmail.from.first.downcase
       end
       
       # Answers the usable destination addresses of the email.
       #
       def list_addresses
-        bounce? ? @tmail.header_string('to').match(/\Amlist-(.*)\Z/)[1] : @tmail.to
+        bounce? ? @tmail.header_string('to').match(/\Amlist-(.*)\Z/)[1] : @tmail.to.collect(&:downcase)
       end
       
       # Answers true if this email is a bounce.
