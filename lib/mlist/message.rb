@@ -9,7 +9,6 @@ module MList
     set_table_name 'mlist_messages'
     
     belongs_to :mail_list, :class_name => 'MList::MailList'
-    belongs_to :subscriber, :polymorphic => true
     
     attr_writer :header_sanitizers
     before_save :serialize_tmail
@@ -63,12 +62,12 @@ module MList
       @tmail ||= TMail::Mail.parse(email_text)
     end
     
-    def to=(recipients)
-      tmail.to = sanitize_header('to', recipients)
+    def to=(recipient_addresses)
+      tmail.to = sanitize_header('to', recipient_addresses)
     end
     
-    def bcc=(recipients)
-      tmail.bcc = sanitize_header('bcc', recipients)
+    def bcc=(recipient_addresses)
+      tmail.bcc = sanitize_header('bcc', recipient_addresses)
     end
     
     # Provide delegation to *most* of the underlying TMail::Mail methods,
@@ -86,6 +85,34 @@ module MList
     
     def sanitize_header(name, *values)
       header_sanitizer(name).call(charset, *values)
+    end
+    
+    def subscriber
+      @subscriber ||= begin
+        if subscriber_type? && subscriber_id?
+          subscriber_type.constantize.find(subscriber_id)
+        elsif subscriber_address?
+          MList::EmailSubscriber.new(subscriber_address)
+        end
+      end
+    end
+    
+    def subscriber=(subscriber)
+      case subscriber
+      when ActiveRecord::Base
+        @subscriber = subscriber
+        self.subscriber_address = subscriber.email_address
+        self.subscriber_type = subscriber.class.base_class.name
+        self.subscriber_id = subscriber.id
+      when MList::EmailSubscriber
+        @subscriber = subscriber
+        self.subscriber_address = subscriber.email_address
+        self.subscriber_type = self.subscriber_id = nil
+      when String
+        self.subscriber = MList::EmailSubscriber.new(subscriber)
+      else
+        @subscriber = self.subscriber_address = self.subscriber_type = self.subscriber_id = nil
+      end
     end
     
     private

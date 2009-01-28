@@ -7,10 +7,14 @@ describe MList::MailList do
     stub(self).label       {'Discussions'}
     stub(self).address     {'list@example.com'}
     stub(self).list_id     {'list@example.com'}
-    stub(self).subscribers {[OpenStruct.new(:email_address => 'bob@example.com')]}
+    stub(self).subscribers {[MList::EmailSubscriber.new('bob@example.com')]}
     
     @mail_list = MList::MailList.new(:manager_list => self)
-    @message = MList::Message.new(:mail_list => @mail_list, :tmail => tmail_fixture('single_list'))
+    @message = MList::Message.new(
+      :mail_list => @mail_list,
+      :tmail => tmail_fixture('single_list'),
+      :subscriber => subscribers.first
+    )
   end
   
   it 'should not require the manager list be an ActiveRecord type' do

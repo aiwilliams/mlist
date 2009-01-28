@@ -19,15 +19,16 @@ module MList
     has_many :messages, :class_name => 'MList::Message', :dependent => :delete_all
     has_many :threads, :class_name => 'MList::Thread', :dependent => :delete_all
     
-    delegate :address, :label, :post_url, :recipients, :subscribers,
+    delegate :address, :label, :post_url, :subscribers,
              :to => :list
     
     def post(email_server, email)
-      message = messages.build(:subscriber_address => email.from_address, :tmail => email.tmail)
-      return unless process?(message)
+      message = messages.build(
+        :subscriber => list.subscriber(email.from_address),
+        :tmail => email.tmail
+      )
       
-      subscriber = list.subscriber(email.from_address)
-      message.subscriber = subscriber if subscriber.is_a?(ActiveRecord::Base)
+      return unless process?(message)
       prepare_delivery(message)
       deliver(message, email_server)
     end
@@ -83,6 +84,7 @@ module MList
         self.ar_manager_list = list
         @list = list
       else
+        self.ar_manager_list = nil
         @list = list
       end
     end
@@ -102,6 +104,10 @@ module MList
     
     def process?(message)
       !been_there?(message) && !recipients(message).blank?
+    end
+    
+    def recipients(message)
+      list.recipients(message.subscriber)
     end
   end
 end

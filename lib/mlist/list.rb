@@ -41,8 +41,8 @@ module MList
       address
     end
     
-    def recipients(message)
-      subscribers.collect(&:email_address) - [message.from_address]
+    def recipients(subscriber)
+      subscribers.collect(&:email_address) - [subscriber.email_address]
     end
     
     def subscriber(email_address)
