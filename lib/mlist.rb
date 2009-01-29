@@ -12,3 +12,5 @@ require 'mlist/thread'
 
 module MList
 end
+
+TMail::Mail::ALLOW_MULTIPLE['x-beenthere'] = true

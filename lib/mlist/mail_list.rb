@@ -19,8 +19,7 @@ module MList
     has_many :messages, :class_name => 'MList::Message', :dependent => :delete_all
     has_many :threads, :class_name => 'MList::Thread', :dependent => :delete_all
     
-    delegate :address, :label, :post_url, :subscribers,
-             :to => :list
+    delegate :address, :label, :post_url, :to => :list
     
     def post(email_server, email)
       message = messages.build(
@@ -91,6 +90,7 @@ module MList
     
     def prepare_delivery(message)
       prepare_list_headers(message)
+      prepare_list_subject(message)
       message.to = address
       message.bcc = recipients(message)
       message.reply_to = "#{label} <#{post_url}>"
@@ -98,8 +98,19 @@ module MList
     
     def prepare_list_headers(message)
       list_headers.each do |k,v|
-        message.write_header(k,v)
+        if TMail::Mail::ALLOW_MULTIPLE.include?(k.downcase)
+          message.prepend_header(k,v)
+        else
+          message.write_header(k,v)
+        end
       end
+    end
+    
+    def prepare_list_subject(message)
+      prefix = "[#{label}]"
+      subject = message.subject.gsub(%r(#{Regexp.escape(prefix)}\s*), '')
+      subject.gsub!(%r{(re:\s*){2,}}i, 'Re: ')
+      message.subject = "#{prefix} #{subject}"
     end
     
     def process?(message)

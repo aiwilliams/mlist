@@ -48,6 +48,18 @@ module MList
       !parent_identifier.nil?
     end
     
+    # Add another value for the named header, it's position being earlier in
+    # the email than those that are already present. This will raise an error
+    # if the header does not allow multiple values according to
+    # TMail::Mail::ALLOW_MULTIPLE.
+    #
+    def prepend_header(name, value)
+      original = tmail[name] || []
+      tmail[name] = nil
+      tmail[name] = sanitize_header(name, value)
+      tmail[name] = tmail[name] + original
+    end
+    
     def write_header(name, value)
       tmail[name] = sanitize_header(name, value)
     end

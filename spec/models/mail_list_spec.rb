@@ -28,9 +28,36 @@ describe MList::MailList do
       @message.should have_header('x-beenthere', 'list@example.com')
     end
     
-    it 'should not remove any existing x-beenthere headers'
+    it 'should not remove any existing x-beenthere headers' do
+      @message.write_header('x-beenthere', 'somewhere@nomain.net')
+      @mail_list.prepare_delivery(@message)
+      @message.tmail['x-beenthere'].size.should == 2
+      @message.tmail['x-beenthere'].first.to_s.should == 'list@example.com'
+      @message.tmail['x-beenthere'].last.to_s.should == 'somewhere@nomain.net'
+    end
     
-    it 'should not modify existing headers'
+    it 'should not modify existing headers' do
+      @message.write_header('x-something-custom', 'existing')
+      @mail_list.prepare_delivery(@message)
+      @message.tmail['x-something-custom'].to_s.should == 'existing'
+    end
+    
+    it 'should prepend the list label to the subject of messages' do
+      @mail_list.prepare_delivery(@message)
+      @message.subject.should == '[Discussions] Test'
+    end
+    
+    it 'should move the list label to the front of subjects that already include the label' do
+      @message.subject = 'Re: [Discussions] Test'
+      @mail_list.prepare_delivery(@message)
+      @message.subject.should == '[Discussions] Re: Test'
+    end
+    
+    it 'should remove multiple occurrences of Re:' do
+      @message.subject = 'Re: [Discussions] Re: Test'
+      @mail_list.prepare_delivery(@message)
+      @message.subject.should == '[Discussions] Re: Test'
+    end
     
     it 'should add standard list headers when they are available' do
       stub(self).help_url        {'http://list_manager.example.com/help'}
