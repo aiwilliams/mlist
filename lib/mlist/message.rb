@@ -35,6 +35,13 @@ module MList
       @tmail ||= TMail::Mail.parse(email_text)
     end
     
+    # Cause the message to re-parse the email text, thereby forgetting any
+    # changes that have been made to the underlying email.
+    #
+    def reset
+      @tmail = TMail::Mail.parse(email_text)
+    end
+    
     # The subject of the TMail::Mail instance, which may be different from the
     # value of the message received (modified for delivery).
     #

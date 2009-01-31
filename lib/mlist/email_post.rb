@@ -8,8 +8,9 @@ module MList
     
     def initialize(attributes)
       @tmail = TMail::Mail.new
-      @tmail.mime_version = "1.0"
-      @tmail['x-mailer'] = attributes[:mailer] || 'MList Client Application'
+      
+      self.mime_version = "1.0"
+      self.write_header('x-mailer', attributes[:mailer] || 'MList Client Application')
       
       self.from = attributes[:subscriber].email_address
       self.subject = attributes[:subject]

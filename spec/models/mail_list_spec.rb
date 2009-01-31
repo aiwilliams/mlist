@@ -39,12 +39,30 @@ describe MList::MailList do
       tmail.subject.should =~ /I'm a Program!/
       tmail.from.should == ['adam@nomail.net']
     end
+    
+    it 'should allow posting a reply to an existing message' do
+      @mail_list.process_email(MList::EmailServer::Email.new(tmail_fixture('single_list')))
+      existing_message = @mail_list.messages.last
+      lambda do
+        lambda do
+          @mail_list.post(
+            :in_reply_to_message => existing_message,
+            :subscriber => subscribers.first,
+            :text => 'I am!'
+          )
+        end.should change(MList::Message, :count).by(1)
+      end.should_not change(MList::Thread, :count)
+      new_message = MList::Message.last
+      new_message.subject.should == "Re: Test"
+    end
+    
+    it 'should set (or capture?) the message-id of delivered email'
   end
   
   describe 'parent identifier' do
     before do
-      @parent_message = MList::Message.new(:mail_list => @mail_list, :tmail => tmail_fixture('single_list'))
-      @message = MList::Message.new(:mail_list => @mail_list, :tmail => tmail_fixture('single_list_reply'))
+      @parent_message = MList::Message.new(:tmail => tmail_fixture('single_list'))
+      @message = MList::Message.new(:tmail => tmail_fixture('single_list_reply'))
     end
     
     it 'should be in-reply-to field when present' do
@@ -118,6 +136,10 @@ describe MList::MailList do
     it 'should remove multiple occurrences of Re:' do
       @tmail_post.subject = 'Re: [Discussions] Re: Test'
       process_post.subject.should == '[Discussions] Re: Test'
+    end
+    
+    it 'should maintain the message-ids correctly' do
+      pending 'a bit of research is needed - do we forward and keep the incoming message-id?'
     end
     
     it 'should add standard list headers when they are available' do

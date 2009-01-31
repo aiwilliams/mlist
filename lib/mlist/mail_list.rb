@@ -37,8 +37,17 @@ module MList
     #
     def post(attributes)
       in_reply_to_message = attributes.delete(:in_reply_to_message)
+      parent_identifier = nil
+      if in_reply_to_message
+        in_reply_to_message.reset
+        parent_identifier = in_reply_to_message.identifier
+        attributes[:subject] ||= "Re: #{in_reply_to_message.subject}"
+      end
+      
       email = MList::EmailPost.new(attributes)
       process_message messages.build(
+        :parent => in_reply_to_message,
+        :parent_identifier => parent_identifier,
         :mail_list => self,
         :subscriber => attributes[:subscriber],
         :tmail => email.tmail
@@ -115,7 +124,7 @@ module MList
       end
       
       def process_message(message)
-        return unless process?(message)
+        return message unless process?(message)
         delivery_time = Time.now
         transaction do
           thread = assign_thread(message, delivery_time)
@@ -123,6 +132,7 @@ module MList
           prepare_delivery(message)
           outgoing_server.deliver(message.tmail)
         end
+        message
       end
       
       def prepare_delivery(message)
