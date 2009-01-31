@@ -3,102 +3,56 @@ module MList
   # The persisted version of an email that is processed by MList::MailLists.
   #
   # The tmail object referenced by these are unique, though they may reference
-  # the 'same' originating email.
+  # the 'same' originating email. It is by design that multiple copies of an
+  # email text may exist when it is delivered to more than one list. Until we
+  # have a better understanding of whether this happens a lot or no, this
+  # simplifies things a bit.
   #
   class Message < ActiveRecord::Base
     set_table_name 'mlist_messages'
     
+    include MList::Util::TMailMethods
+    
     belongs_to :mail_list, :class_name => 'MList::MailList'
+    belongs_to :parent, :class_name => 'MList::Message'
+    belongs_to :thread, :class_name => 'MList::Thread'
     
-    attr_writer :header_sanitizers
-    before_save :serialize_tmail
-    
-    def charset
-      'utf-8'
-    end
-    
-    def delete_header(name)
-      tmail[name] = nil
-    end
-    
-    def from_address
-      tmail.from.first
-    end
-    
-    def parent_identifier
-      if in_reply_to = header_string('in-reply-to')
-        identifier = in_reply_to
-      elsif references = read_header('references')
-        identifier = references.ids.first
-      else
-        parent_message = mail_list.messages.find(:first,
-          :conditions => ['mlist_messages.subject = ?', remove_regard(subject)],
-          :order => 'created_at asc'
-        )
-        identifier = parent_message.identifier if parent_message
-      end
-      remove_brackets(identifier) if identifier
-    end
-    
-    def read_header(name)
-      tmail[name]
-    end
-    
-    def reply?
-      !parent_identifier.nil?
-    end
-    
-    # Add another value for the named header, it's position being earlier in
-    # the email than those that are already present. This will raise an error
-    # if the header does not allow multiple values according to
-    # TMail::Mail::ALLOW_MULTIPLE.
+    # Assign the TMail::Mail content that this message will represent. It is
+    # important to understand that any modifications made to the TMail::Mail
+    # instance answered by this message will not be persistent. The ORIGINAL
+    # email content, as received from MUAs, is preserved, whereas
+    # modifications are intended for use only during the delivery of the
+    # message.
     #
-    def prepend_header(name, value)
-      original = tmail[name] || []
-      tmail[name] = nil
-      tmail[name] = sanitize_header(name, value)
-      tmail[name] = tmail[name] + original
-    end
-    
-    def write_header(name, value)
-      tmail[name] = sanitize_header(name, value)
-    end
-    
     def tmail=(tmail)
-      write_attribute(:identifier, remove_brackets(tmail.header_string('message-id')))
-      write_attribute(:subject, tmail.subject)
-      @tmail = tmail
+      @tmail = TMail::Mail.parse(write_attribute(:email_text, tmail.to_s))
+      write_attribute(:identifier, remove_brackets(@tmail.header_string('message-id')))
+      write_attribute(:mailer, extract_mailer)
+      write_attribute(:subject, @tmail.subject)
     end
     
     def tmail
       @tmail ||= TMail::Mail.parse(email_text)
     end
     
-    def to=(recipient_addresses)
-      tmail.to = sanitize_header('to', recipient_addresses)
-    end
-    
-    def bcc=(recipient_addresses)
-      tmail.bcc = sanitize_header('bcc', recipient_addresses)
-    end
-    
-    # Provide delegation to *most* of the underlying TMail::Mail methods,
-    # excluding those overridden by this class and the [] and []= methods. We
-    # must maintain the ActiveRecord interface over that of the TMail::Mail
-    # interface.
+    # The subject of the TMail::Mail instance, which may be different from the
+    # value of the message received (modified for delivery).
     #
-    def method_missing(symbol, *args, &block) # :nodoc:
-      if @tmail && @tmail.respond_to?(symbol) && !(symbol == :[] || symbol == :[]=)
-        @tmail.__send__(symbol, *args, &block)
-      else
-        super
-      end
+    def subject
+      tmail.subject
     end
     
-    def sanitize_header(name, *values)
-      header_sanitizer(name).call(charset, *values)
+    # Assigns the subject of the TMail::Mail instance. This will not modify
+    # the stored value, which is intended to represent the subject as received
+    # in the originating email.
+    #
+    def subject=(value)
+      tmail.subject = value
     end
     
+    # Answers the subscriber to which this message belongs; the sending list
+    # subscriber.
+    #
     def subscriber
       @subscriber ||= begin
         if subscriber_type? && subscriber_id?
@@ -109,6 +63,9 @@ module MList
       end
     end
     
+    # Assigns the subscriber to which this message belongs; the sending list
+    # subscriber.
+    #
     def subscriber=(subscriber)
       case subscriber
       when ActiveRecord::Base
@@ -128,22 +85,8 @@ module MList
     end
     
     private
-      def header_sanitizer(name)
-        @header_sanitizers ||= Util.default_header_sanitizers
-        @header_sanitizers[name]
-      end
-      
-      def remove_brackets(string)
-        string =~ /\A<(.*?)>\Z/ ? $1 : string
-      end
-      
-      def remove_regard(string)
-        stripped = string.strip
-        stripped =~ /\A.*re:\s+(\[.*\]\s*)?(.*?)\Z/i ? $2 : stripped
-      end
-      
-      def serialize_tmail
-        write_attribute(:email_text, @tmail.to_s)
+      def identifier=(value)
+        raise 'modifying the message identifier is not permitted'
       end
   end
 end

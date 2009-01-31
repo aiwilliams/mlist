@@ -19,6 +19,9 @@ ActiveRecord::Schema.define(:version => 20081126181722) do
     t.column :mail_list_id, :integer
     t.column :thread_id, :integer
     t.column :identifier, :string
+    t.column :parent_identifier, :string
+    t.column :parent_id, :integer
+    t.column :mailer, :string
     t.column :subject, :string
     t.column :email_text, :text
     t.column :subscriber_address, :string
@@ -29,6 +32,8 @@ ActiveRecord::Schema.define(:version => 20081126181722) do
   add_index :mlist_messages, :mail_list_id
   add_index :mlist_messages, :thread_id
   add_index :mlist_messages, :identifier
+  add_index :mlist_messages, :parent_identifier
+  add_index :mlist_messages, :parent_id
   add_index :mlist_messages, :subject
   add_index :mlist_messages, :subscriber_address
   add_index :mlist_messages, [:subscriber_type, :subscriber_id]

@@ -66,8 +66,39 @@ module Spec
         end
     end
     
+    class HaveHeaders
+      def initialize(expected)
+        @matchers = case expected
+        when Array
+          expected.collect {|e| HaveHeader.new(e, nil)}
+        when Hash
+          expected.collect {|k,v| HaveHeader.new(k,v)}
+        end
+      end
+      
+      def matches?(given)
+        @matched, @failed = [], []
+        @matchers.each do |matcher|
+          (matcher.matches?(given) ? @matched : @failed) << matcher
+        end
+        @failed.empty?
+      end
+      
+      def failure_message
+        @failed.collect(&:failure_message).join("\n")
+      end
+      
+      def negative_failure_message
+        raise 'have_headers cannot be used in a negative'
+      end
+    end
+    
     def have_header(name, expected = nil)
       HaveHeader.new(name, expected)
+    end
+    
+    def have_headers(expected)
+      HaveHeaders.new(expected)
     end
   end
 end

@@ -114,7 +114,8 @@ describe MList do
   
   describe 'single list' do
     before do
-      @email_server.receive(tmail_fixture('single_list'))
+      @tmail_post = tmail_fixture('single_list')
+      @email_server.receive(@tmail_post)
     end
     
     it 'should forward emails that are sent to a mailing list' do
@@ -127,17 +128,26 @@ describe MList do
     
     it 'should start a new thread for a new email' do
       thread = MList::Thread.last
-      thread.messages.first.tmail.should equal_tmail(@email_server.deliveries.first)
+      thread.messages.first.tmail.should equal_tmail(@tmail_post)
     end
     
     it 'should add to an existing thread when reply email' do
-      @email_server.receive(tmail_fixture('single_list_reply'))
+      reply_tmail = tmail_fixture('single_list_reply')
+      @email_server.receive(reply_tmail)
       thread = MList::Thread.last
       thread.messages.size.should be(2)
-      thread.messages.last.tmail.should equal_tmail(@email_server.deliveries.last)
+      thread.messages.last.tmail.should equal_tmail(reply_tmail)
     end
     
-    it 'should associate subscriber address to messages' do
+    it 'should associate parent message when reply email' do
+      message = MList::Message.last
+      @email_server.receive(tmail_fixture('single_list_reply'))
+      reply = MList::Message.last
+      reply.parent_identifier.should == message.identifier
+      reply.parent.should == message
+    end
+    
+    it 'should store subscriber address with messages' do
       MList::Message.last.subscriber_address.should == 'adam@nomail.net'
     end
     
@@ -148,7 +158,8 @@ describe MList do
   
   describe 'multiple lists' do
     before do
-      @email_server.receive(tmail_fixture('multiple_lists'))
+      @tmail_post = tmail_fixture('multiple_lists')
+      @email_server.receive(@tmail_post)
     end
     
     it 'should forward emails that are sent to a mailing list' do
@@ -167,8 +178,8 @@ describe MList do
     
     it 'should start a new thread for each list' do
       threads = MList::Thread.find(:all)
-      threads[0].messages.first.tmail.should equal_tmail(@email_server.deliveries[0])
-      threads[1].messages.first.tmail.should equal_tmail(@email_server.deliveries[1])
+      threads[0].messages.first.tmail.should equal_tmail(@tmail_post)
+      threads[1].messages.first.tmail.should equal_tmail(@tmail_post)
     end
   end
 end

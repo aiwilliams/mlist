@@ -42,3 +42,4 @@ def tmail_fixture(path)
 end
 
 require 'mlist'
+require 'mlist/email_server/fake'
