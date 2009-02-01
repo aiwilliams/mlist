@@ -29,3 +29,15 @@ describe MList::Message do
     end.should raise_error
   end
 end
+
+describe MList::Message, 'text' do
+  it 'should work with text/plain' do
+    message = MList::Message.new(:tmail => tmail_fixture('content_types/text_plain'))
+    message.text.should == 'Hello there'
+  end
+  
+  it 'should work with multipart/alternative, simple' do
+    message = MList::Message.new(:tmail => tmail_fixture('content_types/multipart_alternative_simple'))
+    message.text.should == "This is just a simple test.\n\nThis line should be bold.\n\nThis line should be italic."
+  end
+end

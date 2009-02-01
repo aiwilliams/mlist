@@ -1,0 +1,28 @@
+Message-Id: <AA79910E-C6B1-4FBF-87CE-E29FF5F16DB4@johnwlong.com>
+From: Adam Williams <adam@nomail.net>
+To: list_one@example.com
+Content-Type: multipart/alternative; boundary=Apple-Mail-11--351891909
+Mime-Version: 1.0 (Apple Message framework v930.3)
+Subject: HTML Test 2
+Date: Wed, 7 Jan 2009 14:59:38 -0500
+X-Mailer: Apple Mail (2.930.3)
+
+
+--Apple-Mail-11--351891909
+Content-Type: text/plain;
+	charset=US-ASCII;
+	format=flowed
+Content-Transfer-Encoding: 7bit
+
+This is just a simple test.
+
+This line should be bold.
+
+This line should be italic.
+--Apple-Mail-11--351891909
+Content-Type: text/html;
+	charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+
+<html><body style="word-wrap: break-word; -webkit-nbsp-mode: space; -webkit-line-break: after-white-space; ">This is just a simple test.<div><br></div><div><b><span class="Apple-style-span" style="text-shadow: rgba(0, 0, 0, 0.329412) 1px -1px;">This line should be bold.</span></b></div><div><br></div><div><font class="Apple-style-span" face="'Lucida Bright'"><i>This line should be italic.</i></font></div></body></html>
+--Apple-Mail-11--351891909--

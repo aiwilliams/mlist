@@ -17,6 +17,18 @@ module MList
     belongs_to :parent, :class_name => 'MList::Message'
     belongs_to :thread, :class_name => 'MList::Thread'
     
+    # Answers the text content of the message.
+    #
+    def text
+      case tmail.content_type
+      when 'text/plain'
+        tmail.body.strip
+      when 'multipart/alternative'
+        text_part = tmail.parts.detect {|part| part.content_type == 'text/plain'}
+        text_part.body.strip if text_part
+      end
+    end
+    
     # Assign the TMail::Mail content that this message will represent. It is
     # important to understand that any modifications made to the TMail::Mail
     # instance answered by this message will not be persistent. The ORIGINAL
