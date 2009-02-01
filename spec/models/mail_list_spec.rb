@@ -13,7 +13,7 @@ describe MList::MailList do
     ]}
     
     @outgoing_server = MList::EmailServer::Fake.new
-    @mail_list = MList::MailList.new(
+    @mail_list = MList::MailList.create!(
       :manager_list => self,
       :outgoing_server => @outgoing_server)
   end
@@ -46,7 +46,7 @@ describe MList::MailList do
       lambda do
         lambda do
           @mail_list.post(
-            :in_reply_to_message => existing_message,
+            :reply_to => existing_message,
             :subscriber => subscribers.first,
             :text => 'I am!'
           )
@@ -56,7 +56,25 @@ describe MList::MailList do
       new_message.subject.should == "Re: Test"
     end
     
-    it 'should set (or capture?) the message-id of delivered email'
+    it 'should not associate a posting to a parent if not reply' do
+      @mail_list.process_email(MList::EmailServer::Email.new(tmail_fixture('single_list')))
+      lambda do
+        lambda do
+          @mail_list.post(
+            :subscriber => subscribers.first,
+            :subject => 'Different',
+            :text => 'I am!'
+          )
+        end.should change(MList::Message, :count).by(1)
+      end.should change(MList::Thread, :count).by(1)
+      message = MList::Message.last
+      message.parent.should be_nil
+      message.parent_identifier.should be_nil
+    end
+    
+    it 'should set (or capture?) the message-id of delivered email' do
+      pending 'this is very important!!!'
+    end
   end
   
   describe 'parent identifier' do

@@ -29,6 +29,7 @@ class Spec::Example::ExampleGroup
   datasets_directory "#{SPEC_ROOT}/datasets"
 end
 
+# Fixture helpers
 def email_fixtures_path(path)
   File.join(SPEC_ROOT, 'fixtures/email', path)
 end

@@ -15,6 +15,18 @@ describe MList do
     end
   end
   
+  def start_new_thread(tmail)
+    simple_matcher('start new thread') do |email_server|
+      delivery_count = email_server.deliveries.size
+      thread_count = MList::Thread.count
+      message_count = MList::Message.count
+      email_server.receive(tmail)
+      email_server.deliveries.size > delivery_count &&
+        MList::Thread.count == (thread_count + 1) &&
+        MList::Message.count == (message_count + 1)
+    end
+  end
+  
   dataset do
     @list_manager = MList::Manager::Database.new
     @list_one = @list_manager.create_list('list_one@example.com')
@@ -145,6 +157,13 @@ describe MList do
       reply = MList::Message.last
       reply.parent_identifier.should == message.identifier
       reply.parent.should == message
+    end
+    
+    it 'should not associate a parent when not a reply' do
+      tmail = tmail_fixture('single_list')
+      tmail['message-id'] = 'asdfasdfj'
+      tmail['subject'] = 'other thing'
+      @email_server.should start_new_thread(tmail)
     end
     
     it 'should store subscriber address with messages' do

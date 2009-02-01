@@ -35,21 +35,14 @@ module MList
     # This API is provided for applications that want the simplest interface
     # to posting a new message.
     #
-    def post(attributes)
-      in_reply_to_message = attributes.delete(:in_reply_to_message)
-      parent_identifier = nil
-      if in_reply_to_message
-        in_reply_to_message.reset
-        parent_identifier = in_reply_to_message.identifier
-        attributes[:subject] ||= "Re: #{in_reply_to_message.subject}"
-      end
-      
-      email = MList::EmailPost.new(attributes)
+    def post(email_or_attributes)
+      email = email_or_attributes
+      email = MList::EmailPost.new(email_or_attributes) unless email.is_a?(MList::EmailPost)
       process_message messages.build(
-        :parent => in_reply_to_message,
-        :parent_identifier => parent_identifier,
+        :parent => email.reply_to,
+        :parent_identifier => email.parent_identifier,
         :mail_list => self,
-        :subscriber => attributes[:subscriber],
+        :subscriber => email.subscriber,
         :tmail => email.tmail
       )
     end
