@@ -39,11 +39,11 @@ module MList
       email = email_or_attributes
       email = MList::EmailPost.new(email_or_attributes) unless email.is_a?(MList::EmailPost)
       process_message messages.build(
-        :parent => email.reply_to,
+        :parent => email.reply_to_message,
         :parent_identifier => email.parent_identifier,
         :mail_list => self,
         :subscriber => email.subscriber,
-        :tmail => email.tmail
+        :tmail => email.to_tmail
       ), :search_parent => false
     end
     

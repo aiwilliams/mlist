@@ -30,7 +30,7 @@ describe MList::MailList do
           @mail_list.post(
             :subscriber => subscribers.first,
             :subject => "I'm a Program!",
-            :text => 'Are you?'
+            :text => 'Are you a programmer or what?'
           )
         end.should change(MList::Message, :count).by(1)
       end.should change(MList::Thread, :count).by(1)
@@ -40,15 +40,23 @@ describe MList::MailList do
       tmail.from.should == ['adam@nomail.net']
     end
     
+    it 'should answer the message for use by the application' do
+      @mail_list.post(
+        :subscriber => subscribers.first,
+        :subject => "I'm a Program!",
+        :text => 'Are you a programmer or what?'
+      ).should be_instance_of(MList::Message)
+    end
+    
     it 'should allow posting a reply to an existing message' do
       @mail_list.process_email(MList::EmailServer::Email.new(tmail_fixture('single_list')))
       existing_message = @mail_list.messages.last
       lambda do
         lambda do
           @mail_list.post(
-            :reply_to => existing_message,
+            :reply_to_message => existing_message,
             :subscriber => subscribers.first,
-            :text => 'I am!'
+            :text => 'I am a programmer too, dude!'
           )
         end.should change(MList::Message, :count).by(1)
       end.should_not change(MList::Thread, :count)

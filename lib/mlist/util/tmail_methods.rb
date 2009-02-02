@@ -48,6 +48,14 @@ module MList
         tmail.bcc = sanitize_header(charset, 'bcc', recipient_addresses)
       end
       
+      def from=(from_address)
+        tmail.from = sanitize_header(charset, 'from', from_address)
+      end
+      
+      def in_reply_to=(*values)
+        tmail.in_reply_to = sanitize_header(charset, 'in-reply-to', *values)
+      end
+      
       # Provide delegation to *most* of the underlying TMail::Mail methods,
       # excluding those overridden by this Module and the [] and []= methods. We
       # must maintain the ActiveRecord interface over that of the TMail::Mail

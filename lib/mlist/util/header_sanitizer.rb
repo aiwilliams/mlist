@@ -38,6 +38,9 @@ module MList
         self['reply-to'] = quoter(:quote_any_address_if_necessary)
         self['subject']  = quoter(:quote_any_if_necessary)
         
+        self['in-reply-to'] = quoter(:quote_any_address_if_necessary)
+        self['x-mailer']    = quoter(:quote_if_necessary, false)
+        
         self['List-Help']        = quoter(:quote_address_if_necessary)
         self['List-Subscribe']   = quoter(:quote_address_if_necessary)
         self['List-Unsubscribe'] = quoter(:quote_address_if_necessary)
