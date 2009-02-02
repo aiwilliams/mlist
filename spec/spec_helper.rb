@@ -42,5 +42,13 @@ def tmail_fixture(path)
   TMail::Mail.parse(email_fixture(path))
 end
 
+def text_fixtures_path(path)
+  File.join(SPEC_ROOT, 'fixtures/text', path)
+end
+
+def text_fixture(path)
+  File.read(text_fixtures_path(path))
+end
+
 require 'mlist'
 require 'mlist/email_server/fake'
