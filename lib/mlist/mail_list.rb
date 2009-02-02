@@ -44,7 +44,7 @@ module MList
         :mail_list => self,
         :subscriber => email.subscriber,
         :tmail => email.tmail
-      )
+      ), :search_parent => false
     end
     
     # Processes the email received by the MList::Server which is destined for
@@ -116,11 +116,15 @@ module MList
         headers.delete_if {|k,v| v.nil?}
       end
       
-      def process_message(message)
+      def process_message(message, options = {})
+        options = {
+          :search_parent => true
+        }.merge(options)
+        
         return message unless process?(message)
         delivery_time = Time.now
         transaction do
-          thread = assign_thread(message, delivery_time)
+          thread = assign_thread(message, delivery_time, options[:search_parent])
           update_attribute :updated_at, delivery_time
           prepare_delivery(message)
           outgoing_server.deliver(message.tmail)
@@ -153,9 +157,11 @@ module MList
         message.subject = "#{prefix} #{subject}"
       end
       
-      def assign_thread(message, delivery_time)
-        message.parent_identifier = parent_identifier(message)
-        message.parent = messages.find_by_identifier(message.parent_identifier)
+      def assign_thread(message, delivery_time, search_parent)
+        if search_parent
+          message.parent_identifier = parent_identifier(message)
+          message.parent = messages.find_by_identifier(message.parent_identifier)
+        end
         if message.parent
           thread = message.parent.thread
           thread.messages << message

@@ -62,8 +62,8 @@ describe MList::MailList do
         lambda do
           @mail_list.post(
             :subscriber => subscribers.first,
-            :subject => 'Different',
-            :text => 'I am!'
+            :subject => 'Test',
+            :text => 'It is up to the application to provide reply_to'
           )
         end.should change(MList::Message, :count).by(1)
       end.should change(MList::Thread, :count).by(1)
