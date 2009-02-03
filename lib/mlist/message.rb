@@ -13,9 +13,9 @@ module MList
     
     include MList::Util::TMailMethods
     
-    belongs_to :mail_list, :class_name => 'MList::MailList'
     belongs_to :parent, :class_name => 'MList::Message'
-    belongs_to :thread, :class_name => 'MList::Thread'
+    belongs_to :mail_list, :class_name => 'MList::MailList', :counter_cache => :messages_count
+    belongs_to :thread, :class_name => 'MList::Thread', :counter_cache => :messages_count
     
     # Answers the text content of the message.
     #
@@ -27,6 +27,14 @@ module MList
         text_part = tmail.parts.detect {|part| part.content_type == 'text/plain'}
         text_part.body.strip if text_part
       end
+    end
+    
+    # Answers the text content of the message as HTML. The structure of this
+    # output is very simple. For examples of what it can handle, please check
+    # out the spec documents for MList::Util::EmailHelpers.
+    #
+    def text_html
+      text_to_html(text)
     end
     
     # Assign the TMail::Mail content that this message will represent. It is

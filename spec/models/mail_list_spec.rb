@@ -23,6 +23,16 @@ describe MList::MailList do
     @mail_list.manager_list.should be_nil
   end
   
+  it 'should have messages counted' do
+    MList::Message.reflect_on_association(:mail_list).counter_cache_column.should == :messages_count
+    MList::MailList.column_names.should include('messages_count')
+  end
+  
+  it 'should have threads counted' do
+    MList::Thread.reflect_on_association(:mail_list).counter_cache_column.should == :threads_count
+    MList::MailList.column_names.should include('threads_count')
+  end
+  
   describe 'post' do
     it 'should allow posting a new message to the list' do
       lambda do

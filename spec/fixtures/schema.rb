@@ -42,6 +42,7 @@ ActiveRecord::Schema.define(:version => 20081126181722) do
   #
   create_table :mlist_threads, :force => true do |t|
     t.column :mail_list_id, :integer
+    t.column :messages_count, :integer
     t.timestamps
   end
   add_index :mlist_threads, :mail_list_id
@@ -59,6 +60,8 @@ ActiveRecord::Schema.define(:version => 20081126181722) do
     t.column :manager_list_identifier, :string
     t.column :manager_list_type, :string
     t.column :manager_list_id, :integer
+    t.column :messages_count, :integer
+    t.column :threads_count, :integer
     t.timestamps
   end
   add_index :mlist_mail_lists, :manager_list_identifier
