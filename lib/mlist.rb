@@ -1,4 +1,5 @@
 require 'tmail'
+require 'activesupport'
 require 'activerecord'
 
 require 'mlist/util'
@@ -14,4 +15,5 @@ require 'mlist/thread'
 module MList
 end
 
+Time::DATE_FORMATS[:mlist_reply_timestamp] = Date::DATE_FORMATS[:mlist_reply_timestamp] = '%a, %b %e, %Y at %l:%M %p'
 TMail::Mail::ALLOW_MULTIPLE['x-beenthere'] = true

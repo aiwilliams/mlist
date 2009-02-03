@@ -35,6 +35,14 @@ module MList
         lines.join("<br />\n")
       end
       
+      def text_to_quoted(text)
+        lines = normalize_new_lines(text).split("\n")
+        lines.collect! do |line|
+          '> ' + line
+        end
+        lines.join("\n")
+      end
+      
       HTML_ESCAPE = { '&' => '&amp;',  '>' => '&gt;',   '<' => '&lt;', '"' => '&quot;' }
       def escape_once(text)
         text.gsub(/[\"><]|&(?!([a-zA-Z]+|(#\d+));)/) { |special| HTML_ESCAPE[special] }

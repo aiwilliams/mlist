@@ -25,7 +25,7 @@ module MList
     def initialize(attributes)
       @attributes = {}
       self.attributes = {
-        'mailer' => 'MList Client Application'
+        :mailer => 'MList Client Application'
       }.merge(attributes)
     end
     

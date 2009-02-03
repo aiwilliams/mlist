@@ -28,6 +28,11 @@ describe MList::Message do
       @message.identifier = 'hello'
     end.should raise_error
   end
+  
+  it 'should answer a subject suitable for replies' do
+    @message.subject = 'Re: [List Label] Re: The new Chrome Browser from Google'
+    @message.subject_for_reply.should == 'Re: The new Chrome Browser from Google'
+  end
 end
 
 describe MList::Message, 'text' do
@@ -39,5 +44,10 @@ describe MList::Message, 'text' do
   it 'should work with multipart/alternative, simple' do
     message = MList::Message.new(:tmail => tmail_fixture('content_types/multipart_alternative_simple'))
     message.text.should == "This is just a simple test.\n\nThis line should be bold.\n\nThis line should be italic."
+  end
+  
+  it 'should answer text suitable for reply' do
+    message = MList::Message.new(:tmail => tmail_fixture('content_types/text_plain'))
+    message.text_for_reply.should == email_fixture('content_types/text_plain_reply_content')
   end
 end

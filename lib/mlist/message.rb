@@ -37,6 +37,14 @@ module MList
       text_to_html(text)
     end
     
+    # Answers text suitable for creating a reply message.
+    #
+    def text_for_reply
+      datetime = Time.parse(header_string('date')) rescue created_at
+      from = read_header('from')
+      "On #{datetime.to_s(:mlist_reply_timestamp)}, #{from} wrote:\n\n#{text_to_quoted(text)}"
+    end
+    
     # Assign the TMail::Mail content that this message will represent. It is
     # important to understand that any modifications made to the TMail::Mail
     # instance answered by this message will not be persistent. The ORIGINAL
@@ -75,6 +83,15 @@ module MList
     #
     def subject=(value)
       tmail.subject = value
+    end
+    
+    # Answers the subject with all prefixes removed.
+    #
+    #   message.subject = 'Re: [List Label] Re: The new Chrome Browser from Google'
+    #   message.subject_for_reply   => 'Re: The new Chrome Browser from Google'
+    #
+    def subject_for_reply
+      "Re: #{remove_regard(subject)}"
     end
     
     # Answers the subscriber to which this message belongs; the sending list
