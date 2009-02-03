@@ -48,6 +48,11 @@ describe MList::Message, 'text' do
   
   it 'should answer text suitable for reply' do
     message = MList::Message.new(:tmail => tmail_fixture('content_types/text_plain'))
-    message.text_for_reply.should == email_fixture('content_types/text_plain_reply_content')
+    message.text_for_reply.should == email_fixture('content_types/text_plain_reply.txt')
+  end
+  
+  it 'should answer html suitable for reply' do
+    message = MList::Message.new(:tmail => tmail_fixture('content_types/text_plain'))
+    message.html_for_reply.should == email_fixture('content_types/text_plain_reply.html')
   end
 end

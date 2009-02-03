@@ -45,6 +45,13 @@ module MList
       "On #{datetime.to_s(:mlist_reply_timestamp)}, #{from} wrote:\n\n#{text_to_quoted(text)}"
     end
     
+    # Answers text suitable for creating a reply message, converted to the
+    # same simple html of _text_html_.
+    #
+    def html_for_reply
+      text_to_html(text_for_reply)
+    end
+    
     # Assign the TMail::Mail content that this message will represent. It is
     # important to understand that any modifications made to the TMail::Mail
     # instance answered by this message will not be persistent. The ORIGINAL
