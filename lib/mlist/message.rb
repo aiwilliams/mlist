@@ -42,7 +42,7 @@ module MList
     def text_for_reply
       datetime = Time.parse(header_string('date')) rescue created_at
       from = read_header('from')
-      "On #{datetime.to_s(:mlist_reply_timestamp)}, #{from} wrote:\n\n#{text_to_quoted(text)}"
+      "On #{datetime.to_s(:mlist_reply_timestamp)}, #{from} wrote:\n#{text_to_quoted(text)}"
     end
     
     # Answers text suitable for creating a reply message, converted to the

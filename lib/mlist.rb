@@ -15,5 +15,8 @@ require 'mlist/thread'
 module MList
 end
 
-Time::DATE_FORMATS[:mlist_reply_timestamp] = Date::DATE_FORMATS[:mlist_reply_timestamp] = '%a, %b %e, %Y at %l:%M %p'
+Time::DATE_FORMATS[:mlist_reply_timestamp] = Date::DATE_FORMATS[:mlist_reply_timestamp] = lambda do |time|
+  time.strftime('%a, %b %d, %Y at %I:%M %p').sub(/0(\d,)/, '\1').sub(/0(\d:)/, '\1')
+end
+
 TMail::Mail::ALLOW_MULTIPLE['x-beenthere'] = true
