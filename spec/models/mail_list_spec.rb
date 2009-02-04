@@ -90,8 +90,14 @@ describe MList::MailList do
       message.parent_identifier.should be_nil
     end
     
-    it 'should set (or capture?) the message-id of delivered email' do
-      pending 'this is very important!!!'
+    it 'should capture the message-id of delivered email' do
+      pending 'restructuring of message'
+      message = @mail_list.post(
+        :subscriber => subscribers.first,
+        :subject => 'Test',
+        :text => 'Email must have a message id for threading'
+      )
+      message.identifier.should_not be_nil
     end
   end
   
@@ -174,8 +180,16 @@ describe MList::MailList do
       process_post.subject.should == '[Discussions] Re: Test'
     end
     
-    it 'should maintain the message-ids correctly' do
-      pending 'a bit of research is needed - do we forward and keep the incoming message-id?'
+    it 'should capture the new message-ids' do
+      pending 'a restructuring of email content out of message'
+      delivered = process_post
+      delivered.header_string('message-id').should_not be_blank
+      delivered.header_string('message-id').should_not match(/F5F9DC55-CB54-4F2C-9B46-A05F241BCF22@recursivecreative\.com/)
+    end
+    
+    it 'should maintain the content-id part headers (inline images, etc)' do
+      @tmail_post = tmail_fixture('embedded_content')
+      process_post.parts[1].parts[1]['content-id'].to_s.should == "<CF68EC17-F8ED-478A-A4A1-AEBF165A8830/bg_pattern.jpg>"
     end
     
     it 'should add standard list headers when they are available' do
@@ -204,5 +218,7 @@ describe MList::MailList do
       delivery.should_not have_header('list-help')
       delivery.should_not have_header('list-subscribe')
     end
+    
+    it 'should append the list footer to the text/plain part of emails'
   end
 end

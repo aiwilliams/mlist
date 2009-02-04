@@ -19,4 +19,8 @@ Time::DATE_FORMATS[:mlist_reply_timestamp] = Date::DATE_FORMATS[:mlist_reply_tim
   time.strftime('%a, %b %d, %Y at %I:%M %p').sub(/0(\d,)/, '\1').sub(/0(\d:)/, '\1')
 end
 
+# In order to keep the inline images in email intact. Certainly a scary bit of
+# hacking, but this is the solution out there on the internet.
+TMail::HeaderField::FNAME_TO_CLASS.delete 'content-id'
+
 TMail::Mail::ALLOW_MULTIPLE['x-beenthere'] = true

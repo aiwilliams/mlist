@@ -50,5 +50,16 @@ def text_fixture(path)
   File.read(text_fixtures_path(path))
 end
 
+# To see the output of an email in your client, this will use sendmail to
+# deliver the email to the given address. It shouldn't be sent to the
+# addresses in to: cc: or bcc:, I hope.
+#
+def visualize_email(email, recipient_address)
+  tf = Tempfile.new('email_visualize')
+  tf.puts email.to_s
+  tf.close
+  `cat #{tf.path} | sendmail -t #{recipient_address}`
+end
+
 require 'mlist'
 require 'mlist/email_server/fake'
