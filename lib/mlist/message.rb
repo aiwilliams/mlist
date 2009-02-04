@@ -1,32 +1,35 @@
 module MList
   
-  # The persisted version of an email that is processed by MList::MailLists.
-  #
-  # The tmail object referenced by these are unique, though they may reference
-  # the 'same' originating email. It is by design that multiple copies of an
-  # email text may exist when it is delivered to more than one list. Until we
-  # have a better understanding of whether this happens a lot or no, this
-  # simplifies things a bit.
-  #
   class Message < ActiveRecord::Base
     set_table_name 'mlist_messages'
     
-    include MList::Util::TMailMethods
+    include MList::Util::EmailHelpers
     
+    belongs_to :email, :class_name => 'MList::Email'
     belongs_to :parent, :class_name => 'MList::Message'
     belongs_to :mail_list, :class_name => 'MList::MailList', :counter_cache => :messages_count
     belongs_to :thread, :class_name => 'MList::Thread', :counter_cache => :messages_count
     
+    # A temporary storage of recipient subscribers, obtained from
+    # MList::Lists. This list is not available when a message is reloaded.
+    #
+    attr_accessor :recipients
+    
+    def delivery
+      @delivery ||= MList::Util::TMailBuilder.new(TMail::Mail.parse(email.source))
+    end
+    
+    def email_with_capture=(email)
+      self.subject = email.subject
+      self.mailer = email.mailer
+      self.email_without_capture = email
+    end
+    alias_method_chain :email=, :capture
+    
     # Answers the text content of the message.
     #
     def text
-      case tmail.content_type
-      when 'text/plain'
-        tmail.body.strip
-      when 'multipart/alternative'
-        text_part = tmail.parts.detect {|part| part.content_type == 'text/plain'}
-        text_part.body.strip if text_part
-      end
+      delivery.text
     end
     
     # Answers the text content of the message as HTML. The structure of this
@@ -40,9 +43,8 @@ module MList
     # Answers text suitable for creating a reply message.
     #
     def text_for_reply
-      datetime = Time.parse(header_string('date')) rescue created_at
-      from = read_header('from')
-      "On #{datetime.to_s(:mlist_reply_timestamp)}, #{from} wrote:\n#{text_to_quoted(text)}"
+      timestamp = email.date.to_s(:mlist_reply_timestamp)
+      "On #{timestamp}, #{email.from} wrote:\n#{text_to_quoted(text)}"
     end
     
     # Answers text suitable for creating a reply message, converted to the
@@ -50,46 +52,6 @@ module MList
     #
     def html_for_reply
       text_to_html(text_for_reply)
-    end
-    
-    # Assign the TMail::Mail content that this message will represent. It is
-    # important to understand that any modifications made to the TMail::Mail
-    # instance answered by this message will not be persistent. The ORIGINAL
-    # email content, as received from MUAs, is preserved, whereas
-    # modifications are intended for use only during the delivery of the
-    # message.
-    #
-    def tmail=(tmail)
-      @tmail = TMail::Mail.parse(write_attribute(:email_text, tmail.to_s))
-      write_attribute(:identifier, remove_brackets(@tmail.header_string('message-id')))
-      write_attribute(:mailer, extract_mailer)
-      write_attribute(:subject, @tmail.subject)
-    end
-    
-    def tmail
-      @tmail ||= TMail::Mail.parse(email_text)
-    end
-    
-    # Cause the message to re-parse the email text, thereby forgetting any
-    # changes that have been made to the underlying email.
-    #
-    def reset
-      @tmail = TMail::Mail.parse(email_text)
-    end
-    
-    # The subject of the TMail::Mail instance, which may be different from the
-    # value of the message received (modified for delivery).
-    #
-    def subject
-      tmail.subject
-    end
-    
-    # Assigns the subject of the TMail::Mail instance. This will not modify
-    # the stored value, which is intended to represent the subject as received
-    # in the originating email.
-    #
-    def subject=(value)
-      tmail.subject = value
     end
     
     # Answers the subject with all prefixes removed.
@@ -101,8 +63,7 @@ module MList
       "Re: #{remove_regard(subject)}"
     end
     
-    # Answers the subscriber to which this message belongs; the sending list
-    # subscriber.
+    # Answers the subscriber from which this message comes.
     #
     def subscriber
       @subscriber ||= begin
@@ -114,8 +75,7 @@ module MList
       end
     end
     
-    # Assigns the subscriber to which this message belongs; the sending list
-    # subscriber.
+    # Assigns the subscriber from which this message comes.
     #
     def subscriber=(subscriber)
       case subscriber
@@ -135,9 +95,11 @@ module MList
       end
     end
     
-    private
-      def identifier=(value)
-        raise 'modifying the message identifier is not permitted'
-      end
+    def to_tmail
+      delivery.mailer = mailer
+      delivery.ready_to_send
+      self.identifier = delivery.identifier
+      delivery.tmail
+    end
   end
 end

@@ -3,6 +3,7 @@ require 'activesupport'
 require 'activerecord'
 
 require 'mlist/util'
+require 'mlist/email'
 require 'mlist/message'
 require 'mlist/list'
 require 'mlist/mail_list'
@@ -13,6 +14,11 @@ require 'mlist/server'
 require 'mlist/thread'
 
 module MList
+  class DoubleDeliveryError < StandardError
+    def initialize(message)
+      super("A message should never be delivered more than once. An attempt was made to deliver this message:\n#{message.inspect}")
+    end
+  end
 end
 
 Time::DATE_FORMATS[:mlist_reply_timestamp] = Date::DATE_FORMATS[:mlist_reply_timestamp] = lambda do |time|

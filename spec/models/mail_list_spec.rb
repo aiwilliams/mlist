@@ -59,7 +59,7 @@ describe MList::MailList do
     end
     
     it 'should allow posting a reply to an existing message' do
-      @mail_list.process_email(MList::EmailServer::Email.new(tmail_fixture('single_list')))
+      @mail_list.process_email(MList::Email.new(:tmail => tmail_fixture('single_list')))
       existing_message = @mail_list.messages.last
       lambda do
         lambda do
@@ -75,7 +75,7 @@ describe MList::MailList do
     end
     
     it 'should not associate a posting to a parent if not reply' do
-      @mail_list.process_email(MList::EmailServer::Email.new(tmail_fixture('single_list')))
+      @mail_list.process_email(MList::Email.new(:tmail => tmail_fixture('single_list')))
       lambda do
         lambda do
           @mail_list.post(
@@ -91,65 +91,30 @@ describe MList::MailList do
     end
     
     it 'should capture the message-id of delivered email' do
-      pending 'restructuring of message'
       message = @mail_list.post(
         :subscriber => subscribers.first,
         :subject => 'Test',
-        :text => 'Email must have a message id for threading'
-      )
-      message.identifier.should_not be_nil
-    end
-  end
-  
-  describe 'parent identifier' do
-    before do
-      @parent_message = MList::Message.new(:tmail => tmail_fixture('single_list'))
-      @message = MList::Message.new(:tmail => tmail_fixture('single_list_reply'))
-    end
-    
-    it 'should be in-reply-to field when present' do
-      @mail_list.parent_identifier(@message).should == @parent_message.identifier
-    end
-    
-    it 'should be references field if present and no in-reply-to' do
-      @message.delete_header('in-reply-to')
-      @mail_list.parent_identifier(@message).should == @parent_message.identifier
-    end
-    
-    it 'should disregard references that are not in the list'
-    
-    describe 'using subject' do
-      before do
-        @message.delete_header('in-reply-to')
-        @message.delete_header('references')
-        
-        mock(@mail_list.messages).find(
-          :first, :conditions => ['mlist_messages.subject = ?', 'Test'],
-          :order => 'created_at asc'
-        ) {@parent_message}
-      end
-      
-      it 'should happen if present and no in-reply-to or references' do
-        @mail_list.parent_identifier(@message).should == @parent_message.identifier
-      end
-      
-      ['RE: [list name] Re: Test', 'Re: [list name] Re: [list name] Test'].each do |subject|
-        it "should handle '#{subject}'" do
-          @message.subject = subject
-          @mail_list.parent_identifier(@message).should == @parent_message.identifier
-        end
-      end
+        :text => 'Email must have a message id for threading')
+      message.reload.identifier.should_not be_nil
     end
   end
   
   describe 'delivery' do
     def process_post
-      @mail_list.process_email(MList::EmailServer::Email.new(@tmail_post))
+      @mail_list.process_email(MList::Email.new(:tmail => @post_tmail))
       @outgoing_server.deliveries.last
     end
     
     before do
-      @tmail_post = tmail_fixture('single_list')
+      @post_tmail = tmail_fixture('single_list')
+    end
+    
+    it 'should be blind copied to recipients' do
+      mock.proxy(@mail_list.messages).build(anything) do |message|
+        mock(message.delivery).bcc=(%w(john@example.com))
+        message
+      end
+      process_post
     end
     
     it 'should set x-beenthere on emails it delivers to keep from re-posting them' do
@@ -157,12 +122,12 @@ describe MList::MailList do
     end
     
     it 'should not remove any existing x-beenthere headers' do
-      @tmail_post['x-beenthere'] = 'somewhere@nomain.net'
+      @post_tmail['x-beenthere'] = 'somewhere@nomain.net'
       process_post.should have_header('x-beenthere', %w(list_one@example.com somewhere@nomain.net))
     end
     
     it 'should not modify existing headers' do
-      @tmail_post['x-something-custom'] = 'existing'
+      @post_tmail['x-something-custom'] = 'existing'
       process_post.should have_header('x-something-custom', 'existing')
     end
     
@@ -171,24 +136,23 @@ describe MList::MailList do
     end
     
     it 'should move the list label to the front of subjects that already include the label' do
-      @tmail_post.subject = 'Re: [Discussions] Test'
+      @post_tmail.subject = 'Re: [Discussions] Test'
       process_post.subject.should == '[Discussions] Re: Test'
     end
     
     it 'should remove multiple occurrences of Re:' do
-      @tmail_post.subject = 'Re: [Discussions] Re: Test'
+      @post_tmail.subject = 'Re: [Discussions] Re: Test'
       process_post.subject.should == '[Discussions] Re: Test'
     end
     
     it 'should capture the new message-ids' do
-      pending 'a restructuring of email content out of message'
       delivered = process_post
       delivered.header_string('message-id').should_not be_blank
       delivered.header_string('message-id').should_not match(/F5F9DC55-CB54-4F2C-9B46-A05F241BCF22@recursivecreative\.com/)
     end
     
     it 'should maintain the content-id part headers (inline images, etc)' do
-      @tmail_post = tmail_fixture('embedded_content')
+      @post_tmail = tmail_fixture('embedded_content')
       process_post.parts[1].parts[1]['content-id'].to_s.should == "<CF68EC17-F8ED-478A-A4A1-AEBF165A8830/bg_pattern.jpg>"
     end
     
@@ -218,6 +182,8 @@ describe MList::MailList do
       delivery.should_not have_header('list-help')
       delivery.should_not have_header('list-subscribe')
     end
+    
+    it 'should add in-reply-to and references headers when reply'
     
     it 'should append the list footer to the text/plain part of emails'
   end

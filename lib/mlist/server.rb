@@ -28,6 +28,7 @@ module MList
       
       def process_post(lists, email)
         lists.each do |list|
+          next if email.been_here?(list)
           if list.subscriber?(email.from_address)
             if list.active?
               mail_list(list).process_email(email)

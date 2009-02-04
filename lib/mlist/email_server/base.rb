@@ -10,7 +10,7 @@ module MList
       end
       
       def receive(tmail)
-        email = EmailServer::Email.new(tmail)
+        email = MList::Email.new(:tmail => tmail)
         @receivers.each { |r| r.receive_email(email) }
       end
       

@@ -96,8 +96,8 @@ describe MList do
   it 'should not forward mail from non-subscriber and notify manager list' do
     tmail = tmail_fixture('single_list')
     tmail.from = 'unknown@example.com'
-    stub(@list_manager).lists(is_a(MList::EmailServer::Email)) { [@list_one] }
-    mock(@list_one).non_subscriber_post(is_a(MList::EmailServer::Email))
+    stub(@list_manager).lists(is_a(MList::Email)) { [@list_one] }
+    mock(@list_one).non_subscriber_post(is_a(MList::Email))
     @email_server.should_not forward_email(tmail)
   end
   
@@ -105,22 +105,22 @@ describe MList do
     tmail = tmail_fixture('single_list')
     tmail.from = 'unknown@example.com'
     stub(@list_one).active? { false }
-    stub(@list_manager).lists(is_a(MList::EmailServer::Email)) { [@list_one] }
-    mock(@list_one).non_subscriber_post(is_a(MList::EmailServer::Email))
+    stub(@list_manager).lists(is_a(MList::Email)) { [@list_one] }
+    mock(@list_one).non_subscriber_post(is_a(MList::Email))
     @email_server.should_not forward_email(tmail)
   end
   
   it 'should not forward mail to inactive list and notify manager list' do
     tmail = tmail_fixture('single_list')
     stub(@list_one).active? { false }
-    stub(@list_manager).lists(is_a(MList::EmailServer::Email)) { [@list_one] }
-    mock(@list_one).inactive_post(is_a(MList::EmailServer::Email))
+    stub(@list_manager).lists(is_a(MList::Email)) { [@list_one] }
+    mock(@list_one).inactive_post(is_a(MList::Email))
     @email_server.should_not forward_email(tmail)
   end
   
   it 'should report bounces to the list manager' do
-    stub(@list_manager).lists(is_a(MList::EmailServer::Email)) { [@list_one] }
-    mock(@list_one).bounce(is_a(MList::EmailServer::Email))
+    stub(@list_manager).lists(is_a(MList::Email)) { [@list_one] }
+    mock(@list_one).bounce(is_a(MList::Email))
     @email_server.should_not forward_email(tmail_fixture('bounces/1'))
   end
   
@@ -134,26 +134,26 @@ describe MList do
       @email_server.deliveries.size.should == 1
       email = @email_server.deliveries.first
       email.should have_address(:to, 'list_one@example.com')
-      email.should have_address(:bcc, %w(tom@example.com dick@example.com))
+      # bcc fields are not in the headers after tmail#read_to_send
       email.should have_address(:'reply-to', 'list_one@example.com')
     end
     
     it 'should start a new thread for a new email' do
       thread = MList::Thread.last
-      thread.messages.first.tmail.should equal_tmail(@tmail_post)
+      thread.messages.first.email.tmail.should equal_tmail(@tmail_post)
     end
     
     it 'should add to an existing thread when reply email' do
-      reply_tmail = tmail_fixture('single_list_reply')
+      message = MList::Message.last
+      reply_tmail = tmail_fixture('single_list_reply', 'in-reply-to' => "<#{message.identifier}>")
       @email_server.receive(reply_tmail)
       thread = MList::Thread.last
       thread.messages.size.should be(2)
-      thread.messages.last.tmail.should equal_tmail(reply_tmail)
     end
     
     it 'should associate parent message when reply email' do
       message = MList::Message.last
-      @email_server.receive(tmail_fixture('single_list_reply'))
+      @email_server.receive(tmail_fixture('single_list_reply', 'in-reply-to' => "<#{message.identifier}>"))
       reply = MList::Message.last
       reply.parent_identifier.should == message.identifier
       reply.parent.should == message
@@ -188,19 +188,18 @@ describe MList do
       
       email = @email_server.deliveries.first
       email.should have_address(:to, 'list_one@example.com')
-      email.should have_address(:bcc, %w(tom@example.com dick@example.com))
+      # bcc fields are not in the headers after tmail#read_to_send
       email.should have_address(:'reply-to', 'list_one@example.com')
       
       email = @email_server.deliveries.last
       email.should have_address(:to, 'list_two@example.com')
-      email.should have_address(:bcc, %w(jane@example.com))
+      # bcc fields are not in the headers after tmail#read_to_send
       email.should have_address(:'reply-to', 'list_two@example.com')
     end
     
-    it 'should start a new thread for each list' do
+    it 'should start a new thread for each list, both referencing the same email' do
       threads = MList::Thread.find(:all)
-      threads[0].messages.first.tmail.should equal_tmail(@tmail_post)
-      threads[1].messages.first.tmail.should equal_tmail(@tmail_post)
+      threads[0].messages.first.email.should == threads[1].messages.first.email
     end
   end
 end

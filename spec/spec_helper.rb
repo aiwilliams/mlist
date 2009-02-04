@@ -38,8 +38,12 @@ def email_fixture(path)
   File.read(email_fixtures_path(path))
 end
 
-def tmail_fixture(path)
-  TMail::Mail.parse(email_fixture(path))
+def tmail_fixture(path, header_changes = {})
+  tmail = TMail::Mail.parse(email_fixture(path))
+  header_changes.each do |k,v|
+    tmail[k] = v
+  end
+  tmail
 end
 
 def text_fixtures_path(path)

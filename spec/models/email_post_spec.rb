@@ -36,9 +36,10 @@ describe MList::EmailPost do
   end
   
   it 'should assign the identifier it is in reply-to' do
-    message = MList::Message.new(:tmail => tmail_fixture('single_list'))
+    message = MList::Message.new
+    stub(message).identifier { 'blahblah@example.com' }
     @post.reply_to_message = message
-    @post.to_tmail.in_reply_to.should == ["<#{message.identifier}>"]
+    @post.to_tmail.in_reply_to.should == ["<blahblah@example.com>"]
   end
 end
 

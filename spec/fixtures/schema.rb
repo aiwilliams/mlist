@@ -4,26 +4,34 @@ ActiveRecord::Schema.define(:version => 20081126181722) do
   # into other systems' databases.
   
   
+  # The table in which email content is stored.
+  # 
+  create_table :mlist_emails, :force => true do |t|
+    t.column :source, :text
+  end
+  
   # The table in which MList will store MList::Messages.
   #
-  # The identifier is the 'message-id' header value.
+  # The identifier is the 'message-id' header value of the finally delivered
+  # email.
   #
   # An MList::Message will store a reference to your application's subscriber
   # instance if it is an ActiveRecord subclass. That subclass must respond to
   # :email_address. If your subscriber is just a string, it is assumed to be
   # an email address. Either way, that email address will be stored with the
-  # MList::Message, providing a way for you associate messages by
-  # subscriber_address.
+  # MList::Message, providing a way for you to associate messages by
+  # subscriber_address. This is less ideal, as you may allow subscribers to
+  # change their email addresses over time.
   #
   create_table :mlist_messages, :force => true do |t|
     t.column :mail_list_id, :integer
     t.column :thread_id, :integer
+    t.column :email_id, :integer
     t.column :identifier, :string
     t.column :parent_identifier, :string
     t.column :parent_id, :integer
     t.column :mailer, :string
     t.column :subject, :string
-    t.column :email_text, :text
     t.column :subscriber_address, :string
     t.column :subscriber_type, :string
     t.column :subscriber_id, :integer

@@ -44,7 +44,6 @@ module MList
     
     def reply_to_message=(message)
       if message
-        message.reset
         @parent_identifier = message.identifier
       else
         @parent_identifier = nil
@@ -59,26 +58,26 @@ module MList
     def to_tmail
       raise ActiveRecord::RecordInvalid.new(self) unless valid?
       
-      adapter = MList::Util::TMailAdapter.new(TMail::Mail.new)
+      builder = MList::Util::TMailBuilder.new(TMail::Mail.new)
       
-      adapter.mime_version = "1.0"
-      adapter.write_header('x-mailer', mailer)
+      builder.mime_version = "1.0"
+      builder.mailer = mailer
       
-      adapter.in_reply_to = parent_identifier if parent_identifier
+      builder.in_reply_to = parent_identifier if parent_identifier
       
-      adapter.from = subscriber.email_address
-      adapter.subject = subject
+      builder.from = subscriber.email_address
+      builder.subject = subject
       
       if html
-        adapter.add_text_part(text)
-        adapter.add_html_part(html)
-        adapter.set_content_type('multipart/alternative')
+        builder.add_text_part(text)
+        builder.add_html_part(html)
+        builder.set_content_type('multipart/alternative')
       else
-        adapter.body = text
-        adapter.set_content_type('text/plain')
+        builder.body = text
+        builder.set_content_type('text/plain')
       end
       
-      adapter.tmail
+      builder.tmail
     end
     
     # vvv  ActiveRecord validations interface implementation  vvv

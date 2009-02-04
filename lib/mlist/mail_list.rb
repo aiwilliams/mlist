@@ -2,8 +2,6 @@ module MList
   class MailList < ActiveRecord::Base
     set_table_name 'mlist_mail_lists'
     
-    include MList::Util::EmailHelpers
-    
     # Provides the MailList for a given implementation of MList::List,
     # connecting it to the provided email server for delivering posts.
     #
@@ -32,9 +30,6 @@ module MList
     # Creates a new MList::Message and delivers it to the subscribers of this
     # list.
     #
-    # This API is provided for applications that want the simplest interface
-    # to posting a new message.
-    #
     def post(email_or_attributes)
       email = email_or_attributes
       email = MList::EmailPost.new(email_or_attributes) unless email.is_a?(MList::EmailPost)
@@ -43,62 +38,41 @@ module MList
         :parent_identifier => email.parent_identifier,
         :mail_list => self,
         :subscriber => email.subscriber,
-        :tmail => email.to_tmail
+        :recipients => list.recipients(email.subscriber),
+        :email => MList::Email.new(:tmail => email.to_tmail)
       ), :search_parent => false
     end
     
-    # Processes the email received by the MList::Server which is destined for
-    # the recipients of this list.
+    # Processes the email received by the MList::Server.
     #
     def process_email(email)
+      subscriber = list.subscriber(email.from_address)
+      recipients = list.recipients(subscriber)
       process_message messages.build(
         :mail_list => self,
-        :subscriber => list.subscriber(email.from_address),
-        :tmail => email.tmail
+        :subscriber => subscriber,
+        :recipients => recipients,
+        :email => email
       )
-    end
-    
-    def been_there?(message)
-      message.header_string('x-beenthere') == address
     end
     
     def list
       @list ||= manager_list
     end
     
-    alias_method :ar_manager_list=, :manager_list=
-    def manager_list=(list)
+    def manager_list_with_dual_type=(list)
       if list.is_a?(ActiveRecord::Base)
-        self.ar_manager_list = list
+        self.manager_list_without_dual_type = list
         @list = list
       else
-        self.ar_manager_list = nil
+        self.manager_list_without_dual_type = nil
         @list = list
       end
     end
-    
-    # TODO: Make private method (testing this should be done differently)
-    def parent_identifier(message)
-      if in_reply_to = message.header_string('in-reply-to')
-        identifier = in_reply_to
-      elsif references = message.read_header('references')
-        identifier = references.ids.first
-      else
-        parent_message = messages.find(:first,
-          :conditions => ['mlist_messages.subject = ?', remove_regard(message.subject)],
-          :order => 'created_at asc'
-        )
-        identifier = parent_message.identifier if parent_message
-      end
-      remove_brackets(identifier) if identifier
-    end
+    alias_method_chain :manager_list=, :dual_type
     
     def process?(message)
-      !been_there?(message) && !recipients(message).blank?
-    end
-    
-    def recipients(message)
-      list.recipients(message.subscriber)
+      !message.recipients.blank?
     end
     
     private
@@ -117,61 +91,57 @@ module MList
       end
       
       def process_message(message, options = {})
-        options = {
-          :search_parent => true
-        }.merge(options)
-        
+        raise MList::DoubleDeliveryError.new(message) unless message.new_record?
         return message unless process?(message)
-        delivery_time = Time.now
+        
+        options = {
+          :search_parent => true,
+          :delivery_time => Time.now
+        }.merge(options)
         transaction do
-          thread = assign_thread(message, delivery_time, options[:search_parent])
-          update_attribute :updated_at, delivery_time
-          prepare_delivery(message)
-          outgoing_server.deliver(message.tmail)
+          thread = find_thread(message, options)
+          thread.messages << message
+          tmail = prepare_delivery(message)
+          self.updated_at = thread.updated_at = options[:delivery_time]
+          thread.save! && save!
+          outgoing_server.deliver(tmail)
         end
         message
       end
       
       def prepare_delivery(message)
-        prepare_list_headers(message)
-        prepare_list_subject(message)
-        message.to = address
-        message.bcc = recipients(message)
-        message.reply_to = "#{label} <#{post_url}>"
+        delivery = message.delivery
+        prepare_list_headers(delivery)
+        delivery.subject = list_subject(message)
+        delivery.to = address
+        delivery.bcc = message.recipients
+        delivery.reply_to = "#{label} <#{post_url}>"
+        message.to_tmail
       end
       
-      def prepare_list_headers(message)
+      def prepare_list_headers(delivery)
         list_headers.each do |k,v|
           if TMail::Mail::ALLOW_MULTIPLE.include?(k.downcase)
-            message.prepend_header(k,v)
+            delivery.prepend_header(k,v)
           else
-            message.write_header(k,v)
+            delivery.write_header(k,v)
           end
         end
       end
       
-      def prepare_list_subject(message)
+      def list_subject(message)
         prefix = "[#{label}]"
         subject = message.subject.gsub(%r(#{Regexp.escape(prefix)}\s*), '')
         subject.gsub!(%r{(re:\s*){2,}}i, 'Re: ')
-        message.subject = "#{prefix} #{subject}"
+        "#{prefix} #{subject}"
       end
       
-      def assign_thread(message, delivery_time, search_parent)
-        if search_parent
-          message.parent_identifier = parent_identifier(message)
+      def find_thread(message, options)
+        if options[:search_parent]
+          message.parent_identifier = message.email.parent_identifier(self)
           message.parent = messages.find_by_identifier(message.parent_identifier)
         end
-        if message.parent
-          thread = message.parent.thread
-          thread.messages << message
-          thread.update_attribute(:updated_at, delivery_time)
-        else
-          thread = threads.build
-          thread.messages << message
-          thread.save!
-        end
-        thread
+        message.parent ? message.parent.thread : threads.build
       end
   end
 end

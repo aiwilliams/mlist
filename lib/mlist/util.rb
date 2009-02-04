@@ -2,7 +2,7 @@ require 'mlist/util/quoting'
 require 'mlist/util/header_sanitizer'
 require 'mlist/util/email_helpers'
 require 'mlist/util/tmail_methods'
-require 'mlist/util/tmail_adapter'
+require 'mlist/util/tmail_builder'
 
 module MList
   module Util
