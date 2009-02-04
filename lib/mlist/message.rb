@@ -26,6 +26,12 @@ module MList
     end
     alias_method_chain :email=, :capture
     
+    # Answers the html content of the message.
+    #
+    def html
+      email.html
+    end
+    
     # Answers the text content of the message.
     #
     def text

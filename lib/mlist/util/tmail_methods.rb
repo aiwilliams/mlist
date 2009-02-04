@@ -10,6 +10,16 @@ module MList
         tmail.from.first.downcase
       end
       
+      def html
+        case tmail.content_type
+        when 'text/html'
+          tmail.body.strip
+        when 'multipart/alternative'
+          text_part = tmail.parts.detect {|part| part.content_type == 'text/html'}
+          text_part.body.strip if text_part
+        end
+      end
+      
       def identifier
         remove_brackets(tmail.header_string('message-id'))
       end
