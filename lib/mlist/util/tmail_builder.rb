@@ -26,16 +26,6 @@ module MList
         self.parts << part
       end
       
-      def text
-        case content_type
-        when 'text/plain'
-          body.strip
-        when 'multipart/alternative'
-          text_part = parts.detect {|part| part.content_type == 'text/plain'}
-          text_part.body.strip if text_part
-        end
-      end
-      
       # Provide delegation to *most* of the underlying TMail::Mail methods,
       # excluding those overridden by this Module.
       #

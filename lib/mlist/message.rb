@@ -29,7 +29,7 @@ module MList
     # Answers the text content of the message.
     #
     def text
-      delivery.text
+      email.text
     end
     
     # Answers the text content of the message as HTML. The structure of this

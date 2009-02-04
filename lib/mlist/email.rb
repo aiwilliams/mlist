@@ -52,10 +52,6 @@ module MList
       end
     end
     
-    def subject
-      tmail.subject
-    end
-    
     def tmail=(tmail)
       @tmail = tmail
       write_attribute(:source, tmail.to_s)
@@ -68,10 +64,10 @@ module MList
     # Provide reader delegation to *most* of the underlying TMail::Mail
     # methods, excluding those overridden by this Class and the [] method (an
     # ActiveRecord method).
-    #
+    define_attribute_methods
     def method_missing(symbol, *args, &block) # :nodoc:
-      if symbol.to_s !~ /=\Z/ && tmail.respond_to?(symbol) && symbol != :[]
-        @tmail.__send__(symbol, *args, &block)
+      if symbol.to_s !~ /=\Z/ && symbol != :[] &&  tmail.respond_to?(symbol)
+        tmail.__send__(symbol, *args, &block)
       else
         super
       end

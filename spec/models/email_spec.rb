@@ -19,6 +19,16 @@ describe MList::Email do
     @tmail.to = 'ALL_Down_CaSe@NOmail.NET, ALL_Down_CaSe@YESmail.NET'
     @email.list_addresses.should == %w(all_down_case@nomail.net all_down_case@yesmail.net)
   end
+  
+  it 'should answer the subject of the email' do
+    @email.subject.should == 'Test'
+  end
+  
+  it 'should save source of email' do
+    @email.save!
+    @email = MList::Email.find(@email.id)
+    @email.source.should == @tmail.to_s
+  end
 end
 
 describe MList::Email, 'parent identifier' do

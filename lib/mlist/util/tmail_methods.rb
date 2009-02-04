@@ -17,6 +17,16 @@ module MList
       def mailer
         tmail.header_string('x-mailer')
       end
+      
+      def text
+        case tmail.content_type
+        when 'text/plain'
+          tmail.body.strip
+        when 'multipart/alternative'
+          text_part = tmail.parts.detect {|part| part.content_type == 'text/plain'}
+          text_part.body.strip if text_part
+        end
+      end
     end
     
     module TMailWriters
