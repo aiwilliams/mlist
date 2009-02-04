@@ -1,17 +1,17 @@
 module MList
   module EmailServer
+    
     class Default < Base
       def initialize(incoming_server, outgoing_server)
-        super()
-        
+        super({})
         @incoming_server, @outgoing_server = incoming_server, outgoing_server
         @incoming_server.receiver(self)
       end
       
       # Delegates delivery of email to outgoing server.
       #
-      def deliver(email)
-        @outgoing_server.deliver(email)
+      def deliver(tmail, destinations)
+        @outgoing_server.deliver(tmail, destinations)
       end
       
       # Delegates processing of email from incoming server to receivers on
@@ -21,5 +21,6 @@ module MList
         @receivers.each { |r| r.receive_email(email) }
       end
     end
+    
   end
 end

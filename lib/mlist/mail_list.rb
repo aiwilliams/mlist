@@ -101,10 +101,12 @@ module MList
         transaction do
           thread = find_thread(message, options)
           thread.messages << message
-          tmail = prepare_delivery(message)
+          prepare_delivery(message)
+          destinations = message.delivery.destinations
+          tmail = message.to_tmail
           self.updated_at = thread.updated_at = options[:delivery_time]
           thread.save! && save!
-          outgoing_server.deliver(tmail)
+          outgoing_server.deliver(tmail, destinations)
         end
         message
       end
@@ -116,7 +118,6 @@ module MList
         delivery.to = address
         delivery.bcc = message.recipients
         delivery.reply_to = "#{label} <#{post_url}>"
-        message.to_tmail
       end
       
       def prepare_list_headers(delivery)

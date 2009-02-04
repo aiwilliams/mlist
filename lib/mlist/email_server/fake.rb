@@ -4,11 +4,11 @@ module MList
       attr_reader :deliveries
       
       def initialize
-        super
+        super({})
         @deliveries = []
       end
       
-      def deliver(tmail)
+      def deliver(tmail, destinations)
         @deliveries << tmail
       end
     end

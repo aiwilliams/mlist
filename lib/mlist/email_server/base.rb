@@ -1,11 +1,14 @@
 module MList
   module EmailServer
     class Base
-      def initialize
+      attr_reader :settings
+      
+      def initialize(settings)
+        @settings = settings
         @receivers = []
       end
       
-      def deliver(email)
+      def deliver(tmail, destinations)
         raise 'Implement actual delivery mechanism in subclasses'
       end
       
