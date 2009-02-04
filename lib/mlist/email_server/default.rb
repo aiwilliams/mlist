@@ -14,6 +14,11 @@ module MList
         @outgoing_server.deliver(tmail, destinations)
       end
       
+      # Delegates fetching emails to incoming server.
+      def execute
+        @incoming_server.execute
+      end
+      
       # Delegates processing of email from incoming server to receivers on
       # self.
       #
