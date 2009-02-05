@@ -10,7 +10,9 @@ module MList
     
     def receive_email(email)
       lists = list_manager.lists(email)
-      if email.bounce?
+      if lists.empty?
+        list_manager.no_lists_found(email)
+      elsif email.bounce?
         process_bounce(lists.first, email)
       else
         process_post(lists, email)

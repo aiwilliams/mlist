@@ -118,6 +118,13 @@ describe MList do
     @email_server.should_not forward_email(tmail)
   end
   
+  it 'should report unrecognized email to list manager' do
+    tmail = tmail_fixture('single_list')
+    stub(@list_manager).lists(is_a(MList::Email)) { [] }
+    mock(@list_manager).no_lists_found(is_a(MList::Email))
+    @email_server.should_not forward_email(tmail)
+  end
+  
   it 'should report bounces to the list manager' do
     stub(@list_manager).lists(is_a(MList::Email)) { [@list_one] }
     mock(@list_one).bounce(is_a(MList::Email))
