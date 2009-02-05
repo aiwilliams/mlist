@@ -8,6 +8,7 @@ ActiveRecord::Schema.define(:version => 20081126181722) do
   # 
   create_table :mlist_emails, :force => true do |t|
     t.column :source, :text
+    t.column :created_at, :datetime
   end
   
   # The table in which MList will store MList::Messages.

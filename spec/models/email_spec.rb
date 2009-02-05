@@ -29,6 +29,20 @@ describe MList::Email do
     @email = MList::Email.find(@email.id)
     @email.source.should == @tmail.to_s
   end
+  
+  it 'should answer the Date of the email, created_at otherwise' do
+    @email.date.should == Time.parse('Mon, 15 Dec 2008 00:38:31 -0500')
+    @tmail['date'] = nil
+    
+    stub(Time).now { Time.local(2009,1,1) }
+    @email.date.should == Time.local(2009,1,1)
+    
+    stub(Time).now { Time.local(2009,3,1) }
+    @email.date.should == Time.local(2009,1,1)
+    
+    @email.created_at = Time.local(2009,2,1)
+    @email.date.should == Time.local(2009,2,1)
+  end
 end
 
 describe MList::Email, 'parent identifier' do
