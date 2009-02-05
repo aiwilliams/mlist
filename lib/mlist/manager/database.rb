@@ -15,6 +15,10 @@ module MList
         email.list_addresses.map { |a| lists.detect {|l| l.address == a} }.compact
       end
       
+      def no_lists_found(email)
+        # your application may care
+      end
+      
       class List < ActiveRecord::Base
         include ::MList::List
         

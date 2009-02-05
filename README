@@ -1,21 +1,34 @@
-= mlist
+= MList
 
 http://aiwilliams.github.com/mlist
 
 == DESCRIPTION:
 
-An insane attempt to build a mail list server library that can be used
-other applications very easily. The first target is Ruby applications
-that can load MList models for direct integration. It will later have
-a RESTful API so that non-Ruby applications can easily integrate. That
-may depend heavily on community involvement...
+An insane attempt to build a mail list server library that can be used in other
+applications very easily. The first target is Ruby applications that can load
+MList models for direct, embedded integration. It will later have a RESTful API
+so that any language/architecture can be easily integrated. That may depend
+heavily on community involvement...
 
 == FEATURES/PROBLEMS:
 
-There is a LOT to do: segmenting, spam filtering, HTML conversion, i18n,
-backscatter - only the Mailman developers know what else. I have enough
-experience to know that rewrites are NEVER as easy as they seem. I begin
-this with fear and trepidation. Alas, I go boldly forward.
+If you have any experience with mailing lists, things can be understood most
+quickly with this: MList is the mailing list server and database, your
+application is the list manager.
+
+MList is being used in a production environment as a Ruby gem/Rails plugin. I
+decided not to use other list software primarily because a) we already had a
+running, sophisticated list manager that I didn't care to synchronize with
+something else, b) we have an exceptional UI design for listing messages in
+threads and ultimately will have search and c) integration options for the other
+software looked to be a problem in themselves.
+
+And then there's the fame and glory that comes with building something like
+this...
+
+There is a LOT to do: segmenting, i18n, backscatter - only the Mailman developers
+know what else. I have enough experience to know that rewrites are NEVER as easy
+as they seem. Alas, I go boldly forward.
 
 ==== Extracting 'from' IP address from emails is not implemented
 
@@ -29,9 +42,9 @@ required once at initialization, there will always only be one instance of the
 model class, and therefore, many instances of the observer class (all but the
 most recent invalid, since they were undefined) registered with it.
 
-There are a number of ways to solve this, the best being the one that makes things
-'just work' such that I can delete this part of the document. For now, do the
-following in environment.rb:
+There are a number of ways to solve this, the best being the one that makes
+things 'just work' such that I can delete this part of the document. For now, do
+the following in environment.rb:
 
 * remove the observer from the Rails' config.active_record.observers list
 * after the Rails::Initializer.run block, "require 'myobserver'"
@@ -42,11 +55,11 @@ class you are observing.
 
 == SYNOPSIS:
 
-Let's say you want your web application to have a mailing list feature.
-Let's also say you care about the UI, and you don't want to learn all
-about creating the correct HTML structures for a mailing list. You want to
-have lots of power for searching the mail, and you have your own strategy
-for managing the lists. You love Ruby.
+Let's say you want your web application to have a mailing list feature. Let's
+also say you care about the UI, and you don't want to learn all about creating
+the correct HTML structures for a mailing list. You want to have lots of power
+for searching the mail, and you have your own strategy for managing the lists.
+You love Ruby. You want MList.
 
 == REQUIREMENTS:
 
@@ -58,7 +71,57 @@ You'll need some gems.
 
 == INSTALL:
 
-* FIX (sudo gem install, anything else)
+sudo gem install mlist  (you'll need to have github as a source).
+
+For now, copy the mlist_ tables from the spec/fixtures/schema.rb file and move
+them to a new migration in your application. Fun the migration.
+
+Now you'll need to create the MList::Server and provide it with a list manager
+and MList::EmailServer::Default instance. Something like this in your
+environment.rb after the initialize block (our gem needs to have been loaded):
+
+  Rails::Initializer.run do |config|
+    # Please do specify a version, and check for the latest!
+    config.gem "mlist", :version => '0.1.0'
+  end
+  
+  MLIST_SERVER = MList::Server.new(
+    :list_manager => MList::Manager::Database.new,
+    :email_server => MList::EmailServer::Default.new(
+      MList::EmailServer::Pop.new(
+        :ssl      => false,
+        :server   => 'pop.gmail.com',
+        :port     => '995',
+        :username => 'yourusername',
+        :password => 'yourpassword'
+      ),
+      MList::EmailServer::Smtp.new(
+        ActionMailer::Base.smtp_settings # probably good enough!
+      )
+    )
+  )
+
+Your list manager needs to implement only two methods. Check out (and use if you
+like) the MList::Manager::Database for more information.
+
+You'll need something to trigger the incoming server process. Take your pick from
+http://wiki.rubyonrails.org/rails/pages/HowToRunBackgroundJobsInRails. In the
+end, if you don't write your own incoming server thing and go with the POP GMail
+example above, your background process will "MLIST_SERVER.email_server.execute".
+
+Take a look at MList::EmailPost if you're building a UI. It can be posted to a
+list something like this:
+
+  class MyList # instances of these are given by your list manager
+    def post(attributes)
+      email = MList::EmailPost.new({
+        :mailer => 'MyApplication'
+      }.merge(attributes))
+      raise 'You can validate these' unless email.valid?
+      message = MLIST_SERVER.mail_list(self).post(email)
+      # do what you will with message. it's already saved.
+    end
+  end
 
 == LICENSE:
 
@@ -66,21 +129,19 @@ You'll need some gems.
 
 Copyright (c) 2008 Adam Williams (aiwilliams)
 
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-'Software'), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the 'Software'), to deal in the
+Software without restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
 
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
