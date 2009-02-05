@@ -38,15 +38,18 @@ module MList
         self['reply-to'] = quoter(:quote_any_address_if_necessary)
         self['subject']  = quoter(:quote_any_if_necessary)
         
+        self['sender']      = quoter(:quote_address_if_necessary)
+        self['errors-to']   = quoter(:quote_address_if_necessary)
         self['in-reply-to'] = quoter(:quote_any_address_if_necessary)
         self['x-mailer']    = quoter(:quote_if_necessary, false)
         
-        self['List-Help']        = quoter(:quote_address_if_necessary)
-        self['List-Subscribe']   = quoter(:quote_address_if_necessary)
-        self['List-Unsubscribe'] = quoter(:quote_address_if_necessary)
-        self['List-Post']        = quoter(:quote_address_if_necessary)
-        self['List-Owner']       = quoter(:quote_address_if_necessary)
-        self['List-Archive']     = quoter(:quote_address_if_necessary)
+        self['list-id']          = quoter(:quote_address_if_necessary)
+        self['list-help']        = quoter(:quote_address_if_necessary)
+        self['list-subscribe']   = quoter(:quote_address_if_necessary)
+        self['list-unsubscribe'] = quoter(:quote_address_if_necessary)
+        self['list-post']        = quoter(:quote_address_if_necessary)
+        self['list-owner']       = quoter(:quote_address_if_necessary)
+        self['list-archive']     = quoter(:quote_address_if_necessary)
       end
       
       def [](key)

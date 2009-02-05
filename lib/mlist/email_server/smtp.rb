@@ -5,10 +5,9 @@ module MList
     
     class Smtp < Base
       def deliver(tmail, destinations)
-        sender = tmail['return-path'] || tmail.from
         Net::SMTP.start(settings[:address], settings[:port], settings[:domain],
             settings[:user_name], settings[:password], settings[:authentication]) do |smtp|
-          smtp.sendmail(tmail.encoded, sender, destinations)
+          smtp.sendmail(tmail.encoded, tmail['sender'], destinations)
         end
       end
       

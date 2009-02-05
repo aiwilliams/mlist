@@ -163,17 +163,18 @@ describe MList::MailList do
       stub(self).owner_url       {"<mailto:list_manager@example.com>\n(Jimmy Fish)"}
       stub(self).archive_url     {'http://list_manager.example.com/archive'}
       
-      process_post.should have_headers(
-        'list-id'          => "list_one@example.com",
+      tmail = process_post
+      tmail.should have_headers(
+        'list-id'          => "<list_one@example.com>",
         'list-help'        => "<#{help_url}>",
         'list-subscribe'   => "<#{subscribe_url}>",
         'list-unsubscribe' => "<#{unsubscribe_url}>",
         'list-post'        => "<#{address}>",
         'list-owner'       => '<mailto:list_manager@example.com>(Jimmy Fish)',
         'list-archive'     => "<#{archive_url}>",
-        'sender'           => 'mlist-list_one@example.com',
-        'errors-to'        => 'mlist-list_one@example.com'
+        'errors-to'        => '<mlist-list_one@example.com>'
       )
+      tmail['sender'].inspect.should =~ /<mlist-list_one@example.com>/
     end
     
     it 'should not add list headers that are not available or nil' do
