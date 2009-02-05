@@ -11,7 +11,7 @@ describe MList::EmailPost do
   end
   
   it 'should send include html and text when both provided' do
-    @post.html = "<p>My simple message</p>"
+    @post.html = '<p>My simple message</p>'
     
     tmail = @post.to_tmail
     tmail.content_type.should == 'multipart/alternative'
@@ -33,6 +33,15 @@ describe MList::EmailPost do
   it 'should use the given mailer' do
     @post.mailer = 'My Program'
     @post.to_tmail['x-mailer'].to_s.should == 'My Program'
+  end
+  
+  it 'should use the given subject' do
+    @post.subject.should == "I'm a Program!"
+    @post.to_tmail.subject.should == "I'm a Program!"
+    
+    @post.subject = 'My Program'
+    @post.subject.should == 'My Program'
+    @post.to_tmail.subject.should == 'My Program'
   end
   
   it 'should assign the identifier it is in reply-to' do
