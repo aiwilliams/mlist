@@ -1,0 +1,7 @@
+*0.1.2 [] (January 7, 2009)
+
+* Added references header when creating a reply post.
+* Including display_name in from address of EmailPost.
+* Improved extraction of text when it is nested inside parts.
+
+*0.1.1 [First Working Release] (January 5, 2009)

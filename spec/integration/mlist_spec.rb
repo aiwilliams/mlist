@@ -173,8 +173,6 @@ describe MList do
       @email_server.should start_new_thread(tmail)
     end
     
-    it 'should use the subscriber display name in addresses if available'
-    
     it 'should store subscriber address with messages' do
       MList::Message.last.subscriber_address.should == 'adam@nomail.net'
     end
