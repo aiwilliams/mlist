@@ -116,7 +116,7 @@ module MList
         prepare_list_headers(delivery)
         delivery.subject = list_subject(message)
         delivery.to = address
-        delivery.bcc = message.recipients
+        delivery.bcc = message.recipients.collect(&:email_address)
         delivery.reply_to = "#{label} <#{post_url}>"
       end
       

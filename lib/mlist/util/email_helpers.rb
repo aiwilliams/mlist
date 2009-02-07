@@ -14,8 +14,14 @@ module MList
         text.to_s.gsub(/\r\n?/, "\n")
       end
       
+      BRACKETS_RE = /\A<(.*?)>\Z/
+      
+      def bracket(string)
+        string.blank? || string =~ BRACKETS_RE ? string : "<#{string}>"
+      end
+      
       def remove_brackets(string)
-        string =~ /\A<(.*?)>\Z/ ? $1 : string
+        string =~ BRACKETS_RE ? $1 : string
       end
       
       def remove_regard(string)

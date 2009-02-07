@@ -62,6 +62,11 @@ describe MList::Message, 'text' do
       "This is just a simple test.\n\nThis line should be bold.\n\nThis line should be italic."
   end
   
+  it 'should work with mutltipart/mixed, outlook' do
+    message_from_tmail('content_types/multipart_mixed_outlook').text.should ==
+      "This is a simple test."
+  end
+  
   it 'should answer text suitable for reply' do
     message_from_tmail('content_types/text_plain').text_for_reply.should ==
       email_fixture('content_types/text_plain_reply.txt')

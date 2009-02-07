@@ -10,6 +10,8 @@ module MList
   # list outside of the methods provided herein.
   #
   class EmailPost
+    include MList::Util::EmailHelpers
+    
     ATTRIBUTE_NAMES = %w(html text mailer subject subscriber)
     ATTRIBUTE_NAMES.each do |attribute_name|
       define_method(attribute_name) do
@@ -63,9 +65,15 @@ module MList
       builder.mime_version = "1.0"
       builder.mailer = mailer
       
-      builder.in_reply_to = parent_identifier if parent_identifier
+      if parent_identifier
+        builder.in_reply_to = parent_identifier
+        builder.references = [bracket(parent_identifier)]
+      end
       
-      builder.from = subscriber.email_address
+      from = subscriber.email_address
+      from = "#{subscriber.display_name} #{bracket(from)}" if subscriber.respond_to?(:display_name)
+      builder.from = from
+      
       builder.subject = subject
       
       if html

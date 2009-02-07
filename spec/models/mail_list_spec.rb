@@ -184,8 +184,6 @@ describe MList::MailList do
       delivery.should_not have_header('list-subscribe')
     end
     
-    it 'should add in-reply-to and references headers when reply'
-    
     it 'should append the list footer to the text/plain part of emails'
   end
 end

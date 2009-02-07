@@ -10,7 +10,7 @@ describe MList::EmailPost do
     })
   end
   
-  it 'should send include html and text when both provided' do
+  it 'should include html and text when both provided' do
     @post.html = '<p>My simple message</p>'
     
     tmail = @post.to_tmail
@@ -44,11 +44,17 @@ describe MList::EmailPost do
     @post.to_tmail.subject.should == 'My Program'
   end
   
-  it 'should assign the identifier it is in reply-to' do
+  it 'should assign the identifier it is in-reply-to and references' do
     message = MList::Message.new
     stub(message).identifier { 'blahblah@example.com' }
     @post.reply_to_message = message
     @post.to_tmail.in_reply_to.should == ["<blahblah@example.com>"]
+    @post.to_tmail.references.should == ["<blahblah@example.com>"]
+  end
+  
+  it 'should include the subscriber display name in the from address if subscriber supports it' do
+    stub(@subscriber).display_name { 'Johnny' }
+    @post.to_tmail['from'].to_s.should == "Johnny <john@example.com>"
   end
 end
 

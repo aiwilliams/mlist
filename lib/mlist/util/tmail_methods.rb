@@ -33,14 +33,21 @@ module MList
       end
       
       def text
-        case tmail.content_type
-        when 'text/plain'
-          tmail.body.strip
-        when 'multipart/alternative'
-          text_part = tmail.parts.detect {|part| part.content_type == 'text/plain'}
-          text_part.body.strip if text_part
-        end
+        returning('') {|content| extract_text_content(tmail, content)}
       end
+      
+      private
+        def extract_text_content(part, collector)
+          case part.content_type
+          when 'text/plain'
+            collector << part.body.strip
+          when 'multipart/alternative'
+            text_part = part.parts.detect {|part| part.content_type == 'text/plain'}
+            collector << text_part.body.strip if text_part
+          when 'multipart/mixed', 'multipart/related'
+            part.parts.each {|mixed_part| extract_text_content(mixed_part, collector)}
+          end
+        end
     end
     
     module TMailWriters

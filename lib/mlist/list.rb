@@ -7,7 +7,8 @@ module MList
   #
   module List
     
-    # Answers whether this list is active or not.
+    # Answers whether this list is active or not. All lists are active all the
+    # time by default.
     #
     def active?
       true
@@ -41,8 +42,19 @@ module MList
       address
     end
     
+    # A list is responsible for answering the recipient subscribers.
+    
+    # The subscriber of the incoming message is provided if the list would
+    # like to exclude it from the returned list. It is not assumed that it
+    # will be included or excluded, thereby allowing the list to decide. This
+    # default implementation does not include the sending subscriber in the
+    # list of recipients.
+    #
+    # Your 'subscriber' instance MUST respond to :email_address. They may
+    # optionally respond to :display_name.
+    #
     def recipients(subscriber)
-      subscribers.collect(&:email_address) - [subscriber.email_address]
+      subscribers.reject {|s| s.email_address == subscriber.email_address}
     end
     
     def subscriber(email_address)
