@@ -2,8 +2,8 @@ module MList
   module EmailServer
     
     class Default < Base
-      def initialize(incoming_server, outgoing_server)
-        super({})
+      def initialize(incoming_server, outgoing_server, settings = {})
+        super(settings)
         @incoming_server, @outgoing_server = incoming_server, outgoing_server
         @incoming_server.receiver(self)
       end
