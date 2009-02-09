@@ -30,6 +30,14 @@ There is a LOT to do: segmenting, i18n, backscatter - only the Mailman developer
 know what else. I have enough experience to know that rewrites are NEVER as easy
 as they seem. Alas, I go boldly forward.
 
+==== Thread Trees
+
+We need to implement this at the database level. For now, each MList::Message
+simply points to it's parent. I believe the implementation will ultimately be
+extracted from awesome_nested_set. That's a bit of work, so for now, the
+MList::Thread provides a couple of methods, roots and children, to support the
+simplest display of the tree.
+
 ==== Extracting 'from' IP address from emails is not implemented
 
 http://compnetworking.about.com/od/workingwithipaddresses/qt/ipaddressemail.htm
