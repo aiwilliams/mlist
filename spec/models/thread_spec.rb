@@ -38,3 +38,26 @@ describe MList::Thread do
     @thread.previous(@messages[2]).should == @messages[1]
   end
 end
+
+describe MList::Thread, 'tree' do
+  before do
+    @messages = (1..5).map {|i| m = MList::Message.new; stub(m).subject {i.to_s}; m}
+    @messages[1].parent = @messages[0]
+    @messages[2].parent = @messages[1]
+    @messages[4].parent = @messages[3]
+    
+    @thread = MList::Thread.new
+    stub(@thread).messages {@messages}
+  end
+  
+  it 'should answer the root nodes' do
+    @thread.roots.should == [@messages[0], @messages[3]]
+  end
+  
+  it 'should answer the children of a node' do
+    @thread.children(@messages[0]).should == [@messages[1]]
+    @thread.children(@messages[1]).should == [@messages[2]]
+    @thread.children(@messages[2]).should == []
+    @thread.children(@messages[3]).should == [@messages[4]]
+  end
+end

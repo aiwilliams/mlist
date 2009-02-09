@@ -5,6 +5,10 @@ module MList
     belongs_to :mail_list, :class_name => 'MList::MailList', :counter_cache => :threads_count
     has_many :messages, :class_name => 'MList::Message', :dependent => :delete_all
     
+    def children(message)
+      messages.select {|m| m.parent == message}
+    end
+    
     def first?(message)
       messages.first == message
     end
@@ -21,6 +25,10 @@ module MList
     def previous(message)
       i = messages.index(message)
       messages[i - 1] if i > 0
+    end
+    
+    def roots
+      messages.select {|m| m.parent.nil?}
     end
     
     def subject
