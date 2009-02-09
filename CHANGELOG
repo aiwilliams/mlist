@@ -1,8 +1,8 @@
 *0.1.4 [] (January 7, 2009)
 
-* NOT GEM SPEC'D yet
 * Fixed bug where default email server was not allowing for settings
 * Made subject for reply place 're:' in front of the list label
+* Added really simple tree support. Really simple.
 
 *0.1.3 [] (January 7, 2009)
 
