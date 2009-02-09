@@ -4,7 +4,7 @@ module MList
   module EmailServer
     
     class Pop < Base
-      def deliver(tmail, destinations)
+      def deliver(tmail)
         raise "Mail cannot be delivered through a POP server. Please use the '#{MList::EmailServer::Default.name}' type."
       end
       

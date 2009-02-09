@@ -4,7 +4,9 @@ module MList
   module EmailServer
     
     class Smtp < Base
-      def deliver(tmail, destinations)
+      def deliver(tmail)
+        destinations = tmail.destinations
+        tmail.delete_no_send_fields
         Net::SMTP.start(settings[:address], settings[:port], settings[:domain],
             settings[:user_name], settings[:password], settings[:authentication]) do |smtp|
           smtp.sendmail(tmail.encoded, tmail['sender'], destinations)

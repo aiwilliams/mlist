@@ -100,6 +100,8 @@ describe MList::MailList do
   end
   
   describe 'delivery' do
+    include MList::Util::EmailHelpers
+    
     def process_post
       @mail_list.process_email(MList::Email.new(:tmail => @post_tmail))
       @outgoing_server.deliveries.last
@@ -148,6 +150,7 @@ describe MList::MailList do
     it 'should capture the new message-ids' do
       delivered = process_post
       delivered.header_string('message-id').should_not be_blank
+      MList::Message.last.identifier.should == remove_brackets(delivered.header_string('message-id'))
       delivered.header_string('message-id').should_not match(/F5F9DC55-CB54-4F2C-9B46-A05F241BCF22@recursivecreative\.com/)
     end
     

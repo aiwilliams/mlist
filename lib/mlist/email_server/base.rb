@@ -4,12 +4,20 @@ module MList
       attr_reader :settings
       
       def initialize(settings)
-        @settings = settings
+        @settings = {
+          :domain => ::Socket.gethostname
+        }.merge(settings)
+        
+        @uuid = UUID.new
         @receivers = []
       end
       
-      def deliver(tmail, destinations)
+      def deliver(tmail)
         raise 'Implement actual delivery mechanism in subclasses'
+      end
+      
+      def generate_message_id
+        "#{@uuid.generate}@#{@settings[:domain]}"
       end
       
       def receive(tmail)

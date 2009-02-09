@@ -1,3 +1,4 @@
+require 'uuid'
 require 'tmail'
 require 'activesupport'
 require 'activerecord'

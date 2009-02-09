@@ -10,8 +10,8 @@ module MList
       
       # Delegates delivery of email to outgoing server.
       #
-      def deliver(tmail, destinations)
-        @outgoing_server.deliver(tmail, destinations)
+      def deliver(tmail)
+        @outgoing_server.deliver(tmail)
       end
       
       # Delegates fetching emails to incoming server.

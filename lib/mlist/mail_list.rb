@@ -98,35 +98,35 @@ module MList
           :search_parent => true,
           :delivery_time => Time.now
         }.merge(options)
+        
         transaction do
           thread = find_thread(message, options)
+          thread.updated_at = options[:delivery_time]
+          
+          delivery = prepare_delivery(message, options)
           thread.messages << message
-          prepare_delivery(message)
-          destinations = message.delivery.destinations
-          tmail = message.to_tmail
-          self.updated_at = thread.updated_at = options[:delivery_time]
+          
+          self.updated_at = options[:delivery_time]
           thread.save! && save!
-          outgoing_server.deliver(tmail, destinations)
+          
+          outgoing_server.deliver(delivery.tmail)
         end
+        
         message
       end
       
-      def prepare_delivery(message)
-        delivery = message.delivery
-        prepare_list_headers(delivery)
-        delivery.subject = list_subject(message)
-        delivery.to = address
-        delivery.bcc = message.recipients.collect(&:email_address)
-        delivery.reply_to = "#{label} <#{post_url}>"
-      end
-      
-      def prepare_list_headers(delivery)
-        list_headers.each do |k,v|
-          if TMail::Mail::ALLOW_MULTIPLE.include?(k.downcase)
-            delivery.prepend_header(k,v)
-          else
-            delivery.write_header(k,v)
-          end
+      def prepare_delivery(message, options)
+        message.identifier = outgoing_server.generate_message_id
+        message.created_at = options[:delivery_time]
+        returning(message.delivery) do |delivery|
+          delivery.date = message.created_at
+          delivery.message_id = message.identifier
+          delivery.mailer = message.mailer
+          delivery.headers = list_headers
+          delivery.subject = list_subject(message)
+          delivery.to = address
+          delivery.bcc = message.recipients.collect(&:email_address)
+          delivery.reply_to = "#{label} <#{post_url}>"
         end
       end
       

@@ -34,16 +34,6 @@ describe MList::Message do
     @message = MList::Message.find(@message.id)
     @message.email.source.should == @tmail.to_s
   end
-  
-  describe 'delivery tmail' do
-    it 'should capture the message-id' do
-      delivery_tmail = @message.to_tmail
-      delivery_message_id = remove_brackets(delivery_tmail.header_string('message-id'))
-      delivery_message_id.should_not == 'F5F9DC55-CB54-4F2C-9B46-A05F241BCF22@recursivecreative.com'
-      @message.identifier.should_not be_blank
-      @message.identifier.should == delivery_message_id
-    end
-  end
 end
 
 describe MList::Message, 'text' do

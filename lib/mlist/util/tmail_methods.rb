@@ -59,6 +59,16 @@ module MList
         tmail[name] = nil
       end
       
+      def headers=(updates)
+        updates.each do |k,v|
+          if TMail::Mail::ALLOW_MULTIPLE.include?(k.downcase)
+            prepend_header(k,v)
+          else
+            write_header(k,v)
+          end
+        end
+      end
+      
       # Add another value for the named header, it's position being earlier in
       # the email than those that are already present. This will raise an error
       # if the header does not allow multiple values according to
@@ -93,6 +103,10 @@ module MList
       
       def mailer=(value)
         write_header('x-mailer', value)
+      end
+      
+      def message_id=(value)
+        tmail.message_id = sanitize_header(charset, 'message-id', value)
       end
     end
     

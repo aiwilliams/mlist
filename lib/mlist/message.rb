@@ -15,8 +15,21 @@ module MList
     #
     attr_accessor :recipients
     
+    # Answers an MList::TMailBuilder for assembling the TMail::Mail object
+    # that will be fit for delivery. If this is not a new message, the
+    # delivery will be updated to reflect the message-id, x-mailer, etc. of
+    # this message.
+    #
     def delivery
-      @delivery ||= MList::Util::TMailBuilder.new(TMail::Mail.parse(email.source))
+      @delivery ||= begin
+        d = MList::Util::TMailBuilder.new(TMail::Mail.parse(email.source))
+        unless new_record?
+          d.message_id = self.identifier
+          d.mailer = self.mailer
+          d.date = self.created_at
+        end
+        d
+      end
     end
     
     def email_with_capture=(email)
@@ -99,13 +112,6 @@ module MList
       else
         @subscriber = self.subscriber_address = self.subscriber_type = self.subscriber_id = nil
       end
-    end
-    
-    def to_tmail
-      delivery.mailer = mailer
-      delivery.ready_to_send
-      self.identifier = delivery.identifier
-      delivery.tmail
     end
   end
 end

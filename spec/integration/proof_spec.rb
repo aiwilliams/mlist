@@ -3,6 +3,8 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 require 'mlist/manager/database'
 
 describe MList do
+  include MList::Util::EmailHelpers
+  
   dataset do
     subscriber_addresses = %w(adam@nomail.net adam@example.net)
     
@@ -38,9 +40,13 @@ describe MList do
       list = MList::Manager::Database::List.find_by_address(File.basename(list_path) + '@example.com')
       Dir[File.join(list_path, 'thread*')].each do |thread_path|
         email_paths = Dir[File.join(thread_path, '*.eml')]
-        @email_server.should start_thread(TMail::Mail.load(email_paths.shift))
+        top_post_path = email_paths.shift
+        top_post_tmail = TMail::Mail.load(top_post_path)
+        stub(@email_server).generate_message_id { remove_brackets(top_post_tmail.message_id) }
+        @email_server.should start_thread(top_post_tmail)
         email_paths.each do |email_path|
           tmail = TMail::Mail.load(email_path)
+          stub(@email_server).generate_message_id { remove_brackets(tmail.message_id) }
           expected = email_path =~ %r{\d+\.eml\Z} ? :should : :should_not
           @email_server.send expected, accept_message(tmail)
         end
@@ -52,7 +58,7 @@ describe MList do
     simple_matcher("to receive message from #{tmail.header_string('from')}") do |email_server|
       message_count_start = MList::Message.count
       email_server.receive(tmail)
-      MList::Message.count == message_count_start + 1
+      MList::Message.count == message_count_start + 1 && MList::Message.last.identifier == remove_brackets(@email_server.deliveries.last.header_string('message-id'))
     end
   end
   

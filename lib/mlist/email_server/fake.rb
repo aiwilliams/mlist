@@ -3,12 +3,12 @@ module MList
     class Fake < Base
       attr_reader :deliveries
       
-      def initialize
-        super({})
+      def initialize(settings = {})
+        super
         @deliveries = []
       end
       
-      def deliver(tmail, destinations)
+      def deliver(tmail)
         @deliveries << tmail
       end
     end

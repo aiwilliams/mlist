@@ -65,9 +65,10 @@ You love Ruby. You want MList.
 
 You'll need some gems.
 
+* uuid (macaddr also)
+* tmail
 * activesupport
 * activerecord
-* tmail
 
 == INSTALL:
 
@@ -86,6 +87,7 @@ environment.rb after the initialize block (our gem needs to have been loaded):
   end
   
   MLIST_SERVER = MList::Server.new(
+    :domain       => 'myapp.com',                      # This is optional
     :list_manager => MList::Manager::Database.new,
     :email_server => MList::EmailServer::Default.new(
       MList::EmailServer::Pop.new(

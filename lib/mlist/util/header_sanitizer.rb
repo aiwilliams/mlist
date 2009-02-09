@@ -31,6 +31,8 @@ module MList
       end
       
       def initialize_default_sanitizers
+        self['message-id'] = quoter(:quote_address_if_necessary)
+        
         self['to']       = quoter(:quote_any_address_if_necessary)
         self['cc']       = quoter(:quote_any_address_if_necessary)
         self['bcc']      = quoter(:quote_any_address_if_necessary)
