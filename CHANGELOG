@@ -1,3 +1,14 @@
+*0.1.4 [] (January 7, 2009)
+
+* NOT GEM SPEC'D yet
+* Fixed bug where default email server was not allowing for settings
+
+*0.1.3 [] (January 7, 2009)
+
+* Generating message id as UUID
+* Allowing setting of domain for message id
+* Fixed bug in storing message id
+
 *0.1.2 [] (January 7, 2009)
 
 * Added references header when creating a reply post.
