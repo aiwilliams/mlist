@@ -132,8 +132,13 @@ module MList
       
       def list_subject(message)
         prefix = "[#{label}]"
-        subject = message.subject.gsub(%r(#{Regexp.escape(prefix)}\s*), '')
-        subject.gsub!(%r{(re:\s*){2,}}i, 'Re: ')
+        subject = message.subject.dup
+        if subject =~ /re: /i
+          subject.gsub!(%r{(re:\s*)}i, '')
+          prefix = 'Re: ' + prefix
+        end
+        subject.gsub!(/\[.*?\]/, '')
+        subject.strip!
         "#{prefix} #{subject}"
       end
       

@@ -139,12 +139,12 @@ describe MList::MailList do
     
     it 'should move the list label to the front of subjects that already include the label' do
       @post_tmail.subject = 'Re: [Discussions] Test'
-      process_post.subject.should == '[Discussions] Re: Test'
+      process_post.subject.should == 'Re: [Discussions] Test'
     end
     
     it 'should remove multiple occurrences of Re:' do
       @post_tmail.subject = 'Re: [Discussions] Re: Test'
-      process_post.subject.should == '[Discussions] Re: Test'
+      process_post.subject.should == 'Re: [Discussions] Test'
     end
     
     it 'should capture the new message-ids' do
