@@ -99,6 +99,42 @@ describe MList::MailList do
     end
   end
   
+  describe 'message storage' do
+    def process_post
+      @mail_list.process_email(MList::Email.new(:tmail => @post_tmail))
+      MList::Message.last
+    end
+    
+    before do
+      @post_tmail = tmail_fixture('single_list')
+    end
+    
+    it 'should not include list label in subject' do
+      @post_tmail.subject = '[Discussions] Test'
+      process_post.subject.should == 'Test'
+    end
+    
+    it 'should not include list label in reply subject' do
+      @post_tmail.subject = 'Re: [Discussions] Test'
+      process_post.subject.should == 'Re: Test'
+    end
+    
+    it 'should not bother labels it does not understand in subject' do
+      @post_tmail.subject = '[Ann] Test'
+      process_post.subject.should == '[Ann] Test'
+    end
+    
+    it 'should not bother labels it does not understand in reply subject' do
+      @post_tmail.subject = 'Re: [Ann] Test'
+      process_post.subject.should == 'Re: [Ann] Test'
+    end
+    
+    it 'should be careful of multiple re:' do
+      @post_tmail.subject = 'Re: [Ann] RE: Test'
+      process_post.subject.should == 'Re: [Ann] Test'
+    end
+  end
+  
   describe 'delivery' do
     include MList::Util::EmailHelpers
     
@@ -133,7 +169,7 @@ describe MList::MailList do
       process_post.should have_header('x-something-custom', 'existing')
     end
     
-    it 'should prepend the list label to the subject of messages' do
+    it 'should prefix the list label to the subject of messages' do
       process_post.subject.should == '[Discussions] Test'
     end
     

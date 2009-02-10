@@ -86,6 +86,7 @@ describe MList::Email, 'parent identifier' do
     before do
       @parent_message = MList::Message.new
       @mail_list = MList::MailList.new
+      stub(@mail_list).label { 'list name' }
       @reply_tmail = tmail_fixture('single_list')
       @reply_email = MList::Email.new(:tmail => @reply_tmail)
     end

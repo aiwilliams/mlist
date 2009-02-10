@@ -14,4 +14,20 @@ describe MList::Util::EmailHelpers do
   specify 'text_to_quoted should prepend >' do
     text_to_quoted(text_fixture('nothing_special')).should == text_fixture('nothing_special_quoted')
   end
+  
+  describe 'remove_regard' do
+    it 'should remove regardless of case' do
+      remove_regard('Re: [Label] Subject').should == '[Label] Subject'
+      remove_regard('RE: [Label] Subject').should == '[Label] Subject'
+    end
+    
+    it 'should not bother [] labels when multiple re:' do
+      remove_regard('Re: [Label] Re: Subject').should == '[Label] Subject'
+    end
+    
+    it 'should remove multiple re:' do
+      remove_regard('Re: Re: Test').should == 'Test'
+      remove_regard('Re:  Re: Subject').should == 'Subject'
+    end
+  end
 end

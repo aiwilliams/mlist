@@ -73,13 +73,18 @@ module MList
       text_to_html(text_for_reply)
     end
     
-    # Answers the subject with all prefixes removed.
+    # Answers the subject with 'Re:' prefixed. Note that it is the
+    # responsibility of the MList::MailList to perform any processing of the
+    # persisted subject (ie, cleaning up labels, etc).
+    #
+    #   message.subject = '[List Label] Re: The new Chrome Browser from Google'
+    #   message.subject_for_reply   => 'Re: [List Label] The new Chrome Browser from Google'
     #
     #   message.subject = 'Re: [List Label] Re: The new Chrome Browser from Google'
-    #   message.subject_for_reply   => 'Re: The new Chrome Browser from Google'
+    #   message.subject_for_reply   => 'Re: [List Label] The new Chrome Browser from Google'
     #
     def subject_for_reply
-      "Re: #{remove_regard(subject)}"
+      subject =~ REGARD_RE ? subject : "Re: #{subject}"
     end
     
     # Answers the subscriber from which this message comes.

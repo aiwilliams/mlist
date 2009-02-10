@@ -43,10 +43,10 @@ module MList
       
       if identifier
         remove_brackets(identifier)
-      elsif mail_list && subject =~ /(^|[^\w])re:/i
+      elsif mail_list && subject =~ REGARD_RE
         parent_message = mail_list.messages.find(:first,
           :select => 'identifier',
-          :conditions => ['mlist_messages.subject = ?', remove_regard(subject)],
+          :conditions => ['mlist_messages.subject = ?', remove_regard(mail_list.clean_subject(subject))],
           :order => 'created_at asc')
         parent_message.identifier if parent_message
       end

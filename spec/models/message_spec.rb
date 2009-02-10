@@ -25,8 +25,11 @@ describe MList::Message do
   end
   
   it 'should answer a subject suitable for replies' do
-    @message.subject = 'Re: [List Label] Re: The new Chrome Browser from Google'
-    @message.subject_for_reply.should == 'Re: The new Chrome Browser from Google'
+    @message.subject = '[List Label] The new Chrome Browser from Google'
+    @message.subject_for_reply.should == 'Re: [List Label] The new Chrome Browser from Google'
+    
+    @message.subject = 'Re: [List Label] The new Chrome Browser from Google'
+    @message.subject_for_reply.should == 'Re: [List Label] The new Chrome Browser from Google'
   end
   
   it 'should save the associated email' do

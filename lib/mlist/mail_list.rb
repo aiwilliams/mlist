@@ -18,6 +18,8 @@ module MList
       mail_list
     end
     
+    include MList::Util::EmailHelpers
+    
     belongs_to :manager_list, :polymorphic => true
     
     has_many :messages, :class_name => 'MList::Message', :dependent => :delete_all
@@ -54,6 +56,21 @@ module MList
         :recipients => recipients,
         :email => email
       )
+    end
+    
+    # Answers the provided subject with superfluous 're:' and this list's
+    # labels removed.
+    #
+    #   clean_subject('[List Label] Re: The new Chrome Browser from Google') => 'Re: The new Chrome Browser from Google'
+    #   clean_subject('Re: [List Label] Re: The new Chrome Browser from Google') => 'Re: The new Chrome Browser from Google'
+    #
+    def clean_subject(string)
+      without_label = string.gsub(subject_prefix_regex, '')
+      if without_label =~ REGARD_RE
+        "Re: #{remove_regard(without_label)}"
+      else
+        without_label
+      end
     end
     
     def list
@@ -118,28 +135,26 @@ module MList
       def prepare_delivery(message, options)
         message.identifier = outgoing_server.generate_message_id
         message.created_at = options[:delivery_time]
+        message.subject = clean_subject(message.subject)
         returning(message.delivery) do |delivery|
           delivery.date = message.created_at
           delivery.message_id = message.identifier
           delivery.mailer = message.mailer
           delivery.headers = list_headers
-          delivery.subject = list_subject(message)
+          delivery.subject = list_subject(message.subject)
           delivery.to = address
           delivery.bcc = message.recipients.collect(&:email_address)
           delivery.reply_to = "#{label} <#{post_url}>"
         end
       end
       
-      def list_subject(message)
-        prefix = "[#{label}]"
-        subject = message.subject.dup
-        if subject =~ /re: /i
-          subject.gsub!(%r{(re:\s*)}i, '')
-          prefix = 'Re: ' + prefix
+      def list_subject(string)
+        list_subject = string.dup
+        if list_subject =~ REGARD_RE
+          "Re: #{subject_prefix} #{remove_regard(list_subject)}"
+        else
+          "#{subject_prefix} #{list_subject}"
         end
-        subject.gsub!(/\[.*?\]/, '')
-        subject.strip!
-        "#{prefix} #{subject}"
       end
       
       def find_thread(message, options)
@@ -148,6 +163,14 @@ module MList
           message.parent = messages.find_by_identifier(message.parent_identifier)
         end
         message.parent ? message.parent.thread : threads.build
+      end
+      
+      def subject_prefix_regex
+        @subject_prefix_regex ||= Regexp.new(Regexp.escape(subject_prefix) + ' ')
+      end
+      
+      def subject_prefix
+        @subject_prefix ||= "[#{label}]"
       end
   end
 end

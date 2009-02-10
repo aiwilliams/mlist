@@ -15,7 +15,6 @@ module MList
       end
       
       BRACKETS_RE = /\A<(.*?)>\Z/
-      
       def bracket(string)
         string.blank? || string =~ BRACKETS_RE ? string : "<#{string}>"
       end
@@ -24,9 +23,12 @@ module MList
         string =~ BRACKETS_RE ? $1 : string
       end
       
+      REGARD_RE = /(^|[^\w])re: /i
       def remove_regard(string)
-        stripped = string.strip
-        stripped =~ /\A.*re:\s+(\[.*\]\s*)?(.*?)\Z/i ? $2 : stripped
+        while string =~ REGARD_RE
+          string = string.sub(REGARD_RE, ' ')
+        end
+        string.strip
       end
       
       def text_to_html(text)
