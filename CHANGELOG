@@ -2,6 +2,8 @@
 
 * No longer storing the list label in the message subject field, thereby supporting cleaner viewing of threads [aiwilliams]
 * Improved handling of incoming email subjects by leaving labels alone that aren't obviously the label of the list, thereby allowing for subjects like "[Ann] My New Thing" [aiwilliams]
+* Notifying subscribers when the list indicates that they are currently blocked from posting messages to a list they are subscribed to [aiwilliams]
+* Added MList::Manager module to better define the interface of list managers. This needs to be included into list manager implementations. [aiwilliams]
 
 *0.1.4 [] (January 7, 2009)
 
