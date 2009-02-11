@@ -24,8 +24,23 @@ module MList
       false
     end
     
+    # Answers the footer content for this list. Default implementation is very
+    # simple right now. Expect improvements in the future.
+    #
+    def footer_content(message)
+      %Q{The "#{label}" mailing list\nTo post messages, send email to #{post_url}}
+    end
+    
+    # Answer a suitable label for the list, which will be used in various
+    # parts of content that is delivered to subscribers, etc.
+    #
+    def label
+      raise 'answer the list label'
+    end
+    
     # Answers the headers that are to be included in the emails delivered for
-    # this list.
+    # this list. Any entries that have a nil value will not be included in the
+    # delivered email.
     #
     def list_headers
       {

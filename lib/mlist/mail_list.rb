@@ -94,10 +94,31 @@ module MList
     end
     
     private
+      FOOTER_BLOCK_START    = "-~----------~----~----~----~------~----~------~--~---"
+      FOOTER_BLOCK_END      = "--~--~---------~--~----~------------~-------~--~----~"
+      FOOTER_BLOCK_START_RE = %r[#{FOOTER_BLOCK_START}]
+      FOOTER_BLOCK_END_RE   = %r[#{FOOTER_BLOCK_END}]
+      
       # http://mail.python.org/pipermail/mailman-developers/2006-April/018718.html
       def bounce_headers
         {'sender'    => "mlist-#{address}",
          'errors-to' => "mlist-#{address}"}
+      end
+      
+      def strip_list_footers(content)
+        if content =~ FOOTER_BLOCK_START_RE
+          in_footer_block = false
+          content = normalize_new_lines(content)
+          content = content.split("\n").reject do |line|
+            if in_footer_block
+              in_footer_block = line !~ FOOTER_BLOCK_END_RE
+              true
+            else
+              in_footer_block = line =~ FOOTER_BLOCK_START_RE
+            end
+          end.join("\n").rstrip
+        end
+        content
       end
       
       # http://www.jamesshuggins.com/h/web1/list-email-headers.htm
@@ -146,7 +167,23 @@ module MList
           delivery.to = address
           delivery.bcc = message.recipients.collect(&:email_address)
           delivery.reply_to = "#{label} <#{post_url}>"
+          prepare_list_footer(delivery, message)
         end
+      end
+      
+      def prepare_list_footer(delivery, message)
+        text_plain_part = delivery.text_plain_part
+        return unless text_plain_part
+        
+        content = strip_list_footers(text_plain_part.body)
+        content << "\n\n" unless content.end_with?("\n\n")
+        content << list_footer(message)
+        text_plain_part.body = content
+      end
+      
+      def list_footer(message)
+        content = list.footer_content(message)
+        "#{FOOTER_BLOCK_START}\n#{content}\n#{FOOTER_BLOCK_END}"
       end
       
       def list_subject(string)

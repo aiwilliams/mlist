@@ -225,6 +225,41 @@ describe MList::MailList do
       delivery.should_not have_header('list-subscribe')
     end
     
-    it 'should append the list footer to the text/plain part of emails'
+    it 'should append the list footer to text/plain emails' do
+      @post_tmail.body = "My Email\n\n\n\n\n"
+      mock(self).footer_content(is_a(MList::Message)) { 'my footer' }
+      process_post.body.should == "My Email\n\n\n\n\n-~----------~----~----~----~------~----~------~--~---\nmy footer\n--~--~---------~--~----~------------~-------~--~----~"
+    end
+    
+    it 'should append the list footer to multipart/alternative, text/plain part of emails' do
+      @post_tmail = tmail_fixture('content_types/multipart_alternative_simple')
+      mock(self).footer_content(is_a(MList::Message)) { 'my footer' }
+      process_post.parts[0].body.should match(/-~----------~----~----~----~------~----~------~--~---\nmy footer\n--~--~---------~--~----~------------~-------~--~----~/)
+    end
+    
+    it 'should handle whitespace well when appending footer' do
+      @post_tmail.body = "My Email"
+      mock(self).footer_content(is_a(MList::Message)) { 'my footer' }
+      process_post.body.should == "My Email\n\n-~----------~----~----~----~------~----~------~--~---\nmy footer\n--~--~---------~--~----~------------~-------~--~----~"
+    end
+    
+    it 'should strip out any existing footers from the list' do
+      mock(self).footer_content(is_a(MList::Message)) { 'my footer' }
+      @post_tmail.body = %{My Email
+
+>  >  -~----------~----~----~----~------~----~------~--~---
+>     >  content at front shouldn't matter
+>      >  --~--~---------~--~----~------------~-------~--~----~
+
+>>  -~----------~----~----~----~------~----~------~--~---
+>>  this is fine to be removed
+>>  --~--~---------~--~----~------------~-------~--~----~
+
+-~----------~----~----~----~------~----~------~--~---
+this is without any in front
+--~--~---------~--~----~------------~-------~--~----~
+      }
+      process_post.body.should == "My Email\n\n-~----------~----~----~----~------~----~------~--~---\nmy footer\n--~--~---------~--~----~------------~-------~--~----~"
+    end
   end
 end

@@ -1,7 +1,15 @@
 module MList
   module Manager
     
+    # Constructs the notices that are sent to list subscribers. Applications
+    # may subclass this to customize the content of a notice delivery.
+    #
     class Notifier
+      
+      # Answers the delivery that will be sent to a subscriber when an
+      # MList::List indicates that the distribution of an email from that
+      # subscriber has been blocked.
+      #
       def subscriber_blocked(list, email, subscriber)
         delivery = MList::Util::TMailBuilder.new(TMail::Mail.new)
         delivery.write_header('x-mlist-loop', 'notice')

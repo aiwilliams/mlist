@@ -19,8 +19,8 @@ module MList
         when 'text/html'
           tmail.body.strip
         when 'multipart/alternative'
-          text_part = tmail.parts.detect {|part| part.content_type == 'text/html'}
-          text_part.body.strip if text_part
+          html_part = tmail.parts.detect {|part| part.content_type == 'text/html'}
+          html_part.body.strip if html_part
         end
       end
       
@@ -34,6 +34,18 @@ module MList
       
       def text
         returning('') {|content| extract_text_content(tmail, content)}
+      end
+      
+      # Answers the first text/plain part it can find, the tmail itself if
+      # it's content type is text/plain.
+      #
+      def text_plain_part(part = tmail)
+        case part.content_type
+        when 'text/plain'
+          part
+        when 'multipart/alternative'
+          part.parts.detect {|part| text_plain_part(part)}
+        end
       end
       
       private

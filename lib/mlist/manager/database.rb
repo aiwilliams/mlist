@@ -18,13 +18,17 @@ module MList
       end
       
       def no_lists_found(email)
-        # your application may care
+        # TODO: Move to notifier
       end
       
       class List < ActiveRecord::Base
         include ::MList::List
         
         has_many :subscribers, :dependent => :delete_all
+        
+        def label
+          self[:label]
+        end
         
         def list_id
           "#{self.class.name}#{id}"
