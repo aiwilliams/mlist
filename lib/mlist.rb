@@ -14,6 +14,8 @@ require 'mlist/email_subscriber'
 require 'mlist/server'
 require 'mlist/thread'
 
+require 'mlist/manager'
+
 module MList
   class DoubleDeliveryError < StandardError
     def initialize(message)

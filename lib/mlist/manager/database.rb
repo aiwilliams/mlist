@@ -2,6 +2,8 @@ module MList
   module Manager
     
     class Database
+      include ::MList::Manager
+      
       def create_list(address, attributes = {})
         attributes = {
           :address => address,

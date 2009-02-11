@@ -7,11 +7,17 @@ describe MList do
     simple_matcher('forward email') do |email_server|
       lambda do
         lambda do
-          lambda do
-            email_server.receive(tmail)
-          end.should_not change(email_server.deliveries, :size)
-        end.should_not change(MList::Thread, :count)
-      end.should_not change(MList::Message, :count)
+          email_server.receive(tmail)
+        end.should_not change(email_server.deliveries, :size)
+      end.should_not store_message
+    end
+  end
+  
+  def store_message
+    simple_matcher('store message') do |block|
+      thread_count, message_count = MList::Thread.count, MList::Message.count
+      block.call
+      MList::Thread.count == thread_count + 1 && MList::Message.count == message_count + 1
     end
   end
   
@@ -104,15 +110,31 @@ describe MList do
   it 'should not forward mail from non-subscriber when inactive and notify as non-subscriber' do
     tmail = tmail_fixture('single_list')
     tmail.from = 'unknown@example.com'
-    stub(@list_one).active? { false }
+    do_not_call(@list_one).active?
     stub(@list_manager).lists(is_a(MList::Email)) { [@list_one] }
     mock(@list_one).non_subscriber_post(is_a(MList::Email))
     @email_server.should_not forward_email(tmail)
   end
   
+  it 'should not forward mail from blocked subscriber, notify the subscriber using list manager notifier' do
+    subscriber = MList::Manager::Database::Subscriber.find_by_email_address('adam@nomail.net')
+    tmail = tmail_fixture('single_list')
+    mock(@list_one).active? {true}
+    mock(@list_one).blocked?(subscriber) { true }
+    stub(@list_manager).lists(is_a(MList::Email)) { [@list_one] }
+    lambda do
+      @email_server.receive(tmail)
+      response_tmail = @email_server.deliveries.last
+      response_tmail.header_string('from').should == 'mlist-list_one@example.com'
+      response_tmail.header_string('to').should == 'adam@nomail.net'
+      response_tmail.header_string('x-mlist-loop').should == 'notice'
+      response_tmail.header_string('x-mlist-notice').should == 'subscriber_blocked'
+    end.should_not store_message
+  end
+  
   it 'should not forward mail to inactive list and notify manager list' do
     tmail = tmail_fixture('single_list')
-    stub(@list_one).active? { false }
+    mock(@list_one).active? { false }
     stub(@list_manager).lists(is_a(MList::Email)) { [@list_one] }
     mock(@list_one).inactive_post(is_a(MList::Email))
     @email_server.should_not forward_email(tmail)
@@ -141,7 +163,7 @@ describe MList do
       @email_server.deliveries.size.should == 1
       email = @email_server.deliveries.first
       email.should have_address(:to, 'list_one@example.com')
-      # bcc fields are not in the headers after tmail#read_to_send
+      # bcc fields are not in the headers of delivered emails
       email.should have_address(:'reply-to', 'list_one@example.com')
     end
     
@@ -193,12 +215,12 @@ describe MList do
       
       email = @email_server.deliveries.first
       email.should have_address(:to, 'list_one@example.com')
-      # bcc fields are not in the headers after tmail#read_to_send
+      # bcc fields are not in the headers of delivered emails
       email.should have_address(:'reply-to', 'list_one@example.com')
       
       email = @email_server.deliveries.last
       email.should have_address(:to, 'list_two@example.com')
-      # bcc fields are not in the headers after tmail#read_to_send
+      # bcc fields are not in the headers of delivered emails
       email.should have_address(:'reply-to', 'list_two@example.com')
     end
     

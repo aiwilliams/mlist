@@ -1,10 +1,11 @@
 module MList
   class Server
-    attr_reader :list_manager, :email_server
+    attr_reader :list_manager, :email_server, :notifier
     
     def initialize(config)
       @list_manager = config[:list_manager]
       @email_server = config[:email_server]
+      @notifier = MList::Manager::Notifier.new
       @email_server.receiver(self)
     end
     
@@ -24,23 +25,38 @@ module MList
     end
     
     protected
-      def process_bounce(list, email)
-        list.bounce(email)
-      end
-      
       def process_post(lists, email)
         lists.each do |list|
           next if email.been_here?(list)
           if list.subscriber?(email.from_address)
-            if list.active?
-              mail_list(list).process_email(email)
-            else
-              list.inactive_post(email)
-            end
+            publish_if_list_active(list, email)
           else
             list.non_subscriber_post(email)
           end
         end
       end
+      
+      def publish_if_list_active(list, email)
+        if list.active?
+          subscriber = list.subscriber(email.from_address)
+          publish_unless_blocked(list, email, subscriber)
+        else
+          list.inactive_post(email)
+        end
+      end
+      
+      def publish_unless_blocked(list, email, subscriber)
+        if list.blocked?(subscriber)
+          notice_delivery = notifier.subscriber_blocked(list, email, subscriber)
+          email_server.deliver(notice_delivery.tmail)
+        else
+          mail_list(list).process_email(email, subscriber)
+        end
+      end
+      
+      def process_bounce(list, email)
+        list.bounce(email)
+      end
+      
   end
 end

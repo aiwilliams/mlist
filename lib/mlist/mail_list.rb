@@ -47,8 +47,7 @@ module MList
     
     # Processes the email received by the MList::Server.
     #
-    def process_email(email)
-      subscriber = list.subscriber(email.from_address)
+    def process_email(email, subscriber)
       recipients = list.recipients(subscriber)
       process_message messages.build(
         :mail_list => self,
@@ -73,6 +72,8 @@ module MList
       end
     end
     
+    # The MList::List instance of the list manager.
+    #
     def list
       @list ||= manager_list
     end

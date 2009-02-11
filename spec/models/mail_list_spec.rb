@@ -7,10 +7,10 @@ describe MList::MailList do
     stub(self).label       {'Discussions'}
     stub(self).address     {'list_one@example.com'}
     stub(self).list_id     {'list_one@example.com'}
-    stub(self).subscribers {[
-      MList::EmailSubscriber.new('adam@nomail.net'),
-      MList::EmailSubscriber.new('john@example.com')
-    ]}
+    
+    @subscriber_one = MList::EmailSubscriber.new('adam@nomail.net')
+    @subscriber_two = MList::EmailSubscriber.new('john@example.com')
+    stub(self).subscribers {[@subscriber_one, @subscriber_two]}
     
     @outgoing_server = MList::EmailServer::Fake.new
     @mail_list = MList::MailList.create!(
@@ -38,7 +38,7 @@ describe MList::MailList do
       lambda do
         lambda do
           @mail_list.post(
-            :subscriber => subscribers.first,
+            :subscriber => @subscriber_one,
             :subject => "I'm a Program!",
             :text => 'Are you a programmer or what?'
           )
@@ -52,20 +52,20 @@ describe MList::MailList do
     
     it 'should answer the message for use by the application' do
       @mail_list.post(
-        :subscriber => subscribers.first,
+        :subscriber => @subscriber_one,
         :subject => "I'm a Program!",
         :text => 'Are you a programmer or what?'
       ).should be_instance_of(MList::Message)
     end
     
     it 'should allow posting a reply to an existing message' do
-      @mail_list.process_email(MList::Email.new(:tmail => tmail_fixture('single_list')))
+      @mail_list.process_email(MList::Email.new(:tmail => tmail_fixture('single_list')), @subscriber_one)
       existing_message = @mail_list.messages.last
       lambda do
         lambda do
           @mail_list.post(
             :reply_to_message => existing_message,
-            :subscriber => subscribers.first,
+            :subscriber => @subscriber_one,
             :text => 'I am a programmer too, dude!'
           )
         end.should change(MList::Message, :count).by(1)
@@ -75,11 +75,11 @@ describe MList::MailList do
     end
     
     it 'should not associate a posting to a parent if not reply' do
-      @mail_list.process_email(MList::Email.new(:tmail => tmail_fixture('single_list')))
+      @mail_list.process_email(MList::Email.new(:tmail => tmail_fixture('single_list')), @subscriber_one)
       lambda do
         lambda do
           @mail_list.post(
-            :subscriber => subscribers.first,
+            :subscriber => @subscriber_one,
             :subject => 'Test',
             :text => 'It is up to the application to provide reply_to'
           )
@@ -92,7 +92,7 @@ describe MList::MailList do
     
     it 'should capture the message-id of delivered email' do
       message = @mail_list.post(
-        :subscriber => subscribers.first,
+        :subscriber => @subscriber_one,
         :subject => 'Test',
         :text => 'Email must have a message id for threading')
       message.reload.identifier.should_not be_nil
@@ -101,12 +101,13 @@ describe MList::MailList do
   
   describe 'message storage' do
     def process_post
-      @mail_list.process_email(MList::Email.new(:tmail => @post_tmail))
+      @mail_list.process_email(MList::Email.new(:tmail => @post_tmail), @subscriber)
       MList::Message.last
     end
     
     before do
       @post_tmail = tmail_fixture('single_list')
+      @subscriber = @subscriber_one
     end
     
     it 'should not include list label in subject' do
@@ -139,12 +140,13 @@ describe MList::MailList do
     include MList::Util::EmailHelpers
     
     def process_post
-      @mail_list.process_email(MList::Email.new(:tmail => @post_tmail))
+      @mail_list.process_email(MList::Email.new(:tmail => @post_tmail), @subscriber)
       @outgoing_server.deliveries.last
     end
     
     before do
       @post_tmail = tmail_fixture('single_list')
+      @subscriber = @subscriber_one
     end
     
     it 'should be blind copied to recipients' do
