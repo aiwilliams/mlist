@@ -228,38 +228,38 @@ describe MList::MailList do
     it 'should append the list footer to text/plain emails' do
       @post_tmail.body = "My Email\n\n\n\n\n"
       mock(self).footer_content(is_a(MList::Message)) { 'my footer' }
-      process_post.body.should == "My Email\n\n\n\n\n-~----------~----~----~----~------~----~------~--~---\nmy footer\n--~--~---------~--~----~------------~-------~--~----~"
+      process_post.body.should == "My Email\n\n\n\n\n#{MList::MailList::FOOTER_BLOCK_START}\nmy footer\n#{MList::MailList::FOOTER_BLOCK_END}"
     end
     
     it 'should append the list footer to multipart/alternative, text/plain part of emails' do
       @post_tmail = tmail_fixture('content_types/multipart_alternative_simple')
       mock(self).footer_content(is_a(MList::Message)) { 'my footer' }
-      process_post.parts[0].body.should match(/-~----------~----~----~----~------~----~------~--~---\nmy footer\n--~--~---------~--~----~------------~-------~--~----~/)
+      process_post.parts[0].body.should match(/#{MList::MailList::FOOTER_BLOCK_START}\nmy footer\n#{MList::MailList::FOOTER_BLOCK_END}/)
     end
     
     it 'should handle whitespace well when appending footer' do
       @post_tmail.body = "My Email"
       mock(self).footer_content(is_a(MList::Message)) { 'my footer' }
-      process_post.body.should == "My Email\n\n-~----------~----~----~----~------~----~------~--~---\nmy footer\n--~--~---------~--~----~------------~-------~--~----~"
+      process_post.body.should == "My Email\n\n#{MList::MailList::FOOTER_BLOCK_START}\nmy footer\n#{MList::MailList::FOOTER_BLOCK_END}"
     end
     
     it 'should strip out any existing footers from the list' do
       mock(self).footer_content(is_a(MList::Message)) { 'my footer' }
       @post_tmail.body = %{My Email
 
->  >  -~----------~----~----~----~------~----~------~--~---
+>  >  #{MList::MailList::FOOTER_BLOCK_START}
 >     >  content at front shouldn't matter
->      >  --~--~---------~--~----~------------~-------~--~----~
+>      >  #{MList::MailList::FOOTER_BLOCK_END}
 
->>  -~----------~----~----~----~------~----~------~--~---
+>>  #{MList::MailList::FOOTER_BLOCK_START}
 >>  this is fine to be removed
->>  --~--~---------~--~----~------------~-------~--~----~
+>>  #{MList::MailList::FOOTER_BLOCK_END}
 
--~----------~----~----~----~------~----~------~--~---
+#{MList::MailList::FOOTER_BLOCK_START}
 this is without any in front
---~--~---------~--~----~------------~-------~--~----~
+#{MList::MailList::FOOTER_BLOCK_END}
       }
-      process_post.body.should == "My Email\n\n-~----------~----~----~----~------~----~------~--~---\nmy footer\n--~--~---------~--~----~------------~-------~--~----~"
+      process_post.body.should == "My Email\n\n#{MList::MailList::FOOTER_BLOCK_START}\nmy footer\n#{MList::MailList::FOOTER_BLOCK_END}"
     end
   end
 end

@@ -93,9 +93,17 @@ module MList
       !message.recipients.blank?
     end
     
+    # Distinct footer start marker. It is important to realize that changing
+    # this could be problematic.
+    #
+    FOOTER_BLOCK_START    = "-~----~~----~----~----~----~---~~-~----~------~--~-~-"
+    
+    # Distinct footer end marker. It is important to realize that changing
+    # this could be problematic.
+    #
+    FOOTER_BLOCK_END      = "--~--~---~~----~--~----~-----~~~----~---~---~--~-~--~"
+    
     private
-      FOOTER_BLOCK_START    = "-~----------~----~----~----~------~----~------~--~---"
-      FOOTER_BLOCK_END      = "--~--~---------~--~----~------------~-------~--~----~"
       FOOTER_BLOCK_START_RE = %r[#{FOOTER_BLOCK_START}]
       FOOTER_BLOCK_END_RE   = %r[#{FOOTER_BLOCK_END}]
       
