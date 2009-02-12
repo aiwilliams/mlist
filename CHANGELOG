@@ -7,6 +7,7 @@
 * MList::List implementors may now answer the footer content to be appended to the bottom of the text/plain part of messages. [aiwilliams]
 * List footers are stripped from text/plain part of messages before being delivered. [aiwilliams]
 * Observers of MList models which are defined in client applications now work without special instruction. [aiwilliams]
+* A first pass implementation for converting html to text using Hpricot. [aiwilliams]
 
 *0.1.4 [] (January 7, 2009)
 

@@ -60,6 +60,30 @@ describe MList::Message, 'text' do
       "This is a simple test."
   end
   
+  it 'should work with multipart/related, no text part' do
+    message_from_tmail('content_types/multipart_related_no_text_plain').text.should == %(I don't really have much to say, so I'm going to share some random things I saw today:
+
+I saw this guy on twitter.com, and he looks pretty chill:
+
+I found this sweet url, and it's not dirty!: 
+
+I found out that if I call our Skype phone from Skype on my laptop, my laptop will give me the ability to answer the call I am placing. Freaky!
+
+Here is what my rating star widget looks like:
+
+What's with the dashes and tildes?
+
+Yeah, what is going on with that. They don't even match.
+-~----~~----~----~----~----~---~~-~----~------~--~-~-
+vs
+--~--~---~~----~--~----~-----~~~----~---~---~--~-~--~
+
+
+Good job with this!
+
+-Steve)
+  end
+  
   it 'should answer text suitable for reply' do
     message_from_tmail('content_types/text_plain').text_for_reply.should ==
       email_fixture('content_types/text_plain_reply.txt')

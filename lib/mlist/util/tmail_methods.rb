@@ -33,7 +33,15 @@ module MList
       end
       
       def text
-        returning('') {|content| extract_text_content(tmail, content)}
+        text_content = ''
+        extract_text_content(tmail, text_content)
+        return text_content unless text_content.blank?
+        
+        html_content = ''
+        extract_html_content(tmail, html_content)
+        return html_to_text(html_content) unless html_content.blank?
+        
+        return nil
       end
       
       # Answers the first text/plain part it can find, the tmail itself if
@@ -49,15 +57,21 @@ module MList
       end
       
       private
+        def extract_html_content(part, collector)
+          case part.content_type
+          when 'text/html'
+            collector << part.body.strip
+          when 'multipart/alternative', 'multipart/mixed', 'multipart/related'
+            part.parts.each {|part| extract_html_content(part, collector)}
+          end
+        end
+        
         def extract_text_content(part, collector)
           case part.content_type
           when 'text/plain'
             collector << part.body.strip
-          when 'multipart/alternative'
-            text_part = part.parts.detect {|part| part.content_type == 'text/plain'}
-            collector << text_part.body.strip if text_part
-          when 'multipart/mixed', 'multipart/related'
-            part.parts.each {|mixed_part| extract_text_content(mixed_part, collector)}
+          when 'multipart/alternative', 'multipart/mixed', 'multipart/related'
+            part.parts.each {|part| extract_text_content(part, collector)}
           end
         end
     end

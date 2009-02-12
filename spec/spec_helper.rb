@@ -46,6 +46,14 @@ def tmail_fixture(path, header_changes = {})
   tmail
 end
 
+def html_fixtures_path(path)
+  File.join(SPEC_ROOT, 'fixtures/html', path)
+end
+
+def html_fixture(path)
+  File.read(html_fixtures_path(path))
+end
+
 def text_fixtures_path(path)
   File.join(SPEC_ROOT, 'fixtures/text', path)
 end

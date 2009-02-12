@@ -30,4 +30,14 @@ describe MList::Util::EmailHelpers do
       remove_regard('Re:  Re: Subject').should == 'Subject'
     end
   end
+  
+  describe 'html_to_text' do
+    it 'should handle real life example' do
+      html_to_text(html_fixture('real_life')).should == html_fixture('real_life.txt')
+    end
+    
+    it 'should handle lists' do
+      html_to_text('<p>Fruits</p>  <ul><li>Apples</li><li>Oranges</li><li>Bananas</li></ul>').should == %{Fruits\n\n * Apples\n\n * Oranges\n\n * Bananas}
+    end
+  end
 end

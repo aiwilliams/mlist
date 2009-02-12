@@ -54,6 +54,7 @@ You love Ruby. You want MList.
 
 You'll need some gems.
 
+* hpricot
 * uuid (macaddr also)
 * tmail
 * activesupport

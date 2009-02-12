@@ -1,5 +1,6 @@
 require 'uuid'
 require 'tmail'
+require 'hpricot'
 require 'activesupport'
 require 'activerecord'
 

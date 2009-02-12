@@ -1,0 +1,36 @@
+#html_to_text
+
+ADDRESS - Address
+BLOCKQUOTE - Block quotation
+
+DIV - Generic block-level container
+DL - Definition list
+FIELDSET - Form control group
+FORM - Interactive form
+H1 - Level-one heading
+H2 - Level-two heading
+H3 - Level-three heading
+H4 - Level-four heading
+H5 - Level-five heading
+H6 - Level-six heading
+HR - Horizontal rule
+OL - Ordered list
+P - Paragraph
+PRE - Preformatted text
+
+TABLE - Table
+  output TRs as lines, csv the TDs
+
+UL - Unordered list
+
+DD - Definition description
+DT - Definition term
+LI - List item
+
+
+a (Links)     -   Link to Somewhere[1] ---- [1] http://
+b (Bold)      -   *bold*
+i (Italic)    -   _italic_
+strong        -   *strong*
+em (emphasis) -   _emphasis_
+u (underline) -   probably do nothing, maybe something like em
