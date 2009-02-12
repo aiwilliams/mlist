@@ -6,6 +6,7 @@
 * Added MList::Manager module to better define the interface of list managers. This needs to be included into list manager implementations. [aiwilliams]
 * MList::List implementors may now answer the footer content to be appended to the bottom of the text/plain part of messages. [aiwilliams]
 * List footers are stripped from text/plain part of messages before being delivered. [aiwilliams]
+* Observers of MList models which are defined in client applications now work without special instruction. [aiwilliams]
 
 *0.1.4 [] (January 7, 2009)
 

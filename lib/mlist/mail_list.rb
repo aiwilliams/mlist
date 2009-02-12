@@ -101,7 +101,7 @@ module MList
     # Distinct footer end marker. It is important to realize that changing
     # this could be problematic.
     #
-    FOOTER_BLOCK_END      = "--~--~---~~----~--~----~-----~~~----~---~---~--~-~--~"
+    FOOTER_BLOCK_END      = "--~--~---~-----~--~----~-----~~~----~---~---~--~----~"
     
     private
       FOOTER_BLOCK_START_RE = %r[#{FOOTER_BLOCK_START}]

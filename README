@@ -42,25 +42,6 @@ simplest display of the tree.
 
 http://compnetworking.about.com/od/workingwithipaddresses/qt/ipaddressemail.htm
   
-==== Observing MList ActiveRecord subsclasses (ie, MList::Message, MList::Thread)
-
-ActiveRecord observers are reloaded at each request in development mode. They
-will be registered with the MList models each time. Since the MList models are
-required once at initialization, there will always only be one instance of the
-model class, and therefore, many instances of the observer class (all but the
-most recent invalid, since they were undefined) registered with it.
-
-There are a number of ways to solve this, the best being the one that makes
-things 'just work' such that I can delete this part of the document. For now, do
-the following in environment.rb:
-
-* remove the observer from the Rails' config.active_record.observers list
-* after the Rails::Initializer.run block, "require 'myobserver'"
-* after that require line, "Myobserver.instance"
-
-This will load the observer once, thereby only registering it once with the MList
-class you are observing.
-
 == SYNOPSIS:
 
 Let's say you want your web application to have a mailing list feature. Let's
