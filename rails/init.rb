@@ -1,4 +1,6 @@
-ActionController::Dispatcher.module_eval do
+require 'dispatcher' unless defined?(::Dispatcher)
+
+Dispatcher.module_eval do
   # Provides the mechinism to support applications that want to observe MList
   # models.
   #
@@ -9,12 +11,18 @@ ActionController::Dispatcher.module_eval do
   # class registered with it; all but the most recent are invalid, since they
   # were undefined when the dispatcher reloaded the application.
   #
+  # Why not an initializer "to_prepare" block? Simply because we must clear
+  # the observers in the ActiveRecord classes before the
+  # ActiveRecord::Base.instantiate_observers call is made by the prepare block
+  # that we cannot get in front of with the initializer approach. Also, it
+  # lessens the configuration burden of the MList client application.
+  #
   # Should we ever have observers in MList, this will likely need more careful
   # attention.
-  #   
+  #    
   def reload_application_with_plugin_record_support
-    ActiveRecord::Base.subclasses.each(&:delete_observers)
+    ActiveRecord::Base.send(:subclasses).each(&:delete_observers)
     reload_application_without_plugin_record_support
   end
-  alias_method_chaing :reload_application, :plugin_record_support
+  alias_method_chain :reload_application, :plugin_record_support
 end
