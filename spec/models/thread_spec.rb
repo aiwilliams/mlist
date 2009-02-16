@@ -57,4 +57,27 @@ describe MList::Thread, 'tree' do
     @tree.next.leaf?.should be_false
     @tree.next.next.leaf?.should be_true
   end
+  
+  it 'should answer when a message is last in the thread' do
+    @thread.first?(@messages[0]).should be_true
+    @thread.first?(@messages[1]).should be_false
+    @thread.first?(@messages[2]).should be_false
+  end
+  
+  it 'should answer when a message is last in the thread' do
+    @thread.last?(@messages[0]).should be_false
+    @thread.last?(@messages[1]).should be_false
+    @thread.last?(@messages[4]).should be_true
+  end
+  
+  it 'should answer the message next to given' do
+    @thread.next(@messages[0]).should == @messages[1]
+    @thread.next(@messages[2]).should == @messages[3]
+    @thread.next(@messages[4]).should be_nil
+  end
+  
+  it 'should answer the message previous to given' do
+    @thread.previous(@messages[0]).should be_nil
+    @thread.previous(@messages[2]).should == @messages[1]
+  end
 end
