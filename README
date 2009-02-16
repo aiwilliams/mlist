@@ -32,16 +32,44 @@ as they seem. Alas, I go boldly forward.
 
 ==== Thread Trees
 
-We need to implement this at the database level. For now, each MList::Message
-simply points to it's parent. I believe the implementation will ultimately be
-extracted from awesome_nested_set. That's a bit of work, so for now, the
-MList::Thread provides a couple of methods, roots and children, to support the
-simplest display of the tree.
+A Thread answers a tree of messages where each message in the tree knows it's
+parent, children, previous and next message, and whether it is the root or a leaf
+in the tree. The messages are actually delegates, wrappers around the real
+message instances from the thread.
+
+This approach makes a few assumptions:
+
+ # You want the tree because you will be displaying it # Moving through a tree
+message by message should 'feel' right; next is determined by walking the tree
+depth first.
+
+It may or may not prove useful someday to have this knowledge in the form of
+something like awesome_nested_set.
 
 ==== Extracting 'from' IP address from emails is not implemented
 
 http://compnetworking.about.com/od/workingwithipaddresses/qt/ipaddressemail.htm
-  
+
+==== Deleting messages
+
+Mail list servers don't typically deal with this, do they? When an email is sent,
+it's sent! If you delete one, how can a reply to it be accurately injected into a
+partially broken tree?
+
+Since MList is designed to integrate with applications that want to distribute
+messages, those applications may want to delete messages. I feel, at the time of
+writing this, that the feature of deleting is NOT a problem for MList to work
+around or otherwise. The models are ActiveRecord descendants, so they can be
+deleted with #destroy, et. al. MList will not prevent that from happening. This
+has implications, of course.
+
+ # MList::Thread#tree will likely break if messages are gone.
+
+In my own usage, I have opted for adding a column to my mlist_messages table,
+deleted_at. The application will make decisions based on whether that column has
+a value or not. I would suggest you implement something similar, always favoring
+leaving the records in place.
+
 == SYNOPSIS:
 
 Let's say you want your web application to have a mailing list feature. Let's

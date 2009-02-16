@@ -1,3 +1,5 @@
+require 'delegate'
+
 require 'uuid'
 require 'tmail'
 require 'hpricot'
