@@ -33,6 +33,19 @@ describe MList::MailList do
     MList::MailList.column_names.should include('threads_count')
   end
   
+  it 'should delete email not referenced by other lists' do
+    email_in_other = MList::Email.create!(:tmail => tmail_fixture('single_list'))
+    email_not_other = MList::Email.create!(:tmail => tmail_fixture('single_list'))
+    lambda do
+      MList::Message.create!(:mail_list_id => 2342342, :email => email_in_other)
+      @mail_list.process_email(email_in_other, @subscriber_one)
+      @mail_list.process_email(email_not_other, @subscriber_one)
+    end.should change(MList::Message, :count).by(3)
+    @mail_list.destroy
+    MList::Email.exists?(email_in_other).should be_true
+    MList::Email.exists?(email_not_other).should be_false
+  end
+  
   describe 'post' do
     it 'should allow posting a new message to the list' do
       lambda do

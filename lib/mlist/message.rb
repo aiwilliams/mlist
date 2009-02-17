@@ -10,6 +10,8 @@ module MList
     belongs_to :mail_list, :class_name => 'MList::MailList', :counter_cache => :messages_count
     belongs_to :thread, :class_name => 'MList::Thread', :counter_cache => :messages_count
     
+    after_destroy :delete_unreferenced_email
+    
     # A temporary storage of recipient subscribers, obtained from
     # MList::Lists. This list is not available when a message is reloaded.
     #
@@ -118,5 +120,10 @@ module MList
         @subscriber = self.subscriber_address = self.subscriber_type = self.subscriber_id = nil
       end
     end
+    
+    private
+      def delete_unreferenced_email
+        email.destroy unless MList::Message.count(:conditions => "email_id = #{email_id} and id != #{id}") > 0
+      end
   end
 end

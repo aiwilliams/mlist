@@ -58,17 +58,23 @@ partially broken tree?
 
 Since MList is designed to integrate with applications that want to distribute
 messages, those applications may want to delete messages. I feel, at the time of
-writing this, that the feature of deleting is NOT a problem for MList to work
-around or otherwise. The models are ActiveRecord descendants, so they can be
-deleted with #destroy, et. al. MList will not prevent that from happening. This
-has implications, of course.
+writing this, that the feature of deleting is NOT a problem that MList should
+attempt to address in great detail. The models are ActiveRecord descendants, so
+they can be deleted with #destroy, et. al. MList will not prevent that from
+happening. This has implications, of course.
 
  # MList::Thread#tree will likely break if messages are gone.
 
 In my own usage, I have opted for adding a column to my mlist_messages table,
 deleted_at. The application will make decisions based on whether that column has
 a value or not. I would suggest you implement something similar, always favoring
-leaving the records in place.
+leaving the records in place (paranoid delete). Since MList::MailList#messages
+(and other such has_many associations) don't know about this column, they will
+always answer collections which still include those messages.
+
+When an MList::MailList is destroyed, all it's MList::Messages and MList::Threads
+will be deleted (:dependent => :delete_all). If no other MList::Messages are
+referencing the MList::Email records, they will also be deleted.
 
 == SYNOPSIS:
 

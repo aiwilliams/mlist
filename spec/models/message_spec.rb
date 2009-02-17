@@ -37,6 +37,19 @@ describe MList::Message do
     @message = MList::Message.find(@message.id)
     @message.email.source.should == @tmail.to_s
   end
+  
+  it 'should delete the email when message destroyed' do
+    @message.save!
+    @message.destroy
+    MList::Email.exists?(@email).should be_false
+  end
+  
+  it 'should not delete the email if other messages reference it' do
+    @message.save!
+    MList::Message.create!(:mail_list_id => 234234, :email => @email)
+    @message.destroy
+    MList::Email.exists?(@email).should be_true
+  end
 end
 
 describe MList::Message, 'text' do

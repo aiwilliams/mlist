@@ -22,6 +22,7 @@ module MList
     
     belongs_to :manager_list, :polymorphic => true
     
+    before_destroy :delete_unreferenced_email
     has_many :messages, :class_name => 'MList::Message', :dependent => :delete_all
     has_many :threads, :class_name => 'MList::Thread', :dependent => :delete_all
     
@@ -111,6 +112,18 @@ module MList
       def bounce_headers
         {'sender'    => "mlist-#{address}",
          'errors-to' => "mlist-#{address}"}
+      end
+      
+      def delete_unreferenced_email
+        conditions = %Q{
+          mlist_emails.id in (
+            select me.id from mlist_emails me left join mlist_messages mm on mm.email_id = me.id
+            where mm.mail_list_id = #{id}
+          ) AND mlist_emails.id not in (
+            select meb.id from mlist_emails meb left join mlist_messages mmb on mmb.email_id = meb.id
+            where mmb.mail_list_id != #{id}
+          )}
+        MList::Email.delete_all(conditions)
       end
       
       def strip_list_footers(content)
