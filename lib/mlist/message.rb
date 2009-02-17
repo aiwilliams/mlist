@@ -75,6 +75,17 @@ module MList
       text_to_html(text_for_reply)
     end
     
+    def parent_with_identifier_capture=(parent)
+      if parent
+        self.parent_without_identifier_capture = parent
+        self.parent_identifier = parent.identifier
+      else
+        self.parent_without_identifier_capture = nil
+        self.parent_identifier = nil
+      end
+    end
+    alias_method_chain :parent=, :identifier_capture
+    
     # Answers the subject with 'Re:' prefixed. Note that it is the
     # responsibility of the MList::MailList to perform any processing of the
     # persisted subject (ie, cleaning up labels, etc).

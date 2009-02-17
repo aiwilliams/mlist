@@ -9,6 +9,8 @@
 * Observers of MList models which are defined in client applications now work without special instruction. [aiwilliams]
 * A first pass implementation for converting html to text using Hpricot. [aiwilliams]
 * Better thread tree, supporting message navigation within a thread through a linked list kind of approach. [aiwilliams]
+* Better parent message associating using in-reply-to, then references, then subject. [aiwilliams]
+* MList.version is hash of {:major => 0, :minor => 0, :patch => 0}, with a to_s of 'MList 0.0.0'. [aiwilliams]
 
 *0.1.4 [] (January 7, 2009)
 

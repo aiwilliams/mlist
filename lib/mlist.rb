@@ -20,6 +20,14 @@ require 'mlist/thread'
 require 'mlist/manager'
 
 module MList
+  mattr_reader :version
+  @@version = YAML.load_file(File.join(File.dirname(__FILE__), '..', "VERSION.yml"))
+  class << @@version
+    def to_s
+      @to_s ||= [self[:major], self[:minor], self[:patch]].join('.')
+    end
+  end
+  
   class DoubleDeliveryError < StandardError
     def initialize(message)
       super("A message should never be delivered more than once. An attempt was made to deliver this message:\n#{message.inspect}")

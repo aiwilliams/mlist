@@ -73,6 +73,29 @@ module MList
       end
     end
     
+    def find_parent_message(email)
+      if in_reply_to = email.header_string('in-reply-to')
+        message = messages.find(:first,
+          :conditions => ['identifier = ?', remove_brackets(in_reply_to)])
+        return message if message
+      end
+      
+      if email.references
+        reference_identifiers = email.references.collect {|rid| remove_brackets(rid)}
+        message = messages.find(:first,
+          :conditions => ['identifier in (?)', reference_identifiers],
+          :order => 'created_at desc')
+        return message if message
+      end
+      
+      if email.subject =~ REGARD_RE
+        message = messages.find(:first,
+          :conditions => ['subject = ?', remove_regard(clean_subject(email.subject))],
+          :order => 'created_at asc')
+        return message if message
+      end
+    end
+    
     # The MList::List instance of the list manager.
     #
     def list
@@ -110,8 +133,8 @@ module MList
       
       # http://mail.python.org/pipermail/mailman-developers/2006-April/018718.html
       def bounce_headers
-        {'sender'    => "mlist-#{address}",
-         'errors-to' => "mlist-#{address}"}
+        list_address = "#{label} <mlist-#{address}>"
+        {'sender' => list_address, 'errors-to' => list_address}
       end
       
       def delete_unreferenced_email
@@ -146,6 +169,7 @@ module MList
       def list_headers
         headers = list.list_headers
         headers['x-beenthere'] = address
+        headers['x-mlist-version'] = MList.version.to_s
         headers.update(bounce_headers)
         headers.delete_if {|k,v| v.nil?}
       end
@@ -217,10 +241,7 @@ module MList
       end
       
       def find_thread(message, options)
-        if options[:search_parent]
-          message.parent_identifier = message.email.parent_identifier(self)
-          message.parent = messages.find_by_identifier(message.parent_identifier)
-        end
+        message.parent = find_parent_message(message.email) if message.email && options[:search_parent]
         message.parent ? message.parent.thread : threads.build
       end
       
