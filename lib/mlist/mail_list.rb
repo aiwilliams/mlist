@@ -133,8 +133,8 @@ module MList
       
       # http://mail.python.org/pipermail/mailman-developers/2006-April/018718.html
       def bounce_headers
-        list_address = "#{label} <mlist-#{address}>"
-        {'sender' => list_address, 'errors-to' => list_address}
+        # tmail would not correctly quote the label in the sender header, which would break smtp delivery
+        {'sender' => "<mlist-#{address}>", 'errors-to' => "#{label} <mlist-#{address}>"}
       end
       
       def delete_unreferenced_email
@@ -167,7 +167,7 @@ module MList
       
       # http://www.jamesshuggins.com/h/web1/list-email-headers.htm
       def list_headers
-        headers = list.list_headers
+        headers = list.list_headers.dup
         headers['x-beenthere'] = address
         headers['x-mlist-version'] = MList.version.to_s
         headers.update(bounce_headers)

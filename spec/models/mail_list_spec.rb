@@ -299,9 +299,10 @@ describe MList::MailList do
         'list-post'        => "<#{address}>",
         'list-owner'       => '<mailto:list_manager@example.com>(Jimmy Fish)',
         'list-archive'     => "<#{archive_url}>",
-        'errors-to'        => '"Discussions" <mlist-list_one@example.com>'
+        'errors-to'        => '"Discussions" <mlist-list_one@example.com>',
+        # I couldn't get tmail to quote 'Discussions', so apostrophe's would break smtp
+        'sender'           => 'mlist-list_one@example.com'
       )
-      tmail['sender'].inspect.should =~ /<mlist-list_one@example.com>/
       tmail.header_string('x-mlist-version').should =~ /\d+\.\d+\.\d+/
     end
     
