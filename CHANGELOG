@@ -1,4 +1,4 @@
-*0.1.5 [UPCOMING RELEASE] (???)
+*0.1.5 [Solid Basics] (January 17, 2009)
 
 * No longer storing the list label in the message subject field, thereby supporting cleaner viewing of threads [aiwilliams]
 * Improved handling of incoming email subjects by leaving labels alone that aren't obviously the label of the list, thereby allowing for subjects like "[Ann] My New Thing" [aiwilliams]
