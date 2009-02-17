@@ -57,6 +57,10 @@ module MList
       @attributes['subject'] || (reply_to_message ? "Re: #{reply_to_message.subject}" : nil)
     end
     
+    def to_s
+      to_tmail.to_s
+    end
+    
     def to_tmail
       raise ActiveRecord::RecordInvalid.new(self) unless valid?
       

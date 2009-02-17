@@ -11,6 +11,7 @@
 * Better thread tree, supporting message navigation within a thread through a linked list kind of approach. [aiwilliams]
 * Better parent message associating using in-reply-to, then references, then subject. [aiwilliams]
 * MList.version is hash of {:major => 0, :minor => 0, :patch => 0}, with a to_s of 'MList 0.0.0'. [aiwilliams]
+* Fixed bug where original email source content was last in TMail::Mail#to_s usage. [aiwilliams]
 
 *0.1.4 [] (January 7, 2009)
 

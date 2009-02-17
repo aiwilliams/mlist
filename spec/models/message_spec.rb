@@ -35,7 +35,7 @@ describe MList::Message do
   it 'should save the associated email' do
     @message.save!
     @message = MList::Message.find(@message.id)
-    @message.email.source.should == @tmail.to_s
+    @message.email.source.should == email_fixture('single_list')
   end
   
   it 'should delete the email when message destroyed' do

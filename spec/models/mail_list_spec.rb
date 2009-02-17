@@ -226,7 +226,7 @@ describe MList::MailList do
     include MList::Util::EmailHelpers
     
     def process_post
-      @mail_list.process_email(MList::Email.new(:tmail => @post_tmail), @subscriber)
+      @mail_list.process_email(MList::Email.new(:source => @post_tmail.to_s), @subscriber)
       @outgoing_server.deliveries.last
     end
     

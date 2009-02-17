@@ -30,7 +30,7 @@ module MList
     
     def tmail=(tmail)
       @tmail = tmail
-      write_attribute(:source, tmail.to_s)
+      write_attribute(:source, tmail.port.read_all)
     end
     
     def tmail

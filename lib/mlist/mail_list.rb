@@ -42,7 +42,7 @@ module MList
         :mail_list => self,
         :subscriber => email.subscriber,
         :recipients => list.recipients(email.subscriber),
-        :email => MList::Email.new(:tmail => email.to_tmail)
+        :email => MList::Email.new(:source => email.to_s)
       ), :search_parent => false
     end
     

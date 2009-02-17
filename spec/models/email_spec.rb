@@ -6,10 +6,6 @@ describe MList::Email do
     @email = MList::Email.new(:tmail => @tmail)
   end
   
-  it 'should store the source email content' do
-    @email.source.should == @tmail.to_s
-  end
-  
   it 'should downcase the from address' do
     @tmail.from = 'ALL_Down_CaSe@NOmail.NET'
     @email.from_address.should == 'all_down_case@nomail.net'
@@ -24,10 +20,10 @@ describe MList::Email do
     @email.subject.should == 'Test'
   end
   
-  it 'should save source of email' do
+  it 'should be careful to save true source of email' do
+    @email = MList::Email.new(:tmail => tmail_fixture('embedded_content'))
     @email.save!
-    @email = MList::Email.find(@email.id)
-    @email.source.should == @tmail.to_s
+    @email.reload.source.should == email_fixture('embedded_content')
   end
   
   it 'should answer the Date of the email, created_at otherwise' do
