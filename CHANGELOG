@@ -1,3 +1,7 @@
+*0.1.6 [] ()
+
+* Messages are processed even when there are no recipients [aiwilliams]
+
 *0.1.5 [Solid Basics] (January 17, 2009)
 
 * No longer storing the list label in the message subject field, thereby supporting cleaner viewing of threads [aiwilliams]

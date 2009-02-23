@@ -113,10 +113,6 @@ module MList
     end
     alias_method_chain :manager_list=, :dual_type
     
-    def process?(message)
-      !message.recipients.blank?
-    end
-    
     # Distinct footer start marker. It is important to realize that changing
     # this could be problematic.
     #
@@ -176,7 +172,6 @@ module MList
       
       def process_message(message, options = {})
         raise MList::DoubleDeliveryError.new(message) unless message.new_record?
-        return message unless process?(message)
         
         options = {
           :search_parent => true,

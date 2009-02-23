@@ -93,10 +93,10 @@ describe MList do
     @email_server.should_not forward_email(tmail_fixture('x-beenthere'))
   end
   
-  it 'should not forward mail when there are no recipients' do
+  it 'should store message/thread even when there are no recipient subscribers' do
     tmail = tmail_fixture('single_list')
     tmail.to = @list_three.address
-    @email_server.should_not forward_email(tmail)
+    @email_server.should start_new_thread(tmail)
   end
   
   it 'should not forward mail from non-subscriber and notify manager list' do
