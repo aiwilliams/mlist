@@ -1,25 +1,28 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe MList::MailList do
-  include MList::List
+  class ManagerList
+    include MList::List
+  end
   
   before do
-    stub(self).label       {'Discussions'}
-    stub(self).address     {'list_one@example.com'}
-    stub(self).list_id     {'list_one@example.com'}
+    @manager_list = ManagerList.new
+    stub(@manager_list).label       {'Discussions'}
+    stub(@manager_list).address     {'list_one@example.com'}
+    stub(@manager_list).list_id     {'list_one@example.com'}
     
     @subscriber_one = MList::EmailSubscriber.new('adam@nomail.net')
     @subscriber_two = MList::EmailSubscriber.new('john@example.com')
-    stub(self).subscribers {[@subscriber_one, @subscriber_two]}
+    stub(@manager_list).subscribers {[@subscriber_one, @subscriber_two]}
     
     @outgoing_server = MList::EmailServer::Fake.new
     @mail_list = MList::MailList.create!(
-      :manager_list => self,
+      :manager_list => @manager_list,
       :outgoing_server => @outgoing_server)
   end
   
   it 'should not require the manager list be an ActiveRecord type' do
-    @mail_list.list.should == self
+    @mail_list.list.should == @manager_list
     @mail_list.manager_list.should be_nil
   end
   
@@ -284,21 +287,21 @@ describe MList::MailList do
     end
     
     it 'should add standard list headers when they are available' do
-      stub(self).help_url        {'http://list_manager.example.com/help'}
-      stub(self).subscribe_url   {'http://list_manager.example.com/subscribe'}
-      stub(self).unsubscribe_url {'http://list_manager.example.com/unsubscribe'}
-      stub(self).owner_url       {"<mailto:list_manager@example.com>\n(Jimmy Fish)"}
-      stub(self).archive_url     {'http://list_manager.example.com/archive'}
+      stub(@manager_list).help_url        {'http://list_manager.example.com/help'}
+      stub(@manager_list).subscribe_url   {'http://list_manager.example.com/subscribe'}
+      stub(@manager_list).unsubscribe_url {'http://list_manager.example.com/unsubscribe'}
+      stub(@manager_list).owner_url       {"<mailto:list_manager@example.com>\n(Jimmy Fish)"}
+      stub(@manager_list).archive_url     {'http://list_manager.example.com/archive'}
       
       tmail = process_post
       tmail.should have_headers(
         'list-id'          => "<list_one@example.com>",
-        'list-help'        => "<#{help_url}>",
-        'list-subscribe'   => "<#{subscribe_url}>",
-        'list-unsubscribe' => "<#{unsubscribe_url}>",
-        'list-post'        => "<#{address}>",
+        'list-help'        => "<http://list_manager.example.com/help>",
+        'list-subscribe'   => "<http://list_manager.example.com/subscribe>",
+        'list-unsubscribe' => "<http://list_manager.example.com/unsubscribe>",
+        'list-post'        => "<list_one@example.com>",
         'list-owner'       => '<mailto:list_manager@example.com>(Jimmy Fish)',
-        'list-archive'     => "<#{archive_url}>",
+        'list-archive'     => "<http://list_manager.example.com/archive>",
         'errors-to'        => '"Discussions" <mlist-list_one@example.com>',
         # I couldn't get tmail to quote 'Discussions', so apostrophe's would break smtp
         'sender'           => 'mlist-list_one@example.com'
@@ -307,7 +310,7 @@ describe MList::MailList do
     end
     
     it 'should not add list headers that are not available or nil' do
-      stub(self).help_url {nil}
+      stub(@manager_list).help_url {nil}
       delivery = process_post
       delivery.should_not have_header('list-help')
       delivery.should_not have_header('list-subscribe')
@@ -315,24 +318,24 @@ describe MList::MailList do
     
     it 'should append the list footer to text/plain emails' do
       @post_tmail.body = "My Email\n\n\n\n\n"
-      mock(self).footer_content(is_a(MList::Message)) { 'my footer' }
+      mock(@manager_list).footer_content(is_a(MList::Message)) { 'my footer' }
       process_post.body.should == "My Email\n\n\n\n\n#{MList::MailList::FOOTER_BLOCK_START}\nmy footer\n#{MList::MailList::FOOTER_BLOCK_END}"
     end
     
     it 'should append the list footer to multipart/alternative, text/plain part of emails' do
       @post_tmail = tmail_fixture('content_types/multipart_alternative_simple')
-      mock(self).footer_content(is_a(MList::Message)) { 'my footer' }
+      mock(@manager_list).footer_content(is_a(MList::Message)) { 'my footer' }
       process_post.parts[0].body.should match(/#{MList::MailList::FOOTER_BLOCK_START}\nmy footer\n#{MList::MailList::FOOTER_BLOCK_END}/)
     end
     
     it 'should handle whitespace well when appending footer' do
       @post_tmail.body = "My Email"
-      mock(self).footer_content(is_a(MList::Message)) { 'my footer' }
+      mock(@manager_list).footer_content(is_a(MList::Message)) { 'my footer' }
       process_post.body.should == "My Email\n\n#{MList::MailList::FOOTER_BLOCK_START}\nmy footer\n#{MList::MailList::FOOTER_BLOCK_END}"
     end
     
     it 'should strip out any existing footers from the list' do
-      mock(self).footer_content(is_a(MList::Message)) { 'my footer' }
+      mock(@manager_list).footer_content(is_a(MList::Message)) { 'my footer' }
       @post_tmail.body = %{My Email
 
 >  >  #{MList::MailList::FOOTER_BLOCK_START}

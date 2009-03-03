@@ -54,7 +54,7 @@ module MList
         elsif address =~ /^(\S.*)\s+(<.*>)$/
           address = $2
           phrase = quote_if_necessary(charset, $1.gsub(/^['"](.*)['"]$/, '\1'))
-          "\"#{phrase}\" #{address}"
+          "\"#{phrase.gsub(/\\/, '\&\&').gsub('"', '\\"')}\" #{address}"
         else
           address
         end
