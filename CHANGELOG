@@ -1,6 +1,7 @@
-*0.1.6 [] ()
+*0.1.6 [Bug Fixes] (March 5, 2009)
 
 * Messages are processed even when there are no recipients [aiwilliams]
+* Escaping DQUOTE and \ in email address phrase for some headers [aiwilliams]
 
 *0.1.5 [Solid Basics] (January 17, 2009)
 
