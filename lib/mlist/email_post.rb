@@ -94,6 +94,14 @@ module MList
     
     # vvv  ActiveRecord validations interface implementation  vvv
     
+    def self.human_name(options = {})
+      self.name.humanize
+    end
+    
+    def self.self_and_descendants_from_active_record #nodoc:
+      [self]
+    end
+    
     def self.human_attribute_name(attribute_key_name, options = {})
       attribute_key_name.humanize
     end

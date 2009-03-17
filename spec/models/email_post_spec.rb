@@ -93,4 +93,8 @@ describe MList::EmailPost, 'validations' do
     @post.should_not be_valid
     @post.errors[:subject].should_not be_nil
   end
+  
+  it 'should not fail to work when asked to generate error messages' do
+    @post.errors.add(:text)
+  end
 end
