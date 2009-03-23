@@ -2,8 +2,15 @@ module MList
   module Util
     
     class HtmlTextExtraction
+      
+      # We need a way to maintain non-breaking spaces. Hpricot will replace
+      # them with ??.chr. We can easily teach it to convert it to a space, but
+      # then we lose the information in the Text node that we need to keep the
+      # space around, since that is what they would see in a view of the HTML.
+      NBSP = '!!!NBSP!!!'
+      
       def initialize(html)
-        @doc = Hpricot(html)
+        @doc = Hpricot(html.gsub('&nbsp;', NBSP))
       end
       
       def execute
@@ -19,7 +26,7 @@ module MList
           end
           @text << "\n\n--\n#{refs.join("\n")}"
         end
-        @text
+        @text.gsub(NBSP, ' ')
       end
       
       def extract_text_from_node(node)

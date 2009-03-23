@@ -39,5 +39,9 @@ describe MList::Util::EmailHelpers do
     it 'should handle lists' do
       html_to_text('<p>Fruits</p>  <ul><li>Apples</li><li>Oranges</li><li>Bananas</li></ul>').should == %{Fruits\n\n * Apples\n\n * Oranges\n\n * Bananas}
     end
+    
+    it 'should handle lots of non-breaking space' do
+      html_to_text(html_fixture('nbsp')).should == html_fixture('nbsp.txt')
+    end
   end
 end
