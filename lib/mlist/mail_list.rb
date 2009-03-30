@@ -205,6 +205,7 @@ module MList
           delivery.headers = list_headers
           delivery.subject = list_subject(message.subject)
           delivery.to = address
+          delivery.cc = []
           delivery.bcc = message.recipients.collect(&:email_address)
           delivery.reply_to = "#{label} <#{post_url}>"
           prepare_list_footer(delivery, message)

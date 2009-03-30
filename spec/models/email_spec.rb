@@ -16,6 +16,12 @@ describe MList::Email do
     @email.list_addresses.should == %w(all_down_case@nomail.net all_down_case@yesmail.net)
   end
   
+  it 'should include the cc field in list addresses, no duplicates' do
+    @tmail.to = 'list_one@example.com'
+    @tmail.cc = 'list_one@example.com, list_two@example.com'
+    @email.list_addresses.should == %w(list_one@example.com list_two@example.com)
+  end
+  
   it 'should answer the subject of the email' do
     @email.subject.should == 'Test'
   end

@@ -260,6 +260,11 @@ describe MList::MailList do
       process_post.should have_header('x-something-custom', 'existing')
     end
     
+    it 'should not have any cc addresses' do
+      @post_tmail['cc'] = 'billybob@anywhere.com'
+      process_post.should_not have_header('cc')
+    end
+    
     it 'should prefix the list label to the subject of messages' do
       process_post.subject.should == '[Discussions] Test'
     end

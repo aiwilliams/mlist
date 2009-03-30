@@ -17,7 +17,7 @@ module MList
     # Answers the usable destination addresses of the email.
     #
     def list_addresses
-      bounce? ? tmail.header_string('to').match(/\Amlist-(.*)\Z/)[1] : tmail.to.collect(&:downcase)
+      bounce? ? tmail.header_string('to').match(/\Amlist-(.*)\Z/)[1] : extract_list_addresses.collect(&:downcase)
     end
     
     # Answers true if this email is a bounce.
@@ -51,5 +51,10 @@ module MList
     def respond_to?(method)
       super || (method.to_s !~ /=\Z/ && tmail.respond_to?(method))
     end
+    
+    protected
+      def extract_list_addresses
+        (Array(tmail.to) + Array(tmail.cc)).uniq
+      end
   end
 end

@@ -1,6 +1,8 @@
 *0.1.7 []
 
 * &nbsp; is maintained as spacing in html_to_text conversions [aiwilliams]
+* Fixed bug where delivered email included the original Cc header. This could cause all kinds of problems. [aiwilliams]
+* Fixed bug where list addresses in Cc header were not be utilized in determining the lists to deliver to. [aiwilliams]
 
 *0.1.6 [Bug Fixes] (March 5, 2009)
 
