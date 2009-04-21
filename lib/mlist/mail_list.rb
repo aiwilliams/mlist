@@ -199,7 +199,7 @@ module MList
         message.created_at = options[:delivery_time]
         message.subject = clean_subject(message.subject)
         returning(message.delivery) do |delivery|
-          delivery.date = message.created_at
+          delivery.date ||= options[:delivery_time]
           delivery.message_id = message.identifier
           delivery.mailer = message.mailer
           delivery.headers = list_headers

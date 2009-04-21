@@ -357,5 +357,41 @@ this is without any in front
       }
       process_post.body.should == "My Email\n\n#{MList::MailList::FOOTER_BLOCK_START}\nmy footer\n#{MList::MailList::FOOTER_BLOCK_END}"
     end
+    
+    describe 'time' do
+      include TMail::TextUtils
+      
+      before do
+        @old_zone_default = Time.zone_default
+        @system_time = Time.parse('Thu, 2 Apr 2009 15:22:04')
+        mock(Time).now.times(any_times) { @system_time }
+      end
+      
+      after do
+        Time.zone_default = @old_zone_default
+      end
+      
+      it 'should keep date of email post' do
+        @post_tmail['date'] = 'Thu, 2 Apr 2009 15:22:04 -0400'
+        process_post.header_string('date').should == 'Thu, 2 Apr 2009 15:22:04 -0400'
+      end
+      
+      it 'should store the delivery time as created_at of message record' do
+        Time.zone_default = 'Pacific Time (US & Canada)'
+        @post_tmail['date'] = 'Wed, 1 Apr 2009 15:22:04 -0400'
+        process_post.header_string('date').should == 'Wed, 1 Apr 2009 15:22:04 -0400'
+        MList::Message.last.created_at.should == @system_time
+      end
+      
+      # I think that what TMail is doing is evil, but it's reference to
+      # a ruby-talk discussion leads to Japanese, which I cannot read.
+      # I'd prefer that it leave the problem of timezones up to the client,
+      # especially since ActiveSupport does and EXCELLENT job of making
+      # time zones not hurt so much.
+      it 'should use the Time.now (zone of the machine) for date header' do
+        @post_tmail['date'] = nil
+        process_post.header_string('date').should == time2str(@system_time)
+      end
+    end
   end
 end

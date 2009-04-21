@@ -32,17 +32,9 @@ describe MList::Email do
     @email.reload.source.should == email_fixture('embedded_content')
   end
   
-  it 'should answer the Date of the email, created_at otherwise' do
+  it 'should answer the Date of the email if present' do
     @email.date.should == Time.parse('Mon, 15 Dec 2008 00:38:31 -0500')
     @tmail['date'] = nil
-    
-    stub(Time).now { Time.local(2009,1,1) }
-    @email.date.should == Time.local(2009,1,1)
-    
-    stub(Time).now { Time.local(2009,3,1) }
-    @email.date.should == Time.local(2009,1,1)
-    
-    @email.created_at = Time.local(2009,2,1)
-    @email.date.should == Time.local(2009,2,1)
+    @email.date.should be_nil
   end
 end

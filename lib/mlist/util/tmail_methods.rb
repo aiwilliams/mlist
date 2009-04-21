@@ -5,8 +5,6 @@ module MList
       def date
         if date = tmail.header_string('date')
           Time.parse(date)
-        else
-          self.created_at ||= Time.now
         end
       end
       
