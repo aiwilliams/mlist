@@ -207,7 +207,7 @@ module MList
           delivery.to = address
           delivery.cc = []
           delivery.bcc = message.recipients.collect(&:email_address)
-          delivery.reply_to = "#{label} <#{post_url}>"
+          delivery.reply_to = reply_to_header(message)
           prepare_list_footer(delivery, message)
         end
       end
@@ -239,6 +239,14 @@ module MList
       def find_thread(message, options)
         message.parent = find_parent_message(message.email) if message.email && options[:search_parent]
         message.parent ? message.parent.thread : threads.build
+      end
+      
+      def reply_to_header(message)
+        if list.reply_to_list?
+          "#{label} #{bracket(address)}"
+        else
+          subscriber_name_and_address(message.subscriber)
+        end
       end
       
       def subject_prefix_regex

@@ -25,10 +25,10 @@ module MList
     end
     
     # Answers the footer content for this list. Default implementation is very
-    # simple right now. Expect improvements in the future.
+    # simple.
     #
     def footer_content(message)
-      %Q{The "#{label}" mailing list\nTo post messages, send email to #{post_url}}
+      %Q{The "#{label}" mailing list\nPost messages: #{post_url}}
     end
     
     # Answer a suitable label for the list, which will be used in various
@@ -84,6 +84,13 @@ module MList
     #
     def post_url
       address
+    end
+    
+    # Should the reply-to header be set to the list's address? Defaults to
+    # true. If false is returned, the reply-to will be the subscriber address.
+    #
+    def reply_to_list?
+      true
     end
     
     # The web url where subscriptions to this list may be created, nil if this

@@ -74,10 +74,7 @@ module MList
         builder.references = [bracket(parent_identifier)]
       end
       
-      from = subscriber.email_address
-      from = "#{subscriber.display_name} #{bracket(from)}" if subscriber.respond_to?(:display_name)
-      builder.from = from
-      
+      builder.from = subscriber_name_and_address(subscriber)
       builder.subject = subject
       
       if html

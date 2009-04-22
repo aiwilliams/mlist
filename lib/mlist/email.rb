@@ -10,6 +10,14 @@ module MList
       tmail.header_string('x-beenthere') == list.address
     end
     
+    def date
+      if date_from_email = super
+        return date_from_email
+      else
+        self.created_at ||= Time.now
+      end
+    end
+    
     def from
       tmail.header_string('from')
     end

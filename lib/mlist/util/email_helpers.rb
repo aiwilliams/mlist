@@ -102,6 +102,12 @@ module MList
         text.to_s.gsub(/\r\n?/, "\n")
       end
       
+      def subscriber_name_and_address(subscriber)
+        a = subscriber.email_address
+        a = "#{subscriber.display_name} #{bracket(a)}" if subscriber.respond_to?(:display_name)
+        a
+      end
+      
       BRACKETS_RE = /\A<(.*?)>\Z/
       def bracket(string)
         string.blank? || string =~ BRACKETS_RE ? string : "<#{string}>"
