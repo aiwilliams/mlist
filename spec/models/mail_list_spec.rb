@@ -247,12 +247,17 @@ describe MList::MailList do
     end
     
     it 'should use list address as reply-to by default' do
-      process_post.should have_header('reply-to', "Discussions <list_one@example.com>")
+      process_post.should have_header('reply-to', 'Discussions <list_one@example.com>')
     end
     
     it 'should use subscriber address as reply-to if list says to not use address' do
       mock(@manager_list).reply_to_list? { false }
-      process_post.should have_header('reply-to', "adam@nomail.net")
+      process_post.should have_header('reply-to', 'adam@nomail.net')
+    end
+    
+    it 'should use the reply-to already in an email - should not override it' do
+      @post_tmail['reply-to'] = 'theotheradam@nomail.net'
+      process_post.should have_header('reply-to', 'theotheradam@nomail.net')
     end
     
     it 'should set x-beenthere on emails it delivers to keep from re-posting them' do
