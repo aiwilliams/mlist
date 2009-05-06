@@ -86,6 +86,16 @@ module MList
     end
     alias_method_chain :parent=, :identifier_capture
     
+    # Answers the recipient email addresses from the MList::List recipient
+    # subscribers, except those that are in the email TO or CC fields as
+    # placed there by the sending MUA. It is assumed that those addresses have
+    # received a copy of the email already, and that by including them here,
+    # we would cause them to receive two copies of the message.
+    #
+    def recipient_addresses
+      @recipients.collect(&:email_address).collect(&:downcase) - email.recipient_addresses
+    end
+    
     # Answers the subject with 'Re:' prefixed. Note that it is the
     # responsibility of the MList::MailList to perform any processing of the
     # persisted subject (ie, cleaning up labels, etc).

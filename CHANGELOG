@@ -6,6 +6,7 @@
 * Fixed bug where delivery date was left to the mercy of the Rails time configuration. Using Time.now. [aiwilliams]
 * Manager list can indicate if reply-to should be list address or subscriber. [aiwilliams]
 * Leaving the reply-to field intact when it already exists on incoming email. [aiwilliams]
+* Messages will not be delivered to addresses found in the TO and CC fields in order to keep those recipients from getting two emails. [aiwilliams]
 
 *0.1.6 [Bug Fixes] (March 5, 2009)
 

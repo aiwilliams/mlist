@@ -246,6 +246,24 @@ describe MList::MailList do
       process_post
     end
     
+    it 'should not deliver to addresses found in the to header' do
+      @post_tmail.to = ['john@example.com', 'list_one@example.com']
+      mock.proxy(@mail_list.messages).build(anything) do |message|
+        mock(message.delivery).bcc=([])
+        message
+      end
+      process_post
+    end
+    
+    it 'should not deliver to addresses found in the cc header' do
+      @post_tmail.cc = ['john@example.com']
+      mock.proxy(@mail_list.messages).build(anything) do |message|
+        mock(message.delivery).bcc=([])
+        message
+      end
+      process_post
+    end
+    
     it 'should use list address as reply-to by default' do
       process_post.should have_header('reply-to', 'Discussions <list_one@example.com>')
     end
