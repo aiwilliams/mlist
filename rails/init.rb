@@ -1,5 +1,3 @@
-require 'dispatcher' unless defined?(::Dispatcher)
-
 # Provides the mechinism to support applications that want to observe MList
 # models.
 #
@@ -13,7 +11,10 @@ require 'dispatcher' unless defined?(::Dispatcher)
 # Should we ever have observers in MList, this will likely need more careful
 # attention.
 #    
-Dispatcher.to_prepare(:activerecord_instantiate_observers) {
-  ActiveRecord::Base.send(:subclasses).each(&:delete_observers)
-  ActiveRecord::Base.instantiate_observers
-}
+class << ActiveRecord::Base
+  def instantiate_observers_with_mlist_observers
+    subclasses.each(&:delete_observers)
+    instantiate_observers_without_mlist_observers
+  end
+  alias_method_chain :instantiate_observers, :mlist_observers
+end
