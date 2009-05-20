@@ -10,11 +10,13 @@
 #
 # Should we ever have observers in MList, this will likely need more careful
 # attention.
-#    
-class << ActiveRecord::Base
-  def instantiate_observers_with_mlist_observers
-    subclasses.each(&:delete_observers)
-    instantiate_observers_without_mlist_observers
+#
+unless Rails.configuration.cache_classes
+  class << ActiveRecord::Base
+    def instantiate_observers_with_mlist_observers
+      subclasses.each(&:delete_observers)
+      instantiate_observers_without_mlist_observers
+    end
+    alias_method_chain :instantiate_observers, :mlist_observers
   end
-  alias_method_chain :instantiate_observers, :mlist_observers
 end
