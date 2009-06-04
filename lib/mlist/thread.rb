@@ -15,12 +15,12 @@ module MList
     
     def next(message)
       i = tree_order.index(message)
-      messages[i + 1] unless messages.size < i
+      tree_order[i + 1] unless messages.size < i
     end
     
     def previous(message)
       i = tree_order.index(message)
-      messages[i - 1] if i > 0
+      tree_order[i - 1] if i > 0
     end
     
     def subject
