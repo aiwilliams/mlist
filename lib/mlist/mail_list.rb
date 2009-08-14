@@ -43,7 +43,7 @@ module MList
         :subscriber => email.subscriber,
         :recipients => list.recipients(email.subscriber),
         :email => MList::Email.new(:source => email.to_s)
-      ), :search_parent => false
+      ), :search_parent => false, :copy_sender => email.copy_sender
     end
     
     # Processes the email received by the MList::Server.
@@ -55,7 +55,7 @@ module MList
         :subscriber => subscriber,
         :recipients => recipients,
         :email => email
-      )
+      ), :copy_sender => list.copy_sender?(subscriber)
     end
     
     # Answers the provided subject with superfluous 're:' and this list's
@@ -175,7 +175,8 @@ module MList
         
         options = {
           :search_parent => true,
-          :delivery_time => Time.now
+          :delivery_time => Time.now,
+          :copy_sender => false
         }.merge(options)
         
         transaction do
@@ -198,6 +199,15 @@ module MList
         message.identifier = outgoing_server.generate_message_id
         message.created_at = options[:delivery_time]
         message.subject = clean_subject(message.subject)
+        
+        recipient_addresses = message.recipient_addresses
+        sender_address = message.subscriber.email_address
+        if options[:copy_sender]
+          recipient_addresses << sender_address unless recipient_addresses.include?(sender_address)
+        else
+          recipient_addresses.delete(sender_address)
+        end
+        
         returning(message.delivery) do |delivery|
           delivery.date ||= options[:delivery_time]
           delivery.message_id = message.identifier
@@ -206,7 +216,7 @@ module MList
           delivery.subject = list_subject(message.subject)
           delivery.to = address
           delivery.cc = []
-          delivery.bcc = message.recipient_addresses
+          delivery.bcc = recipient_addresses
           delivery.reply_to ||= reply_to_header(message)
           prepare_list_footer(delivery, message)
         end

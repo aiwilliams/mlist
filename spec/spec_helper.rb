@@ -1,6 +1,3 @@
-SPEC_ROOT = File.expand_path(File.dirname(__FILE__))
-$LOAD_PATH << (SPEC_ROOT + '/../lib')
-
 require 'rubygems'
 require 'spec'
 require 'rr'
@@ -10,6 +7,9 @@ Spec::Runner.configure do |config|
   config.mock_with :rr
 end
 
+SPEC_ROOT = File.expand_path(File.dirname(__FILE__))
+$LOAD_PATH.unshift(SPEC_ROOT + '/../lib')
+p $LOAD_PATH
 Dir[SPEC_ROOT + '/matchers/*.rb'].each { |path| require path }
 
 require 'activerecord'

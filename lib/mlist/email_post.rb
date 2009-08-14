@@ -12,7 +12,7 @@ module MList
   class EmailPost
     include MList::Util::EmailHelpers
     
-    ATTRIBUTE_NAMES = %w(html text mailer subject subscriber)
+    ATTRIBUTE_NAMES = %w(copy_sender html text mailer subject subscriber)
     ATTRIBUTE_NAMES.each do |attribute_name|
       define_method(attribute_name) do
         @attributes[attribute_name]
@@ -42,6 +42,10 @@ module MList
       attributes.each do |attribute_name, value|
         send("#{attribute_name}=", value)
       end
+    end
+    
+    def copy_sender=(value)
+      @attributes['copy_sender'] = %w(true 1).include?(value.to_s)
     end
     
     def reply_to_message=(message)

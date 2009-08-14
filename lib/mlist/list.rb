@@ -67,6 +67,16 @@ module MList
       nil
     end
     
+    # Should the sender of an email be copied in the publication? Defaults to
+    # false. If _recipients_ includes the sender email address, it will be
+    # removed if this answers false.
+    #
+    # The sending subscriber is provided to support preferential answering.
+    #
+    def copy_sender?(subscriber)
+      false
+    end
+    
     # The web address of the list help site, nil if this is not supported.
     #
     def help_url
@@ -107,16 +117,15 @@ module MList
       nil
     end
     
-    # A list is responsible for answering the recipient subscribers.
+    # A list is responsible for answering the recipient subscribers. The
+    # answer may or may not include the subscriber; _copy_sender?_ will be
+    # invoked and the subscriber will be added or removed from the Array.
     #
-    # The subscriber of the incoming message is provided if the list would
-    # like to exclude it from the returned list. It is not assumed that it
-    # will be included or excluded, thereby allowing the list to decide. This
-    # default implementation does not include the sending subscriber in the
-    # list of recipients.
+    # The sending subscriber is provided if the list would like to utilize it
+    # in calculating the recipients.
     #
     def recipients(subscriber)
-      subscribers.reject {|s| s.email_address == subscriber.email_address}
+      subscribers
     end
     
     # A list must answer the subscriber who's email address is that of the one

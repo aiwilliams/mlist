@@ -113,6 +113,31 @@ describe MList::MailList do
         :text => 'Email must have a message id for threading')
       message.reload.identifier.should_not be_nil
     end
+    
+    it 'should copy the subscriber if desired' do
+      @mail_list.post(
+        :subscriber => @subscriber_one,
+        :subject => 'Copy Me',
+        :text => 'Email should be sent to subscriber if desired',
+        :copy_sender => true)
+        
+      tmail = @outgoing_server.deliveries.last
+      tmail.bcc.should include(@subscriber_one.email_address)
+    end
+    
+    it 'should not copy the subscriber if undesired and list includes the subscriber' do
+      # The MList::List implementor may include the sending subscriber
+      stub(@manager_list).recipients {[@subscriber_one, @subscriber_two]}
+      
+      @mail_list.post(
+        :subscriber => @subscriber_one,
+        :subject => 'Do Not Copy Me',
+        :text => 'Email should not be sent to subscriber if undesired',
+        :copy_sender => false)
+        
+      tmail = @outgoing_server.deliveries.last
+      tmail.bcc.should_not include(@subscriber_one.email_address)
+    end
   end
   
   describe 'message storage' do
@@ -418,7 +443,7 @@ this is without any in front
       # I think that what TMail is doing is evil, but it's reference to
       # a ruby-talk discussion leads to Japanese, which I cannot read.
       # I'd prefer that it leave the problem of timezones up to the client,
-      # especially since ActiveSupport does and EXCELLENT job of making
+      # especially since ActiveSupport does an EXCELLENT job of making
       # time zones not hurt so much.
       it 'should use the Time.now (zone of the machine) for date header' do
         @post_tmail['date'] = nil
