@@ -213,6 +213,7 @@ module MList
           delivery.message_id = message.identifier
           delivery.mailer = message.mailer
           delivery.headers = list_headers
+          delivery['return-receipt-to'] = nil
           delivery.subject = list_subject(message.subject)
           delivery.to = address
           delivery.cc = []

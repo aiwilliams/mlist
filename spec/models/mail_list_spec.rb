@@ -308,13 +308,18 @@ describe MList::MailList do
     end
     
     it 'should not remove any existing x-beenthere headers' do
-      @post_tmail['x-beenthere'] = 'somewhere@nomain.net'
-      process_post.should have_header('x-beenthere', %w(list_one@example.com somewhere@nomain.net))
+      @post_tmail['x-beenthere'] = 'somewhere@nomail.net'
+      process_post.should have_header('x-beenthere', %w(list_one@example.com somewhere@nomail.net))
     end
     
     it 'should not modify existing headers' do
       @post_tmail['x-something-custom'] = 'existing'
       process_post.should have_header('x-something-custom', 'existing')
+    end
+    
+    it 'should delete Return-Receipt-To headers since they cause clients to spam the list (the sender address)' do
+      @post_tmail['return-receipt-to'] = 'somewhere@nomail.net'
+      process_post.should_not have_header('return-receipt-to')
     end
     
     it 'should not have any cc addresses' do

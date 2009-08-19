@@ -1,3 +1,7 @@
+*0.1.8 [Enhancement] (2009-08-19)
+
+* return-receipt-to header will not be published to list to avoid having recipients spam list with receipts [aiwilliams]
+
 *0.1.7 [Bug Fixes, Delivery Improvements] (2009-08-14)
 
 * &nbsp; is maintained as spacing in html_to_text conversions [aiwilliams]
