@@ -76,6 +76,39 @@ When an MList::MailList is destroyed, all it's MList::Messages and MList::Thread
 will be deleted (:dependent => :delete_all). If no other MList::Messages are
 referencing the MList::Email records, they will also be deleted.
 
+==== Ensuring Delivery
+
+The internet email system is a mess. Spam has proven to be a significant
+problem which plagues both your inbox and the service providers who work to
+deliver email into it. So, what must you, the user of MList do, to ensure that
+your software plays nice, and your emails are delivered?
+
+Of course, this problem goes well beyond MList - any email you send from your
+application servers will suffer the consequences of a misconfigured domain.
+Here's what I've learned:
+
+ * Go to http://old.openspf.org/wizard.html and create your SPF record
+   content, to be placed in a TXT record for your domain.
+   - If you are using Google Apps, check this out:
+     http://www.google.com/support/a/bin/answer.py?hl=en&answer=33786
+ * Make sure you have an abuse@yourdomain.com and postmaster@yourdomain.com
+   address.
+   - If you are using Google Apps, you will need to create 'groups' for those
+     addresses, adding yourself as a recipient. You can read more about it
+     here: http://blog.wordtothewise.com/2009/01/google-apps-wheres-my-abuse/
+ * Be prepared to visit the Feedback Loop (FBL) configuration pages of many
+   ISPs, like the one at AOL: http://postmaster.aol.com/fbl/
+ * You'll probably want to have a way to resolve an email address (subscriber)
+   to an IP address from which the subscriber subscribed. This will help your
+   case should you have an ISP rejecting your mail.
+
+There is a great article here:
+
+  http://community-support.engineyard.com/faqs/guides/making-sure-your-email-gets-delivered
+
+Although that is EY focused, it gives you a good idea of some of the things
+you should get right.
+
 == SYNOPSIS:
 
 Let's say you want your web application to have a mailing list feature. Let's
