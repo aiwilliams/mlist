@@ -16,6 +16,12 @@ describe MList::Email do
     @email.list_addresses.should == %w(all_down_case@nomail.net all_down_case@yesmail.net)
   end
   
+  it 'should handle @ in label of addresses' do
+    @tmail = tmail_fixture('at_in_address_label')
+    @email = MList::Email.new(:tmail => @tmail)
+    @email.list_addresses.should == %w(whatever@yesmail.net)
+  end
+  
   it 'should include the cc field in list addresses, no duplicates' do
     @tmail.to = 'list_one@example.com'
     @tmail.cc = 'list_one@example.com, list_two@example.com'

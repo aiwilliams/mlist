@@ -9,10 +9,9 @@ end
 
 SPEC_ROOT = File.expand_path(File.dirname(__FILE__))
 $LOAD_PATH.unshift(SPEC_ROOT + '/../lib')
-p $LOAD_PATH
 Dir[SPEC_ROOT + '/matchers/*.rb'].each { |path| require path }
 
-require 'activerecord'
+require 'active_record'
 SQLITE_DATABASE = "#{SPEC_ROOT}/sqlite3.db"
 ActiveRecord::Base.silence do
   ActiveRecord::Base.configurations = {'test' => {
