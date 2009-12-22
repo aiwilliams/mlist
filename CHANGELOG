@@ -1,3 +1,8 @@
+*0.1.9 [Enhancement] (2009-12-21)
+
+* DomainKey-Signature and DKIM-Signature headers will not be published to list so that sending SMTP servers may sign. [aiwilliams]
+* Deploying to http://gemcutter.org [aiwilliams]
+
 *0.1.8 [Enhancement] (2009-08-19)
 
 * return-receipt-to header will not be published to list to avoid having recipients spam list with receipts [aiwilliams]
