@@ -170,6 +170,12 @@ module MList
         headers.delete_if {|k,v| v.nil?}
       end
       
+      # Answer headers values which should be stripped from outgoing email.
+      #
+      def strip_headers
+        %w(return-receipt-to domainkey-signature dkim-signature)
+      end
+      
       def process_message(message, options = {})
         raise MList::DoubleDeliveryError.new(message) unless message.new_record?
         
@@ -213,7 +219,7 @@ module MList
           delivery.message_id = message.identifier
           delivery.mailer = message.mailer
           delivery.headers = list_headers
-          delivery['return-receipt-to'] = nil
+          strip_headers.each {|e| delivery[e] = nil}
           delivery.subject = list_subject(message.subject)
           delivery.to = address
           delivery.cc = []

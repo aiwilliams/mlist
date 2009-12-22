@@ -341,6 +341,16 @@ describe MList::MailList do
       process_post.subject.should == 'Re: [Discussions] Test'
     end
     
+    it 'should remove DomainKey-Signature headers so that we can sign the redistribution' do
+      @post_tmail['DomainKey-Signature'] = "a whole bunch of junk"
+      process_post.should_not have_header('domainkey-signature')
+    end
+    
+    it 'should remove DKIM-Signature headers so that we can sign the redistribution' do
+      @post_tmail['DKIM-Signature'] = "a whole bunch of junk"
+      process_post.should_not have_header('dkim-signature')
+    end
+    
     it 'should capture the new message-ids' do
       delivered = process_post
       delivered.header_string('message-id').should_not be_blank
