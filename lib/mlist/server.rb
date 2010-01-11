@@ -27,7 +27,7 @@ module MList
     protected
       def process_post(lists, email)
         lists.each do |list|
-          next if email.been_here?(list)
+          next if list.been_here?(email)
           if list.subscriber?(email.from_address)
             publish_if_list_active(list, email)
           else

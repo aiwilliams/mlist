@@ -17,6 +17,14 @@ module MList
       true
     end
     
+    # Answers whether the email has been to this list before. The simplest
+    # test is whether the email has an X-BeenThere header that matches this
+    # list's address.
+    #
+    def been_here?(email)
+      email.been_there_addresses.include?(address)
+    end
+    
     # Answers whether the subscriber is blocked from posting or not. This will
     # not be asked when the list is not active (answers _active?_ as false).
     #

@@ -6,10 +6,6 @@ module MList
     include MList::Util::EmailHelpers
     include MList::Util::TMailReaders
     
-    def been_here?(list)
-      tmail.header_string('x-beenthere') == list.address
-    end
-    
     def date
       if date_from_email = super
         return date_from_email
@@ -20,6 +16,12 @@ module MList
     
     def from
       tmail.header_string('from')
+    end
+    
+    # Answers the values of all the X-BeenThere headers.
+    #
+    def been_there_addresses
+      Array(tmail['x-beenthere']).collect { |e| e.body.downcase }.uniq
     end
     
     # Answers the usable destination addresses of the email.

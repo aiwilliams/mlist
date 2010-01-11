@@ -90,6 +90,7 @@ describe MList do
   end
   
   it 'should not forward mail that has been on this server before' do
+    # The sample email has multiple headers to prove that's not a problem
     @email_server.should_not forward_email(tmail_fixture('x-beenthere'))
   end
   
