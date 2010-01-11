@@ -1,3 +1,7 @@
+*0.1.10 [Enhancement] (2010-01-11)
+
+* Delegating back to the list the question of whether an email has been to the list before (X-BeenThere checking). [aiwilliams]
+
 *0.1.9 [Enhancement] (2009-12-21)
 
 * DomainKey-Signature and DKIM-Signature headers will not be published to list so that sending SMTP servers may sign. [aiwilliams]
