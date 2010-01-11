@@ -21,7 +21,7 @@ module MList
     # Answers the values of all the X-BeenThere headers.
     #
     def been_there_addresses
-      Array(tmail['x-beenthere']).collect { |e| e.body.downcase }.uniq
+      Array(tmail['x-beenthere']).collect { |e| e.body.strip.downcase }.uniq
     end
     
     # Answers the usable destination addresses of the email.

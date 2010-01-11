@@ -22,7 +22,7 @@ module MList
     # list's address.
     #
     def been_here?(email)
-      email.been_there_addresses.include?(address)
+      email.been_there_addresses.include?(address.downcase)
     end
     
     # Answers whether the subscriber is blocked from posting or not. This will
