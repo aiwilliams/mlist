@@ -141,7 +141,7 @@ environment.rb after the initialize block (our gem needs to have been loaded):
     # Please do specify a version, and check for the latest!
     config.gem "mlist", :version => '0.1.0'
   end
-  
+
   MLIST_SERVER = MList::Server.new(
     :list_manager => MList::Manager::Database.new,
     :email_server => MList::EmailServer::Default.new(
@@ -185,6 +185,7 @@ list something like this:
 (The MIT License)
 
 Copyright (c) 2008-2009 Adam Williams (aiwilliams)
+Portions from Rails are Copyright (c) 2004-2008 David Heinemeier Hansson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the 'Software'), to deal in the

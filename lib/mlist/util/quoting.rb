@@ -1,8 +1,6 @@
 module MList
   module Util
-    
-    # Copyright (c) 2004-2008 David Heinemeier Hansson
-    #
+
     # Taken from ActionMailer. Modified to make charset first argument in all
     # signatures, allowing for a consistent pattern of invocation.
     #
