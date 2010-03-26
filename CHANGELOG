@@ -1,3 +1,7 @@
+*0.1.12 [Enhancement] (2010-03-26)
+
+* Added footers to html parts of email. [aiwilliams]
+
 *0.1.10 [Enhancement] (2010-01-11)
 
 * Delegating back to the list the question of whether an email has been to the list before (X-BeenThere checking). [aiwilliams]
