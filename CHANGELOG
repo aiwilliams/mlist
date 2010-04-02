@@ -1,3 +1,7 @@
+*0.1.15 [Bug Fix] (2010-04-02)
+
+* Fixed mistakes in lifecycle management of imap connection. [aiwilliams]
+
 *0.1.14 [Bug Fix] (2010-04-02)
 
 * Better to ask for not deleted messages, and expunging after processing. [aiwilliams]
