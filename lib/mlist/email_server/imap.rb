@@ -6,11 +6,6 @@ module MList
     class Imap < Base
       def initialize(settings)
         super(settings)
-        @imap = Net::IMAP.new(
-          settings[:server],
-          settings[:port],
-          settings[:ssl]
-        )
       end
 
       def deliver(tmail)
@@ -18,7 +13,12 @@ module MList
       end
 
       def execute
-        connect { process_folders }
+        begin
+          connect
+          process_folders
+        ensure
+          disconnect
+        end
       end
 
       def archive_message_id(id)
@@ -27,12 +27,16 @@ module MList
       end
 
       def connect
+        @imap = Net::IMAP.new(
+          settings[:server],
+          settings[:port],
+          settings[:ssl]
+        )
         @imap.login(settings[:username], settings[:password])
-        begin
-          yield
-        ensure
-          @imap.close
-        end
+      end
+
+      def disconnect
+        @imap.disconnect if @imap && !@imap.disconnected?
       end
 
       def process_folders
@@ -47,7 +51,7 @@ module MList
           process_message_id(message_id)
           archive_message_id(message_id)
         end
-        @imap.expunge
+        @imap.close
       end
 
       def process_message_id(id)

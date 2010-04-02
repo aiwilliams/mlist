@@ -1,50 +1,47 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 require 'mlist/email_server/imap'
 
-describe MList::EmailServer::Imap, 'settings' do
-  it 'should use the provided credentials' do
-    mock(Net::IMAP).new('host', 993, true) { mock('imap') }
-    MList::EmailServer::Imap.new(:server => 'host', :port => 993, :ssl => true)
-  end
-
-  it 'should login with the provided credentials, process the folders, close on completion' do
-    imap_server = Object.new
-    stub(Net::IMAP).new { imap_server }
-
+describe MList::EmailServer::Imap, 'execute' do
+  it 'should use the provided credentials when connecting' do
+    imap_server = 'mock_imap_server'
+    mock(Net::IMAP).new('host', 993, true) { imap_server }
     mock(imap_server).login('aahh', 'eeya')
-    mock(imap_server).close
 
     imap = MList::EmailServer::Imap.new(
+      :server => 'host', :port => 993, :ssl => true,
       :username => 'aahh', :password => 'eeya'
     )
-    mock(imap).process_folders
-    imap.execute
+    imap.connect
   end
 
-  it 'should process the provided folders' do
-    imap_server = Object.new
-    stub(Net::IMAP).new { imap_server }
-    imap = MList::EmailServer::Imap.new(
-      :source_folders => ['Inbox', 'Spam']
-    )
-    mock(imap).process_folder('Inbox')
-    mock(imap).process_folder('Spam')
-    imap.process_folders
+  it 'should connect, process the folders, disconnect on execution' do
+    imap = MList::EmailServer::Imap.new({})
+    mock(imap).connect
+    mock(imap).process_folders
+    mock(imap).disconnect
+    imap.execute
   end
 end
 
 describe MList::EmailServer::Imap, 'processing' do
   before do
     @imap_server = 'mock_imap_server'
-    stub(Net::IMAP).new { @imap_server }
     @imap = MList::EmailServer::Imap.new({:archive_folder => 'Archive'})
+    @imap.instance_variable_set('@imap', @imap_server)
   end
 
-  it 'should examine the specified folder and process all the messages' do
+  it 'should process the provided folders' do
+    imap = MList::EmailServer::Imap.new(:source_folders => ['Inbox', 'Spam'])
+    mock(imap).process_folder('Inbox')
+    mock(imap).process_folder('Spam')
+    imap.process_folders
+  end
+
+  it 'should select the folder, process each message, close the folder' do
     message_ids = [1,2]
     mock(@imap_server).select('folder')
     mock(@imap_server).search(['NOT','DELETED']) { message_ids }
-    mock(@imap_server).expunge
+    mock(@imap_server).close
     mock(@imap).process_message_id(1)
     mock(@imap).archive_message_id(1)
     mock(@imap).process_message_id(2)
