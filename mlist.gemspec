@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{mlist}
-  s.version = "0.1.12"
+  s.version = "0.1.13"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Adam Williams"]
-  s.date = %q{2010-03-26}
+  s.date = %q{2010-04-02}
   s.description = %q{A Ruby mailing list library designed to be integrated into other applications.}
   s.email = %q{adam@thewilliams.ws}
   s.extra_rdoc_files = [
@@ -29,6 +29,7 @@ Gem::Specification.new do |s|
      "lib/mlist/email_server/base.rb",
      "lib/mlist/email_server/default.rb",
      "lib/mlist/email_server/fake.rb",
+     "lib/mlist/email_server/imap.rb",
      "lib/mlist/email_server/pop.rb",
      "lib/mlist/email_server/smtp.rb",
      "lib/mlist/email_subscriber.rb",
@@ -57,6 +58,7 @@ Gem::Specification.new do |s|
   s.test_files = [
     "spec/fixtures/schema.rb",
      "spec/integration/date_formats_spec.rb",
+     "spec/integration/imap_email_server_spec.rb",
      "spec/integration/mlist_spec.rb",
      "spec/integration/pop_email_server_spec.rb",
      "spec/integration/proof_spec.rb",

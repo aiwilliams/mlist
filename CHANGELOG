@@ -1,3 +1,7 @@
+*0.1.13 [Enhancement] (2010-04-02)
+
+* Added an IMAP server for reading multiple folders. [aiwilliams]
+
 *0.1.12 [Enhancement] (2010-03-26)
 
 * Added footers to html parts of email. [aiwilliams]
