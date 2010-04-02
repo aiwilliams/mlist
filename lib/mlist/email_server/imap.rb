@@ -43,10 +43,11 @@ module MList
 
       def process_folder(folder)
         @imap.select(folder)
-        @imap.search(['ALL']).each do |message_id|
+        @imap.search(['NOT','DELETED']).each do |message_id|
           process_message_id(message_id)
           archive_message_id(message_id)
         end
+        @imap.expunge
       end
 
       def process_message_id(id)

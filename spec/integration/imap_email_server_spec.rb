@@ -43,7 +43,8 @@ describe MList::EmailServer::Imap, 'processing' do
   it 'should examine the specified folder and process all the messages' do
     message_ids = [1,2]
     mock(@imap_server).select('folder')
-    mock(@imap_server).search(['ALL']) { message_ids }
+    mock(@imap_server).search(['NOT','DELETED']) { message_ids }
+    mock(@imap_server).expunge
     mock(@imap).process_message_id(1)
     mock(@imap).archive_message_id(1)
     mock(@imap).process_message_id(2)
