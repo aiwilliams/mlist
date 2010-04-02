@@ -1,3 +1,7 @@
+*0.1.14 [Bug Fix] (2010-04-02)
+
+* Better to ask for not deleted messages, and expunging after processing. [aiwilliams]
+
 *0.1.13 [Enhancement] (2010-04-02)
 
 * Added an IMAP server for reading multiple folders. [aiwilliams]
