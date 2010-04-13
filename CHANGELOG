@@ -1,3 +1,7 @@
+*0.1.16 [Bug Fix] (2010-04-13)
+
+* Fixed bug where encoding was lost when adding footers. [aiwilliams]
+
 *0.1.15 [Bug Fix] (2010-04-02)
 
 * Fixed mistakes in lifecycle management of imap connection. [aiwilliams]
