@@ -1,5 +1,7 @@
 module MList
   class MailList < ActiveRecord::Base
+    include Util::Quoting
+
     set_table_name 'mlist_mail_lists'
 
     # Provides the MailList for a given implementation of MList::List,
@@ -237,24 +239,31 @@ module MList
 
       def prepare_html_footer(part, footer)
         return unless part
-        content = part.body
+
+        content = part.body('utf-8')
         content.gsub!(%r(<p>\s*#{FOOTER_BLOCK_START_RE}.*?#{FOOTER_BLOCK_END_RE}\s*<\/p>)im, '')
         content.strip!
+
         html_footer = "<p>#{auto_link_urls(text_to_html(footer))}</p>"
 
         unless content.sub!(/<\/body>/, "#{html_footer}</body>")
           # no body was there, substitution failed
           content << html_footer
         end
-        part.body = content
+
+        part.charset = 'utf-8'
+        part.content_transfer_encoding = 'quoted-printable'
+        part.body = [normalize_new_lines(content)].pack("M*")
       end
 
       def prepare_text_footer(part, footer)
         return unless part
-        content = strip_list_footers(part.body)
+        content = strip_list_footers(part.body('utf-8'))
         content << "\n\n" unless content.end_with?("\n\n")
         content << footer
-        part.body = content
+        part.charset = 'utf-8'
+        part.content_transfer_encoding = 'quoted-printable'
+        part.body = [normalize_new_lines(content)].pack("M*")
       end
 
       def list_footer(message)

@@ -396,7 +396,7 @@ describe MList::MailList do
     it 'should append the list footer to text/plain emails' do
       @post_tmail.body = "My Email\n\n\n\n\n"
       mock(@manager_list).footer_content(is_a(MList::Message)) { 'my footer' }
-      process_post.body.should == "My Email\n\n\n\n\n#{MList::MailList::FOOTER_BLOCK_START}\nmy footer\n#{MList::MailList::FOOTER_BLOCK_END}"
+      process_post.body.should == "My Email\n\n\n\n\n#{MList::MailList::FOOTER_BLOCK_START}\nmy footer\n#{MList::MailList::FOOTER_BLOCK_END}=\n"
     end
 
     it 'should append the list footer to multipart/alternative, text/plain part of emails' do
@@ -414,7 +414,7 @@ describe MList::MailList do
     it 'should handle whitespace well when appending footer' do
       @post_tmail.body = "My Email"
       mock(@manager_list).footer_content(is_a(MList::Message)) { 'my footer' }
-      process_post.body.should == "My Email\n\n#{MList::MailList::FOOTER_BLOCK_START}\nmy footer\n#{MList::MailList::FOOTER_BLOCK_END}"
+      process_post.body.should == "My Email\n\n#{MList::MailList::FOOTER_BLOCK_START}\nmy footer\n#{MList::MailList::FOOTER_BLOCK_END}=\n"
     end
 
     it 'should strip out any existing text footers from the list' do
@@ -433,7 +433,7 @@ describe MList::MailList do
 this is without any in front
 #{MList::MailList::FOOTER_BLOCK_END}
       }
-      process_post.body.should == "My Email\n\n#{MList::MailList::FOOTER_BLOCK_START}\nmy footer\n#{MList::MailList::FOOTER_BLOCK_END}"
+      process_post.body.should == "My Email\n\n#{MList::MailList::FOOTER_BLOCK_START}\nmy footer\n#{MList::MailList::FOOTER_BLOCK_END}=\n"
     end
 
     it 'should strip out any existing html footers from the list' do
@@ -455,6 +455,19 @@ this is without any in front
 </p>
       }
       process_post.parts[1].body.should == "<p>My Email</p>\n<blockquote>\n   <p> Stuff in my email</p>\n\n>>  not in our p!<p>#{MList::MailList::FOOTER_BLOCK_START}<br />\nmy footer<br />\n#{MList::MailList::FOOTER_BLOCK_END}</p>"
+    end
+
+    it 'should properly reflect the new encoding when adding footers' do
+      @post_tmail = tmail_fixture('content_types/multipart_alternative_encoded')
+      stub(@manager_list).footer_content { 'my footer' }
+
+      part = process_post.parts[0]
+      part.charset.should == 'utf-8'
+      part.body.should == "Hi Friends and Neighbors:\n\nLike you, we have many concerns about what is going on in our country.  This\nyear in our homeschool, we've spent a lot more time learning about the\nhistory of our country, and the mindset of the founders that caused them to\nbreak away from the British empire and put together our great founding\ndocuments of the Declaration of Independence and U.S. Constitution.  How far\nwe have fallen!\n\n-- \nBob Bold\nThe Edge of Your Seat Experience Compny™\n\n\n#{MList::MailList::FOOTER_BLOCK_START}\nmy footer\n#{MList::MailList::FOOTER_BLOCK_END}"
+
+      part = process_post.parts[1]
+      part.charset.should == 'utf-8'
+      part.body.should == "<div class=\"gmail_quote\"><br><div class=\"gmail_quote\"><div><span style=\"font-family:arial, sans-serif;font-size:13px;border-collapse:collapse\"><div>\nHi Friends and Neighbors:</div><div><br></div><div>Like you, we have many concerns about what is going on in our country.  This year in our homeschool, we&#39;ve spent a lot more time learning about the history of our country, and the mindset of the founders that caused them to break away from the British empire and put together our great founding documents of the Declaration of Independence and U.S. Constitution.  How far we have fallen!</div>\n\n<div><span style=\"font-size:small\"><br></span></div></span></div></div>-- <br>Bob Bold<br>The Edge of Your Seat Experience Compny™ <br>Beaverton Heights               919-555-5555 (v)<br>1234 Checkstone St            919-555-5555 (f)<br><p>#{MList::MailList::FOOTER_BLOCK_START}<br />\nmy footer<br />\n#{MList::MailList::FOOTER_BLOCK_END}</p>"
     end
 
     describe 'time' do
