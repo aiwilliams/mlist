@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'spec'
+gem 'rr', '0.10.0'
 require 'rr'
 require 'ostruct'
 

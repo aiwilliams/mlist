@@ -396,7 +396,7 @@ describe MList::MailList do
     it 'should append the list footer to text/plain emails' do
       @post_tmail.body = "My Email\n\n\n\n\n"
       mock(@manager_list).footer_content(is_a(MList::Message)) { 'my footer' }
-      process_post.body.should == "My Email\n\n\n\n\n#{MList::MailList::FOOTER_BLOCK_START}\nmy footer\n#{MList::MailList::FOOTER_BLOCK_END}=\n"
+      process_post.body.should == "My Email\n\n\n\n\n#{MList::MailList::FOOTER_BLOCK_START}\nmy footer\n#{MList::MailList::FOOTER_BLOCK_END}"
     end
 
     it 'should append the list footer to multipart/alternative, text/plain part of emails' do
@@ -414,7 +414,7 @@ describe MList::MailList do
     it 'should handle whitespace well when appending footer' do
       @post_tmail.body = "My Email"
       mock(@manager_list).footer_content(is_a(MList::Message)) { 'my footer' }
-      process_post.body.should == "My Email\n\n#{MList::MailList::FOOTER_BLOCK_START}\nmy footer\n#{MList::MailList::FOOTER_BLOCK_END}=\n"
+      process_post.body.should == "My Email\n\n#{MList::MailList::FOOTER_BLOCK_START}\nmy footer\n#{MList::MailList::FOOTER_BLOCK_END}"
     end
 
     it 'should strip out any existing text footers from the list' do
@@ -433,7 +433,7 @@ describe MList::MailList do
 this is without any in front
 #{MList::MailList::FOOTER_BLOCK_END}
       }
-      process_post.body.should == "My Email\n\n#{MList::MailList::FOOTER_BLOCK_START}\nmy footer\n#{MList::MailList::FOOTER_BLOCK_END}=\n"
+      process_post.body.should == "My Email\n\n#{MList::MailList::FOOTER_BLOCK_START}\nmy footer\n#{MList::MailList::FOOTER_BLOCK_END}"
     end
 
     it 'should strip out any existing html footers from the list' do
