@@ -1,8 +1,11 @@
 require 'rubygems'
+require "bundler"
+Bundler.setup
+
 require 'spec'
-gem 'rr', '0.10.0'
 require 'rr'
 require 'ostruct'
+require 'ruby-debug'
 
 Spec::Runner.configure do |config|
   config.mock_with :rr
