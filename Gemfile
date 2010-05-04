@@ -7,6 +7,7 @@ gem 'hpricot', '>= 0.8.2'
 gem 'tmail', '= 1.2.1'
 
 group :development do
+  gem 'jeweler'
   gem 'dataset'
   gem 'rake'
   gem "sqlite3-ruby"

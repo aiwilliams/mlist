@@ -10,8 +10,18 @@ specs:
     version: 0.3.1
 - dataset: 
     version: 1.3.2
+- json_pure: 
+    version: 1.4.2
+- gemcutter: 
+    version: 0.5.0
+- git: 
+    version: 1.2.5
 - hpricot: 
     version: 0.8.2
+- rubyforge: 
+    version: 2.0.4
+- jeweler: 
+    version: 1.4.0
 - linecache: 
     version: "0.43"
 - macaddr: 
@@ -30,7 +40,7 @@ specs:
     version: 1.2.1
 - uuid: 
     version: 2.3.0
-hash: beb4622234918a534a4b4960573d5e58b9203857
+hash: f114a3759c0acf377d0d1d01f36996ba24a98ef7
 sources: 
 - Rubygems: 
     uri: http://gemcutter.org
@@ -73,11 +83,15 @@ dependencies:
     version: ">= 0"
     group: 
     - :development
-  activesupport: 
-    version: = 2.3.4
+  jeweler: 
+    version: ">= 0"
     group: 
-    - :default
+    - :development
   hpricot: 
     version: ">= 0.8.2"
+    group: 
+    - :default
+  activesupport: 
+    version: = 2.3.4
     group: 
     - :default
