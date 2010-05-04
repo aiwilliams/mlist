@@ -55,6 +55,11 @@ describe MList::EmailServer::Imap, 'processing' do
     @imap.process_message_id(1)
   end
 
+  it 'should not blow up if an RFC822 does not exist' do
+    mock(@imap_server).fetch(1, 'RFC822') { nil }
+    lambda { @imap.process_message_id(1) }.should_not raise_error
+  end
+
   it 'should wrap up RFC822 content in a TMail::Mail object' do
     tmail = 'mock_tmail'
     mock(TMail::Mail).parse('email content') { tmail }

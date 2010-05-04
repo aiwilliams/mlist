@@ -55,8 +55,10 @@ module MList
       end
 
       def process_message_id(id)
-        content = @imap.fetch(id, 'RFC822')[0].attr['RFC822']
-        process_message(content)
+        if rfc822 = @imap.fetch(id, 'RFC822')
+          content = rfc822[0].attr['RFC822']
+          process_message(content)
+        end
       end
 
       def process_message(content)
