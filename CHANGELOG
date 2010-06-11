@@ -1,3 +1,7 @@
+*0.1.18 [Enhancement] (2010-06-11)
+
+* Moving mail that has no rfc822 content into a settings[:failure_folder], if that setting is provided. [aiwilliams]
+
 *0.1.17 [Bug Fix] (2010-05-04)
 
 * Fixed bug where rfc822 was missing. [mikehale]
