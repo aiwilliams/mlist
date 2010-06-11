@@ -26,11 +26,14 @@ end
 describe MList::EmailServer::Imap, 'processing' do
   before do
     @imap_server = 'mock_imap_server'
-    @imap = MList::EmailServer::Imap.new({:archive_folder => 'Archive'})
+    @imap = MList::EmailServer::Imap.new({
+      :archive_folder => 'Archive',
+      :failure_folder => 'Failures'
+    })
     @imap.instance_variable_set('@imap', @imap_server)
   end
 
-  it 'should process the provided folders' do
+  it 'should process the provided source folders' do
     imap = MList::EmailServer::Imap.new(:source_folders => ['Inbox', 'Spam'])
     mock(imap).process_folder('Inbox')
     mock(imap).process_folder('Spam')
@@ -55,9 +58,10 @@ describe MList::EmailServer::Imap, 'processing' do
     @imap.process_message_id(1)
   end
 
-  it 'should not blow up if an RFC822 does not exist' do
+  it 'should not receive messages with no RFC822 content, moving them to the failure folder' do
     mock(@imap_server).fetch(1, 'RFC822') { nil }
-    lambda { @imap.process_message_id(1) }.should_not raise_error
+    mock(@imap_server).move(1, 'Failures')
+    @imap.process_message_id(1)
   end
 
   it 'should wrap up RFC822 content in a TMail::Mail object' do

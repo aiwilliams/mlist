@@ -58,6 +58,13 @@ module MList
         if rfc822 = @imap.fetch(id, 'RFC822')
           content = rfc822[0].attr['RFC822']
           process_message(content)
+        elsif settings[:failure_folder]
+          begin
+            @imap.move(id, settings[:failure_folder])
+          rescue Net::IMAP::NoResponseError
+            @imap.create(settings[:failure_folder])
+            retry
+          end
         end
       end
 
