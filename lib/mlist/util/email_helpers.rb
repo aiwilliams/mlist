@@ -103,7 +103,7 @@ module MList
       end
 
       def subscriber_name_and_address(subscriber)
-        a = subscriber.email_address
+        a = subscriber.rfc5322_email
         a = "#{subscriber.display_name} #{bracket(a)}" if subscriber.respond_to?(:display_name)
         a
       end

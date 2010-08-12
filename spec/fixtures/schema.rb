@@ -1,16 +1,16 @@
 ActiveRecord::Schema.define(:version => 20081126181722) do
-  
+
   # All MList required tables are prefixed with 'mlist_' to ease integration
   # into other systems' databases.
-  
-  
+
+
   # The table in which email content is stored.
-  # 
+  #
   create_table :mlist_emails, :force => true do |t|
     t.column :source, :text
     t.column :created_at, :datetime
   end
-  
+
   # The table in which MList will store MList::Messages.
   #
   # The identifier is the 'message-id' header value of the finally delivered
@@ -18,9 +18,9 @@ ActiveRecord::Schema.define(:version => 20081126181722) do
   #
   # An MList::Message will store a reference to your application's subscriber
   # instance if it is an ActiveRecord subclass. That subclass must respond to
-  # :email_address. If your subscriber is just a string, it is assumed to be
-  # an email address. Either way, that email address will be stored with the
-  # MList::Message, providing a way for you to associate messages by
+  # :rfc5322_email. If your subscriber is just a string, it is assumed
+  # to be an email address. Either way, that email address will be stored with
+  # the MList::Message, providing a way for you to associate messages by
   # subscriber_address. This is less ideal, as you may allow subscribers to
   # change their email addresses over time.
   #
@@ -46,7 +46,7 @@ ActiveRecord::Schema.define(:version => 20081126181722) do
   add_index :mlist_messages, :subject
   add_index :mlist_messages, :subscriber_address
   add_index :mlist_messages, [:subscriber_type, :subscriber_id]
-  
+
   # Every MList::Message is associated with an MList::Thread.
   #
   create_table :mlist_threads, :force => true do |t|
@@ -55,7 +55,7 @@ ActiveRecord::Schema.define(:version => 20081126181722) do
     t.timestamps
   end
   add_index :mlist_threads, :mail_list_id
-  
+
   # The table in which MList will store MList::MailLists.
   #
   # The manager_list_identifier column stores the MList::List#list_id value.
@@ -76,8 +76,8 @@ ActiveRecord::Schema.define(:version => 20081126181722) do
   add_index :mlist_mail_lists, :manager_list_identifier
   add_index :mlist_mail_lists, [:manager_list_identifier, :manager_list_type, :manager_list_id],
     :name => :index_mlist_mail_lists_on_manager_association
-  
-  
+
+
   # Database list manager tables, used for testing purposes.
   #
   create_table :lists, :force => true do |t|
@@ -85,10 +85,10 @@ ActiveRecord::Schema.define(:version => 20081126181722) do
     t.column :label, :string
     t.column :created_at, :datetime
   end
-  
+
   create_table :subscribers, :force => true do |t|
     t.column :list_id, :integer
-    t.column :email_address, :string
+    t.column :rfc5322_email, :string
     t.column :created_at, :datetime
   end
 end

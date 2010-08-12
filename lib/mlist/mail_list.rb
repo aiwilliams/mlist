@@ -209,7 +209,7 @@ module MList
         message.subject = clean_subject(message.subject)
 
         recipient_addresses = message.recipient_addresses
-        sender_address = message.subscriber.email_address
+        sender_address = message.subscriber.rfc5322_email
         if options[:copy_sender]
           recipient_addresses << sender_address unless recipient_addresses.include?(sender_address)
         else

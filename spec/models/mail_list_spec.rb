@@ -122,7 +122,7 @@ describe MList::MailList do
         :copy_sender => true)
 
       tmail = @outgoing_server.deliveries.last
-      tmail.bcc.should include(@subscriber_one.email_address)
+      tmail.bcc.should include(@subscriber_one.rfc5322_email)
     end
 
     it 'should not copy the subscriber if undesired and list includes the subscriber' do
@@ -136,7 +136,7 @@ describe MList::MailList do
         :copy_sender => false)
 
       tmail = @outgoing_server.deliveries.last
-      tmail.bcc.should_not include(@subscriber_one.email_address)
+      tmail.bcc.should_not include(@subscriber_one.rfc5322_email)
     end
   end
 
