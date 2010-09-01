@@ -1,3 +1,7 @@
+*0.1.20 [Enhancement] (2010-09-01)
+
+* Fixed bug where delete would not work with select from table update occurs in (sql error). [aiwilliams]
+
 *0.1.19 [Enhancement] (2010-08-12)
 
 * Requiring subscriber instances to respond to 'rfc5322_email' instead of 'email_address' in order to allow the latter name to be used in associations. [aiwilliams]
