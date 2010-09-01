@@ -144,7 +144,7 @@ module MList
             select meb.id from mlist_emails meb left join mlist_messages mmb on mmb.email_id = meb.id
             where mmb.mail_list_id != #{id}
           )}
-        MList::Email.delete_all(conditions)
+        MList::Email.destroy_all(conditions)
       end
 
       def strip_list_footers(content)
