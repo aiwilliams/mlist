@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{mlist}
-  s.version = "0.1.21"
+  s.version = "0.1.22"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Adam Williams"]
@@ -88,7 +88,7 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<activesupport>, ["= 2.3.4"])
       s.add_runtime_dependency(%q<uuid>, [">= 2.0.1"])
       s.add_runtime_dependency(%q<hpricot>, [">= 0.8.2"])
-      s.add_runtime_dependency(%q<tmail>, ["= 1.2.1"])
+      s.add_runtime_dependency(%q<tmail>, ["= 1.2.3.1"])
       s.add_development_dependency(%q<jeweler>, [">= 0"])
       s.add_development_dependency(%q<dataset>, ["= 1.3.2"])
       s.add_development_dependency(%q<rake>, [">= 0"])
@@ -102,7 +102,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<activesupport>, ["= 2.3.4"])
       s.add_dependency(%q<uuid>, [">= 2.0.1"])
       s.add_dependency(%q<hpricot>, [">= 0.8.2"])
-      s.add_dependency(%q<tmail>, ["= 1.2.1"])
+      s.add_dependency(%q<tmail>, ["= 1.2.3.1"])
       s.add_dependency(%q<jeweler>, [">= 0"])
       s.add_dependency(%q<dataset>, ["= 1.3.2"])
       s.add_dependency(%q<rake>, [">= 0"])
@@ -117,7 +117,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<activesupport>, ["= 2.3.4"])
     s.add_dependency(%q<uuid>, [">= 2.0.1"])
     s.add_dependency(%q<hpricot>, [">= 0.8.2"])
-    s.add_dependency(%q<tmail>, ["= 1.2.1"])
+    s.add_dependency(%q<tmail>, ["= 1.2.3.1"])
     s.add_dependency(%q<jeweler>, [">= 0"])
     s.add_dependency(%q<dataset>, ["= 1.3.2"])
     s.add_dependency(%q<rake>, [">= 0"])
