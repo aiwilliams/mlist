@@ -1,0 +1,48 @@
+GEM
+  remote: http://rubygems.org/
+  specs:
+    activerecord (2.3.4)
+      activesupport (= 2.3.4)
+    activesupport (2.3.4)
+    columnize (0.3.2)
+    dataset (1.3.2)
+      activerecord (>= 2.3.0)
+      activesupport (>= 2.3.0)
+    git (1.2.5)
+    hpricot (0.8.3)
+    jeweler (1.5.1)
+      bundler (~> 1.0.0)
+      git (>= 1.2.5)
+      rake
+    linecache (0.43)
+    macaddr (1.0.0)
+    rake (0.8.7)
+    rr (0.10.0)
+    rspec (1.3.1)
+    ruby-debug (0.10.4)
+      columnize (>= 0.1)
+      ruby-debug-base (~> 0.10.4.0)
+    ruby-debug-base (0.10.4)
+      linecache (>= 0.3)
+    sqlite3-ruby (1.3.2)
+    tmail (1.2.1)
+    uuid (2.3.1)
+      macaddr (~> 1.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  activerecord (= 2.3.4)
+  activesupport (= 2.3.4)
+  bundler (>= 1.0.1)
+  dataset (= 1.3.2)
+  hpricot (>= 0.8.2)
+  jeweler
+  rake
+  rr (= 0.10.0)
+  rspec (= 1.3.1)
+  ruby-debug
+  sqlite3-ruby
+  tmail (= 1.2.1)
+  uuid (>= 2.0.1)
