@@ -24,8 +24,20 @@ module MList
 
     belongs_to :manager_list, :polymorphic => true
 
+    # Deletes any Email records that exist for this MailList. While this could
+    # be done by loading each Message, we do it here to make things go a bit
+    # faster.
+    #
     before_destroy :delete_unreferenced_email
+
+    # Answers the Messages that belong to this MailList. delete_all can be used
+    # for dependents because delete_unreferenced_email will clean up Email
+    # instances that are only referenced by Messages in this MailList.
+    #
     has_many :messages, :class_name => 'MList::Message', :dependent => :delete_all
+
+    # Answers the Threads that belong to this MailList.
+    #
     has_many :threads, :class_name => 'MList::Thread', :dependent => :delete_all
 
     delegate :address, :label, :post_url, :to => :list
