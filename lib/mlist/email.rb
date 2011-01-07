@@ -27,7 +27,7 @@ module MList
     # Answers the usable destination addresses of the email.
     #
     def list_addresses
-      bounce? ? tmail.header_string('to').match(/\Amlist-(.*)\Z/)[1] : recipient_addresses
+      bounce? ? tmail.header_string('to').sub(/\Amlist-/, '') : recipient_addresses
     end
     
     # Answers true if this email is a bounce.
@@ -35,7 +35,7 @@ module MList
     # TODO Delegate to the email_server's bounce detector.
     #
     def bounce?
-      tmail.header_string('to') =~ /mlist-/
+      tmail.header_string('to') =~ /\Amlist-/
     end
     
     def tmail=(tmail)
