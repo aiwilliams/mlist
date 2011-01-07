@@ -1,3 +1,7 @@
+*0.1.23 [Enhancement] (2011-01-07)
+
+* A small change to reduce likelyhood of nil match when extracting to address on bounce. [aiwilliams]
+
 *0.1.20 [Enhancement] (2010-09-01)
 
 * Fixed bug where delete would not work with select from table update occurs in (sql error). [aiwilliams]
